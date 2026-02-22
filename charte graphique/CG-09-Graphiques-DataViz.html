@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CG-09 — Graphiques & Data Visualisation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root {
+  --accent-300: #65D5C4; --accent-400: #2BBFAD; --accent-500: #179E8E;
+  --accent-600: #0E7E72; --accent-700: #0C6259;
+  --accent-subtle-bg: rgba(23,158,142,0.08);
+  --accent-subtle-border: rgba(23,158,142,0.20);
+
+  --gray-950: #0A0B0F; --gray-900: #10121A; --gray-800: #1A1D2B;
+  --gray-700: #252838; --gray-600: #323548; --gray-500: #4D5068;
+  --gray-400: #6B6F88; --gray-300: #9196B0; --gray-200: #C2C5D6;
+  --gray-100: #E1E3EE; --gray-50: #F0F1F8; --gray-25: #F8F9FC;
+
+  --success: #268245; --warning: #B07412; --error: #9B322C; --info: #2855A0;
+  --success-subtle: rgba(38,130,69,0.10);  --success-border: rgba(38,130,69,0.25);
+  --warning-subtle: rgba(176,116,18,0.10); --warning-border: rgba(176,116,18,0.25);
+  --error-subtle:   rgba(155,50,44,0.10);  --error-border:   rgba(155,50,44,0.25);
+
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --text-2xl:28px; --text-xl:22px; --text-lg:18px; --text-md:14px;
+  --text-base:13px; --text-sm:11px; --text-xs:10px;
+
+  --radius-xs:2px; --radius-sm:4px; --radius-md:6px; --radius-lg:8px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.20),0 1px 2px rgba(0,0,0,.12);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.25),0 2px 4px rgba(0,0,0,.12);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,.30),0 4px 8px rgba(0,0,0,.14);
+  --shadow-focus: 0 0 0 2px var(--bg-base),0 0 0 4px var(--accent-500);
+
+  --bg-base: var(--gray-950); --bg-panel: var(--gray-900); --bg-raised: var(--gray-800);
+  --border-subtle: var(--gray-800); --border-default: var(--gray-700); --border-strong: var(--gray-600);
+  --text-primary: var(--gray-50); --text-secondary: var(--gray-200);
+  --text-tertiary: var(--gray-400); --text-placeholder: var(--gray-500);
+
+  /* Chart palette */
+  --chart-1: #179E8E;   /* accent-500 — Sage Slate */
+  --chart-2: #65D5C4;   /* accent-300 */
+  --chart-3: #6B6F88;   /* gray-400 */
+  --chart-4: #268245;   /* success */
+  --chart-5: #B07412;   /* warning */
+  --chart-6: #2855A0;   /* info */
+}
+[data-theme="light"] {
+  --bg-base: var(--gray-25); --bg-panel: #FFFFFF; --bg-raised: var(--gray-100);
+  --border-subtle: var(--gray-100); --border-default: var(--gray-200); --border-strong: var(--gray-300);
+  --text-primary: var(--gray-900); --text-secondary: #3D4158;
+  --text-tertiary: var(--gray-500); --text-placeholder: var(--gray-400);
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-sans);font-size:var(--text-base);line-height:1.65;
+  color:var(--text-primary);background:var(--bg-base);
+  -webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden;position:relative;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:1000;
+  opacity:0.20;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:180px 180px;
+}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--gray-700);border-radius:3px}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.doc-container{max-width:1080px;margin:0 auto;padding:48px 24px}
+
+.doc-header{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding-bottom:32px;border-bottom:1px solid var(--border-subtle);
+  margin-bottom:40px;gap:24px;flex-wrap:wrap;
+}
+.doc-header-left{display:flex;flex-direction:column;gap:12px}
+.doc-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:var(--text-xs);font-weight:500;
+  letter-spacing:0.10em;text-transform:uppercase;color:var(--accent-300);
+  background:var(--accent-subtle-bg);border:1px solid var(--accent-subtle-border);
+  padding:5px 10px;border-radius:var(--radius-sm);position:relative;overflow:hidden;
+}
+.doc-badge::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:65px 65px;opacity:0.35;mix-blend-mode:overlay;pointer-events:none;
+}
+.doc-title{font-size:var(--text-2xl);font-weight:700;letter-spacing:-0.035em;line-height:1.2}
+.doc-subtitle{font-size:var(--text-md);color:var(--text-tertiary)}
+.doc-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.doc-meta-item{font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:0.06em;color:var(--text-placeholder)}
+.doc-meta-item span{color:var(--text-tertiary)}
+.theme-btn{
+  display:inline-flex;align-items:center;gap:8px;padding:6px 12px;
+  background:var(--bg-raised);border:1px solid var(--border-default);
+  border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font-sans);
+  font-size:var(--text-sm);color:var(--text-secondary);
+  transition:all 150ms cubic-bezier(0.34,1.56,0.64,1);margin-top:8px;
+}
+.theme-btn:hover{border-color:var(--border-strong);color:var(--text-primary)}
+
+.section{margin-bottom:48px}
+.section-header{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.section-label{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:500;letter-spacing:0.10em;text-transform:uppercase;color:var(--accent-300);white-space:nowrap}
+.section-line{flex:1;height:1px;background:var(--border-subtle)}
+.section-title{font-size:var(--text-lg);font-weight:600;letter-spacing:-0.025em;margin-bottom:8px}
+.section-desc{font-size:var(--text-base);color:var(--text-tertiary);margin-bottom:24px;line-height:1.65}
+.subsection{margin-bottom:24px}
+.subsection-title{font-size:var(--text-md);font-weight:500;color:var(--text-secondary);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.subsection-title::before{content:'';width:3px;height:14px;background:var(--accent-500);border-radius:2px;flex-shrink:0}
+
+.preview-zone{
+  background:var(--bg-panel);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md);padding:24px;position:relative;overflow:hidden;
+}
+.preview-zone::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:110px 110px;opacity:0.12;mix-blend-mode:overlay;pointer-events:none;z-index:0;
+}
+.preview-zone>*{position:relative;z-index:1}
+
+.spec-table{width:100%;border-collapse:collapse;font-size:var(--text-sm);margin-top:16px}
+.spec-table th{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-placeholder);text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-subtle)}
+.spec-table td{padding:8px 12px;color:var(--text-secondary);border-bottom:1px solid var(--border-subtle)}
+.spec-table tr:last-child td{border-bottom:none}
+.spec-table tr:hover td{background:rgba(255,255,255,0.02)}
+.mono{font-family:var(--font-mono);color:var(--accent-300);font-size:var(--text-xs)}
+
+/* ============================================================
+   CHART CARD WRAPPER
+   ============================================================ */
+.chart-card{
+  background:var(--bg-panel);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md);box-shadow:var(--shadow-sm);
+  overflow:hidden;position:relative;
+}
+.chart-card::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:110px 110px;opacity:0.10;mix-blend-mode:overlay;pointer-events:none;z-index:0;
+}
+.chart-card>*{position:relative;z-index:1}
+.chart-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:16px 20px 12px;gap:12px;
+}
+.chart-title{font-size:var(--text-md);font-weight:600;letter-spacing:-0.01em;color:var(--text-primary)}
+.chart-subtitle{font-size:var(--text-sm);color:var(--text-tertiary);margin-top:2px}
+.chart-meta{display:flex;align-items:center;gap:8px}
+.chart-period{
+  font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);
+  background:var(--bg-raised);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-xs);padding:2px 7px;letter-spacing:0.04em;
+}
+.chart-body{padding:0 20px 20px}
+.chart-sep{height:1px;background:var(--border-subtle);margin:0 0 16px}
+
+/* KPI inline */
+.chart-kpi{
+  display:flex;align-items:baseline;gap:8px;margin-bottom:4px;
+}
+.chart-kpi-value{
+  font-size:var(--text-xl);font-weight:600;letter-spacing:-0.030em;color:var(--text-primary);
+}
+.chart-kpi-delta{
+  display:inline-flex;align-items:center;gap:3px;
+  font-family:var(--font-mono);font-size:var(--text-xs);font-weight:500;
+  padding:2px 6px;border-radius:var(--radius-xs);
+}
+.delta-up{background:var(--success-subtle);color:#5DB882}
+.delta-down{background:var(--error-subtle);color:#DC7070}
+
+/* Tooltip */
+.chart-tooltip{
+  position:fixed;
+  background:rgba(20,22,31,0.92);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:var(--radius-md);
+  padding:8px 12px;
+  pointer-events:none;
+  z-index:9999;
+  box-shadow:var(--shadow-lg);
+  min-width:140px;
+  display:none;
+  position:absolute;
+}
+.tooltip-label{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);letter-spacing:0.06em;margin-bottom:4px}
+.tooltip-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:2px}
+.tooltip-series{display:flex;align-items:center;gap:5px;font-size:var(--text-sm);color:var(--text-secondary)}
+.tooltip-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.tooltip-val{font-family:var(--font-mono);font-size:var(--text-sm);font-weight:500;color:var(--text-primary)}
+
+/* Legend */
+.chart-legend{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:0 20px 14px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:var(--text-sm);color:var(--text-tertiary);cursor:pointer;user-select:none;transition:color 150ms ease}
+.legend-item:hover{color:var(--text-secondary)}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.legend-dash{width:16px;height:2px;border-radius:1px;flex-shrink:0}
+
+/* Grid helpers */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* ============================================================
+   SPARKLINES (inline KPI)
+   ============================================================ */
+.kpi-card{
+  background:rgba(255,255,255,0.040);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:var(--radius-md);padding:16px;
+  position:relative;overflow:hidden;
+  box-shadow:var(--shadow-md);
+}
+.kpi-card::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:110px 110px;opacity:0.15;mix-blend-mode:overlay;pointer-events:none;z-index:0;
+}
+.kpi-card::after{
+  content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);
+  pointer-events:none;z-index:2;
+}
+.kpi-card>*{position:relative;z-index:1}
+.kpi-label{font-size:var(--text-sm);color:var(--text-tertiary);margin-bottom:4px}
+.kpi-value{font-size:var(--text-xl);font-weight:600;letter-spacing:-0.030em;color:var(--text-primary);line-height:1.1}
+.kpi-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+
+/* Donut ring */
+.donut-ring{transform:rotate(-90deg);transform-origin:center}
+.donut-track{fill:none}
+.donut-segment{fill:none;stroke-linecap:round;transition:stroke-dashoffset 800ms cubic-bezier(0.34,1.56,0.64,1)}
+
+/* Bar hover */
+.bar-rect{
+  transition:opacity 150ms ease;cursor:pointer;
+}
+.bar-rect:hover{opacity:0.85}
+.bar-value-label{
+  font-family:'DM Mono',monospace;font-size:10px;fill:var(--text-tertiary);
+  text-anchor:middle;
+}
+
+/* Axis text */
+.axis-label{
+  font-family:'DM Mono',monospace;font-size:10px;fill:var(--text-placeholder);
+}
+.axis-grid-line{stroke:var(--border-subtle);stroke-width:1}
+.axis-baseline{stroke:var(--border-default);stroke-width:1}
+
+/* Crosshair */
+.chart-crosshair{
+  position:absolute;pointer-events:none;z-index:10;
+  width:1px;background:var(--border-strong);top:0;bottom:0;opacity:0;
+  transition:opacity 100ms ease;
+}
+
+/* Navigation system */
+.nav-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-placeholder);
+}
+.nav-breadcrumb a {
+  color: var(--accent-400);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.nav-breadcrumb a:hover { color: var(--accent-300); }
+.nav-breadcrumb-sep { color: var(--border-default); }
+
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.nav-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.nav-dropdown-btn:hover {
+  background: var(--bg-panel);
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
+}
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  min-width: 280px;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1000;
+}
+.nav-dropdown.active .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  transition: all 120ms ease;
+}
+.nav-dropdown-item:hover {
+  background: var(--bg-raised);
+  color: var(--text-secondary);
+}
+.nav-dropdown-item.active {
+  background: var(--accent-subtle-bg);
+  color: var(--accent-300);
+  font-weight: 500;
+}
+.nav-dropdown-item-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-placeholder);
+  min-width: 32px;
+}
+
+/* Doc footer */
+.doc-footer{
+  margin-top:48px;padding-top:24px;border-top:1px solid var(--border-subtle);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+}
+.footer-left{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);letter-spacing:0.06em;line-height:1.8}
+.footer-nav {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: all 150ms ease;
+}
+.footer-link:hover {
+  color: var(--text-secondary);
+  background: var(--bg-raised);
+}
+.footer-link svg { width: 14px; height: 14px; }
+.footer-link.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+.kbd-hint {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-placeholder);
+  margin-top: 8px;
+}
+.kbd {
+  display: inline-block;
+  padding: 2px 5px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 3px;
+  font-size: 9px;
+  margin: 0 2px;
+}
+
+/* Palette swatches */
+.palette-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.swatch{
+  width:36px;height:36px;border-radius:var(--radius-sm);
+  position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.08);
+}
+.swatch::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:65px 65px;opacity:0.32;mix-blend-mode:overlay;pointer-events:none;
+}
+.swatch-label{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);margin-top:4px;letter-spacing:0.04em}
+</style>
+</head>
+<body>
+
+<div class="doc-container">
+
+  <!-- ══════════════════════ HEADER ══════════════════════ -->
+  <header class="doc-header">
+    <div class="doc-header-left">
+      <!-- Breadcrumb + Menu -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; width: 100%;">
+        <nav class="nav-breadcrumb" aria-label="Fil d'Ariane">
+          <a href="index.html">← Index</a>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>CG-09</span>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>Graphiques</span>
+        </nav>
+        
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-btn" onclick="toggleNav(this)" aria-label="Menu des modules" aria-expanded="false">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+            Tous les modules
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="CG-01-Identite-Palette.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-01</span> Identité & Palette</a>
+            <a href="CG-02-Systeme-Couleurs-Tokens.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-02</span> Couleurs & Tokens</a>
+            <a href="CG-03-Typographie-Echelle.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-03</span> Typographie</a>
+            <a href="CG-04-Espacement-Grille-Layout.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-04</span> Espacement & Grille</a>
+            <a href="CG-05-Effets-Grain-Verre-Ombres-Bordures.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-05</span> Effets & Grain</a>
+            <a href="CG-06-Composants-Boutons-Inputs-Badges-Cards.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-06</span> Composants UI</a>
+            <a href="CG-07-Navigation-Sidebar-Topbar-Tabs.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-07</span> Navigation</a>
+            <a href="CG-08-Feedback-Toasts-Modals-Etats.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-08</span> Feedback & États</a>
+            <a href="CG-09-Graphiques-DataViz.html" class="nav-dropdown-item active"><span class="nav-dropdown-item-num">CG-09</span> Graphiques</a>
+            <a href="CG-10-Motion-Design-Animations.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-10</span> Motion Design</a>
+            <a href="CG-11-Accessibilite-RGAA.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-11</span> Accessibilité</a>
+            <a href="CG-12-Tokens-CSS-Complets-Guide.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-12</span> Tokens CSS</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Charte Graphique · Module CG-09
+      </div>
+      <h1 class="doc-title">Graphiques &amp; Data Visualisation</h1>
+      <p class="doc-subtitle">Courbes · Barres · Donuts · Sparklines · Palette multi-séries · Tooltips</p>
+    </div>
+    <div class="doc-meta">
+      <div class="doc-meta-item">PROJET <span>Archivage Numérique</span></div>
+      <div class="doc-meta-item">MODULE <span>CG-09 / 12</span></div>
+      <div class="doc-meta-item">VERSION <span>1.0.0</span></div>
+      <button class="theme-btn" onclick="toggleTheme()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        Thème
+      </button>
+    </div>
+  </header>
+
+
+  <!-- ══════════════════════════════════════════════
+       RÈGLE FONDAMENTALE — Dégradés autorisés ICI SEULEMENT
+  ══════════════════════════════════════════════ -->
+  <div style="background:var(--accent-subtle-bg);border:1px solid var(--accent-subtle-border);border-radius:var(--radius-md);padding:14px 18px;margin-bottom:36px;display:flex;align-items:flex-start;gap:10px">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent-300)" stroke-width="1.5" style="flex-shrink:0;margin-top:1px" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div>
+      <div style="font-size:var(--text-md);font-weight:600;color:var(--accent-300);margin-bottom:3px">Règle fondamentale — Dégradés</div>
+      <div style="font-size:var(--text-sm);color:var(--text-secondary);line-height:1.6">Les dégradés sont <strong>autorisés exclusivement sous les courbes statistiques</strong> (fill area). Ils sont <strong>interdits partout ailleurs</strong> : boutons, cards, fonds, headers, inputs, barres. Transparence décroissante obligatoire vers 0 sur l'axe vertical.</div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 01 — SPARKLINES KPI
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">01 — Sparklines</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Mini-sparklines — Cards KPI</h2>
+    <p class="section-desc">Sparklines SVG inline dans les cards KPI glassmorphisme. Courbe accent-400 stroke 1.5px + dégradé sous la courbe (seul usage autorisé). Pas d'axes, pas de labels — données relatives uniquement.</p>
+
+    <div class="preview-zone">
+      <div class="grid-4">
+
+        <!-- KPI 1 — Volumes -->
+        <div class="kpi-card">
+          <div class="kpi-label">Documents archivés</div>
+          <div class="kpi-value">18 472</div>
+          <div class="kpi-bottom">
+            <div class="chart-kpi-delta delta-up">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+              +12.4 %
+            </div>
+            <svg id="spark1" width="80" height="32" viewBox="0 0 80 32" fill="none" aria-hidden="true"></svg>
+          </div>
+        </div>
+
+        <!-- KPI 2 — Versements -->
+        <div class="kpi-card">
+          <div class="kpi-label">Versements / mois</div>
+          <div class="kpi-value">2 341</div>
+          <div class="kpi-bottom">
+            <div class="chart-kpi-delta delta-up">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+              +8.1 %
+            </div>
+            <svg id="spark2" width="80" height="32" viewBox="0 0 80 32" fill="none" aria-hidden="true"></svg>
+          </div>
+        </div>
+
+        <!-- KPI 3 — Attente -->
+        <div class="kpi-card">
+          <div class="kpi-label">En attente validation</div>
+          <div class="kpi-value">47</div>
+          <div class="kpi-bottom">
+            <div class="chart-kpi-delta delta-down">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              +6 hier
+            </div>
+            <svg id="spark3" width="80" height="32" viewBox="0 0 80 32" fill="none" aria-hidden="true"></svg>
+          </div>
+        </div>
+
+        <!-- KPI 4 — Dispo -->
+        <div class="kpi-card">
+          <div class="kpi-label">Disponibilité SLA</div>
+          <div class="kpi-value">98.7 %</div>
+          <div class="kpi-bottom">
+            <div class="chart-kpi-delta delta-up">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+              Conforme
+            </div>
+            <svg id="spark4" width="80" height="32" viewBox="0 0 80 32" fill="none" aria-hidden="true"></svg>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 02 — COURBES STATISTIQUES
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">02 — Courbes</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Courbes statistiques</h2>
+    <p class="section-desc"><strong>Seul endroit autorisé pour les dégradés.</strong> Dégradé vertical sous la courbe de 0.25 → 0 opacité. Axes X/Y en DM Mono 10px. Grilles horizontales border-subtle. Tooltip glassmorphisme au survol. Courbe lissée avec Bezier.</p>
+
+    <!-- Courbe simple (mono-série) -->
+    <div class="subsection">
+      <div class="subsection-title">Courbe mono-série — Volumes d'archivage mensuels</div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Versements mensuels</div>
+            <div class="chart-subtitle">Évolution sur 12 mois — Fonds municipal</div>
+          </div>
+          <div class="chart-meta">
+            <div class="chart-kpi">
+              <span class="chart-kpi-value">28 140</span>
+              <span style="font-size:var(--text-sm);color:var(--text-tertiary)">total</span>
+            </div>
+            <span class="chart-period">12 mois</span>
+          </div>
+        </div>
+        <div class="chart-sep"></div>
+        <div class="chart-body" style="position:relative">
+          <div id="tooltip-line1" class="chart-tooltip"></div>
+          <canvas id="chart-line1" width="1000" height="280" style="width:100%;height:220px;cursor:crosshair" aria-label="Graphique en courbe des versements mensuels sur 12 mois" role="img"></canvas>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item">
+            <div class="legend-dash" style="background:var(--chart-1)"></div>
+            Versements 2024–2025
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Courbe multi-série -->
+    <div class="subsection">
+      <div class="subsection-title">Courbe multi-série — Comparaison N vs N-1</div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Archivages par type de document</div>
+            <div class="chart-subtitle">Délibérations · Arrêtés · Contrats — 2024 vs 2023</div>
+          </div>
+          <div class="chart-meta">
+            <span class="chart-period">2024</span>
+          </div>
+        </div>
+        <div class="chart-sep"></div>
+        <div class="chart-body" style="position:relative">
+          <div id="tooltip-line2" class="chart-tooltip"></div>
+          <canvas id="chart-line2" width="1000" height="280" style="width:100%;height:220px;cursor:crosshair" aria-label="Graphique multi-séries comparaison types de documents" role="img"></canvas>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dash" style="background:var(--chart-1)"></div>Délibérations</div>
+          <div class="legend-item"><div class="legend-dash" style="background:var(--chart-2)"></div>Arrêtés</div>
+          <div class="legend-item"><div class="legend-dash" style="background:var(--chart-3)"></div>Contrats</div>
+          <div class="legend-item"><div class="legend-dash" style="background:var(--chart-4)"></div>Rapports</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 03 — BARRES
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">03 — Barres</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Bar charts</h2>
+    <p class="section-desc">Barres en accent-500 avec grain visible. Hover sur chaque barre : opacité 0.85. Valeurs affichées en DM Mono au-dessus. Pas de dégradé sur les barres. Grille horizontale légère. Radius 2px en haut des barres.</p>
+
+    <div class="grid-2">
+
+      <!-- Bar chart vertical -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Versements par service</div>
+            <div class="chart-subtitle">Mois de février 2025</div>
+          </div>
+          <span class="chart-period">FÉV. 2025</span>
+        </div>
+        <div class="chart-sep"></div>
+        <div class="chart-body" style="position:relative">
+          <div id="tooltip-bar1" class="chart-tooltip"></div>
+          <canvas id="chart-bar1" width="600" height="260" style="width:100%;height:200px;cursor:pointer" aria-label="Bar chart versements par service" role="img"></canvas>
+        </div>
+      </div>
+
+      <!-- Bar chart horizontal -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Top fonds documentaires</div>
+            <div class="chart-subtitle">Par nombre de pièces archivées</div>
+          </div>
+          <span class="chart-period">2025</span>
+        </div>
+        <div class="chart-sep"></div>
+        <div class="chart-body" style="position:relative">
+          <div id="tooltip-bar2" class="chart-tooltip"></div>
+          <canvas id="chart-bar2" width="600" height="260" style="width:100%;height:200px;cursor:pointer" aria-label="Bar chart horizontal top fonds documentaires" role="img"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bar grouped -->
+    <div class="subsection" style="margin-top:16px">
+      <div class="subsection-title">Barres groupées — Multi-séries</div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Répartition mensuelle par format</div>
+            <div class="chart-subtitle">PDF/A · TIFF · DOCX — Premiers semestres 2024 &amp; 2025</div>
+          </div>
+          <span class="chart-period">S1 2025</span>
+        </div>
+        <div class="chart-sep"></div>
+        <div class="chart-body" style="position:relative">
+          <div id="tooltip-bar3" class="chart-tooltip"></div>
+          <canvas id="chart-bar3" width="1000" height="260" style="width:100%;height:200px;cursor:pointer" aria-label="Barres groupées répartition par format" role="img"></canvas>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--chart-1)"></div>PDF/A</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--chart-2)"></div>TIFF</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--chart-3)"></div>DOCX</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 04 — DONUTS & CIRCLES
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">04 — Donuts</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Donuts &amp; cercles de progression</h2>
+    <p class="section-desc">Cercles SVG pour pourcentages, quotas storage, répartition. Stroke-linecap round. Animation d'entrée stroke-dashoffset. Valeur centrale en DM Mono. Track en border-subtle. Grain sur le fond de la card.</p>
+
+    <div class="preview-zone">
+      <div style="display:flex;align-items:center;justify-content:space-around;flex-wrap:wrap;gap:32px;padding:16px 0">
+
+        <!-- Donut — occupation stockage -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+          <div style="position:relative;width:120px;height:120px">
+            <svg width="120" height="120" viewBox="0 0 120 120" aria-label="Occupation du stockage : 68%" role="img">
+              <defs>
+                <linearGradient id="donut-grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#179E8E"/>
+                  <stop offset="100%" stop-color="#65D5C4"/>
+                </linearGradient>
+              </defs>
+              <!-- Track -->
+              <circle cx="60" cy="60" r="48" fill="none" stroke="var(--gray-800)" stroke-width="10" class="donut-ring"/>
+              <!-- Segment -->
+              <circle id="donut1" cx="60" cy="60" r="48" fill="none"
+                stroke="url(#donut-grad1)" stroke-width="10"
+                stroke-linecap="round"
+                stroke-dasharray="301.6" stroke-dashoffset="96.5"
+                class="donut-ring donut-segment"
+                style="transition:stroke-dashoffset 1s cubic-bezier(0.34,1.56,0.64,1)"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0">
+              <span style="font-family:var(--font-mono);font-size:20px;font-weight:500;color:var(--text-primary);line-height:1">68 %</span>
+              <span style="font-family:var(--font-mono);font-size:9px;color:var(--text-placeholder);letter-spacing:0.06em;margin-top:2px">UTILISÉ</span>
+            </div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:var(--text-sm);font-weight:500;color:var(--text-secondary)">Stockage total</div>
+            <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder)">3.4 To / 5 To</div>
+          </div>
+        </div>
+
+        <!-- Donut — SLA -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+          <div style="position:relative;width:120px;height:120px">
+            <svg width="120" height="120" viewBox="0 0 120 120" aria-label="Disponibilité SLA : 98.7%" role="img">
+              <circle cx="60" cy="60" r="48" fill="none" stroke="var(--gray-800)" stroke-width="10" class="donut-ring"/>
+              <circle cx="60" cy="60" r="48" fill="none"
+                stroke="#268245" stroke-width="10" stroke-linecap="round"
+                stroke-dasharray="301.6" stroke-dashoffset="3.9"
+                class="donut-ring" style="transition:stroke-dashoffset 1s cubic-bezier(0.34,1.56,0.64,1)"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+              <span style="font-family:var(--font-mono);font-size:18px;font-weight:500;color:var(--text-primary);line-height:1">98.7</span>
+              <span style="font-family:var(--font-mono);font-size:9px;color:var(--text-placeholder);letter-spacing:0.06em;margin-top:2px">% SLA</span>
+            </div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:var(--text-sm);font-weight:500;color:var(--text-secondary)">Disponibilité</div>
+            <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:#5DB882">Objectif atteint</div>
+          </div>
+        </div>
+
+        <!-- Donut — Quota warning -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+          <div style="position:relative;width:120px;height:120px">
+            <svg width="120" height="120" viewBox="0 0 120 120" aria-label="Quota utilisateurs : 84%" role="img">
+              <circle cx="60" cy="60" r="48" fill="none" stroke="var(--gray-800)" stroke-width="10" class="donut-ring"/>
+              <circle cx="60" cy="60" r="48" fill="none"
+                stroke="#B07412" stroke-width="10" stroke-linecap="round"
+                stroke-dasharray="301.6" stroke-dashoffset="48.3"
+                class="donut-ring" style="transition:stroke-dashoffset 1s cubic-bezier(0.34,1.56,0.64,1)"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+              <span style="font-family:var(--font-mono);font-size:20px;font-weight:500;color:var(--text-primary);line-height:1">84 %</span>
+              <span style="font-family:var(--font-mono);font-size:9px;color:var(--text-placeholder);letter-spacing:0.06em;margin-top:2px">QUOTA</span>
+            </div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:var(--text-sm);font-weight:500;color:var(--text-secondary)">Licences actives</div>
+            <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:#D4993A">126 / 150 utilisateurs</div>
+          </div>
+        </div>
+
+        <!-- Donut multi-segment — répartition types -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+          <div style="position:relative;width:120px;height:120px">
+            <svg width="120" height="120" viewBox="0 0 120 120" aria-label="Répartition types de documents" role="img">
+              <!-- Track -->
+              <circle cx="60" cy="60" r="48" fill="none" stroke="var(--gray-800)" stroke-width="10" class="donut-ring"/>
+              <!-- Délibérations 42% -->
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#179E8E" stroke-width="10" stroke-linecap="butt"
+                stroke-dasharray="126.7 174.9" stroke-dashoffset="0" class="donut-ring"/>
+              <!-- Arrêtés 28% -->
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#65D5C4" stroke-width="10" stroke-linecap="butt"
+                stroke-dasharray="84.4 217.2" stroke-dashoffset="-126.7" class="donut-ring"/>
+              <!-- Contrats 18% -->
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#6B6F88" stroke-width="10" stroke-linecap="butt"
+                stroke-dasharray="54.3 247.3" stroke-dashoffset="-211.1" class="donut-ring"/>
+              <!-- Autres 12% -->
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#268245" stroke-width="10" stroke-linecap="butt"
+                stroke-dasharray="36.2 265.4" stroke-dashoffset="-265.4" class="donut-ring"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+              <span style="font-family:var(--font-mono);font-size:14px;font-weight:500;color:var(--text-primary);line-height:1">4</span>
+              <span style="font-family:var(--font-mono);font-size:9px;color:var(--text-placeholder);letter-spacing:0.06em;margin-top:2px">TYPES</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;align-items:center;gap:5px;font-size:var(--text-xs);color:var(--text-tertiary)"><span style="width:8px;height:8px;border-radius:50%;background:#179E8E;flex-shrink:0"></span>Délibérations 42 %</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:var(--text-xs);color:var(--text-tertiary)"><span style="width:8px;height:8px;border-radius:50%;background:#65D5C4;flex-shrink:0"></span>Arrêtés 28 %</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:var(--text-xs);color:var(--text-tertiary)"><span style="width:8px;height:8px;border-radius:50%;background:#6B6F88;flex-shrink:0"></span>Contrats 18 %</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:var(--text-xs);color:var(--text-tertiary)"><span style="width:8px;height:8px;border-radius:50%;background:#268245;flex-shrink:0"></span>Autres 12 %</div>
+          </div>
+        </div>
+
+        <!-- Ring progress mini (3 items) -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="font-size:var(--text-sm);font-weight:500;color:var(--text-secondary);margin-bottom:2px">Avancement audits</div>
+
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="position:relative;width:40px;height:40px">
+              <svg width="40" height="40" viewBox="0 0 40 40" aria-label="Audit Marchés publics : 75%" role="img">
+                <circle cx="20" cy="20" r="16" fill="none" stroke="var(--gray-800)" stroke-width="4" class="donut-ring"/>
+                <circle cx="20" cy="20" r="16" fill="none" stroke="#179E8E" stroke-width="4" stroke-linecap="round"
+                  stroke-dasharray="100.5" stroke-dashoffset="25.1" class="donut-ring"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:9px;font-weight:500;color:var(--text-primary)">75</div>
+            </div>
+            <div>
+              <div style="font-size:var(--text-sm);color:var(--text-secondary)">Marchés publics</div>
+              <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder)">75 % · 142/189 docs</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="position:relative;width:40px;height:40px">
+              <svg width="40" height="40" viewBox="0 0 40 40" aria-label="Audit RH : 92%" role="img">
+                <circle cx="20" cy="20" r="16" fill="none" stroke="var(--gray-800)" stroke-width="4" class="donut-ring"/>
+                <circle cx="20" cy="20" r="16" fill="none" stroke="#268245" stroke-width="4" stroke-linecap="round"
+                  stroke-dasharray="100.5" stroke-dashoffset="8" class="donut-ring"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:9px;font-weight:500;color:var(--text-primary)">92</div>
+            </div>
+            <div>
+              <div style="font-size:var(--text-sm);color:var(--text-secondary)">Ressources humaines</div>
+              <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder)">92 % · 488/530 docs</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="position:relative;width:40px;height:40px">
+              <svg width="40" height="40" viewBox="0 0 40 40" aria-label="Audit Urbanisme : 34%" role="img">
+                <circle cx="20" cy="20" r="16" fill="none" stroke="var(--gray-800)" stroke-width="4" class="donut-ring"/>
+                <circle cx="20" cy="20" r="16" fill="none" stroke="#B07412" stroke-width="4" stroke-linecap="round"
+                  stroke-dasharray="100.5" stroke-dashoffset="66.3" class="donut-ring"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:9px;font-weight:500;color:var(--text-primary)">34</div>
+            </div>
+            <div>
+              <div style="font-size:var(--text-sm);color:var(--text-secondary)">Urbanisme &amp; PLU</div>
+              <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder)">34 % · 87/256 docs</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <table class="spec-table">
+      <thead><tr><th>Élément</th><th>Valeur</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Rayon donut</td><td class="mono">r=48 (120px) · r=16 (40px)</td><td>stroke-width 10px · 4px selon taille</td></tr>
+        <tr><td>Track</td><td class="mono">stroke: --gray-800</td><td>Fond anneau — jamais transparent</td></tr>
+        <tr><td>Segment</td><td class="mono">stroke-linecap: round (mono) · butt (multi)</td><td>dasharray = 2πr · offset = (1-%) × 2πr</td></tr>
+        <tr><td>Rotation</td><td class="mono">transform: rotate(-90deg) sur le cercle</td><td>Départ à 12h</td></tr>
+        <tr><td>Animation</td><td class="mono">stroke-dashoffset → 0 · 1000ms spring</td><td>cubic-bezier(0.34,1.56,0.64,1)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 05 — PALETTE MULTI-SÉRIES
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">05 — Palette</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Palette couleurs pour graphiques multi-séries</h2>
+    <p class="section-desc">6 couleurs issues du système de tokens. Toutes désaturées et cohérentes avec la palette institutionnelle. Aucune couleur vive ou saturée non validée. Usage strict : graphiques uniquement, jamais sur l'UI.</p>
+
+    <div class="preview-zone">
+      <div style="display:flex;flex-direction:column;gap:20px">
+
+        <div class="palette-row">
+          <div style="display:flex;flex-direction:column;align-items:center">
+            <div class="swatch" style="background:#179E8E"></div>
+            <div class="swatch-label">chart-1</div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-placeholder)">#179E8E</div>
+            <div style="font-size:var(--text-xs);color:var(--text-tertiary);margin-top:2px">accent-500</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center">
+            <div class="swatch" style="background:#65D5C4"></div>
+            <div class="swatch-label">chart-2</div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-placeholder)">#65D5C4</div>
+            <div style="font-size:var(--text-xs);color:var(--text-tertiary);margin-top:2px">accent-300</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center">
+            <div class="swatch" style="background:#6B6F88"></div>
+            <div class="swatch-label">chart-3</div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-placeholder)">#6B6F88</div>
+            <div style="font-size:var(--text-xs);color:var(--text-tertiary);margin-top:2px">gray-400</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center">
+            <div class="swatch" style="background:#268245"></div>
+            <div class="swatch-label">chart-4</div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-placeholder)">#268245</div>
+            <div style="font-size:var(--text-xs);color:var(--text-tertiary);margin-top:2px">success</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center">
+            <div class="swatch" style="background:#B07412"></div>
+            <div class="swatch-label">chart-5</div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-placeholder)">#B07412</div>
+            <div style="font-size:var(--text-xs);color:var(--text-tertiary);margin-top:2px">warning</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center">
+            <div class="swatch" style="background:#2855A0"></div>
+            <div class="swatch-label">chart-6</div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-placeholder)">#2855A0</div>
+            <div style="font-size:var(--text-xs);color:var(--text-tertiary);margin-top:2px">info</div>
+          </div>
+        </div>
+
+        <!-- Démonstration dans un bar stacked -->
+        <div>
+          <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);letter-spacing:0.06em;margin-bottom:10px">Exemple : barres empilées multi-séries</div>
+          <canvas id="chart-stacked" width="1000" height="180" style="width:100%;height:140px" aria-label="Barres empilées exemple palette multi-séries" role="img"></canvas>
+        </div>
+
+        <table class="spec-table" style="margin-top:0">
+          <thead><tr><th>Variable</th><th>Hex</th><th>Token source</th><th>Usage</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">--chart-1</td><td>#179E8E</td><td class="mono">--accent-500</td><td>Série principale · courbe primaire</td></tr>
+            <tr><td class="mono">--chart-2</td><td>#65D5C4</td><td class="mono">--accent-300</td><td>Série secondaire · comparaison</td></tr>
+            <tr><td class="mono">--chart-3</td><td>#6B6F88</td><td class="mono">--gray-400</td><td>Série neutre · données historiques</td></tr>
+            <tr><td class="mono">--chart-4</td><td>#268245</td><td class="mono">--success</td><td>Données positives · conformité</td></tr>
+            <tr><td class="mono">--chart-5</td><td>#B07412</td><td class="mono">--warning</td><td>Données d'alerte · seuil critique</td></tr>
+            <tr><td class="mono">--chart-6</td><td>#2855A0</td><td class="mono">--info</td><td>Données informationnelles · cibles</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 06 — AXES, GRILLES, TOOLTIPS
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">06 — Axes &amp; Tooltips</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Axes · Grilles · Tooltips — Spécifications</h2>
+    <p class="section-desc">Conventions visuelles communes à tous les graphiques du système. Cohérence garantie par un jeu de règles strictes.</p>
+
+    <div class="preview-zone">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px">
+
+        <!-- Axes specs -->
+        <div>
+          <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px">Axes &amp; Grilles</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid var(--border-subtle)">
+              <span style="font-size:var(--text-sm);color:var(--text-secondary)">Labels axes</span>
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--accent-300)">DM Mono 10px · text-placeholder</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid var(--border-subtle)">
+              <span style="font-size:var(--text-sm);color:var(--text-secondary)">Grilles horizontales</span>
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--accent-300)">--border-subtle · stroke 1px</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid var(--border-subtle)">
+              <span style="font-size:var(--text-sm);color:var(--text-secondary)">Ligne de base (0)</span>
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--accent-300)">--border-default · stroke 1px</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid var(--border-subtle)">
+              <span style="font-size:var(--text-sm);color:var(--text-secondary)">Grilles verticales</span>
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--accent-300)">Désactivées par défaut</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid var(--border-subtle)">
+              <span style="font-size:var(--text-sm);color:var(--text-secondary)">Nombre de graduations Y</span>
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--accent-300)">4–6 max</span>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-size:var(--text-sm);color:var(--text-secondary)">Crosshair</span>
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--accent-300)">1px · --border-strong · opacity 0→1</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tooltip spec -->
+        <div>
+          <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px">Tooltip — Rendu</div>
+
+          <!-- Tooltip exemple statique -->
+          <div style="background:rgba(20,22,31,0.92);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.10);border-radius:var(--radius-md);padding:10px 14px;box-shadow:var(--shadow-lg);max-width:200px;position:relative;overflow:hidden">
+            <div style="position:absolute;inset:0;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E\");background-size:110px;opacity:0.14;mix-blend-mode:overlay;pointer-events:none"></div>
+            <div style="position:relative;z-index:1">
+              <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);letter-spacing:0.06em;margin-bottom:6px">NOV. 2024</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px">
+                <div style="display:flex;align-items:center;gap:5px;font-size:var(--text-sm);color:var(--gray-200)">
+                  <span style="width:6px;height:6px;border-radius:50%;background:#179E8E;flex-shrink:0"></span>
+                  Délibérations
+                </div>
+                <span style="font-family:var(--font-mono);font-size:var(--text-sm);font-weight:500;color:var(--gray-50)">284</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px">
+                <div style="display:flex;align-items:center;gap:5px;font-size:var(--text-sm);color:var(--gray-200)">
+                  <span style="width:6px;height:6px;border-radius:50%;background:#65D5C4;flex-shrink:0"></span>
+                  Arrêtés
+                </div>
+                <span style="font-family:var(--font-mono);font-size:var(--text-sm);font-weight:500;color:var(--gray-50)">142</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+                <div style="display:flex;align-items:center;gap:5px;font-size:var(--text-sm);color:var(--gray-200)">
+                  <span style="width:6px;height:6px;border-radius:50%;background:#6B6F88;flex-shrink:0"></span>
+                  Contrats
+                </div>
+                <span style="font-family:var(--font-mono);font-size:var(--text-sm);font-weight:500;color:var(--gray-50)">89</span>
+              </div>
+              <div style="height:1px;background:rgba(255,255,255,0.07);margin:6px 0"></div>
+              <div style="display:flex;justify-content:space-between">
+                <span style="font-size:var(--text-xs);color:var(--text-placeholder)">Total</span>
+                <span style="font-family:var(--font-mono);font-size:var(--text-xs);font-weight:500;color:var(--accent-300)">515</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;justify-content:space-between;font-size:var(--text-sm)">
+              <span style="color:var(--text-secondary)">Fond</span>
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--accent-300)">rgba(20,22,31,0.92) + blur(12px)</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--text-sm)">
+              <span style="color:var(--text-secondary)">Trigger</span>
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--accent-300)">mousemove sur le canvas</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--text-sm)">
+              <span style="color:var(--text-secondary)">Label date</span>
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--accent-300)">DM Mono xs · UPPER · text-placeholder</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════ FOOTER ══════════════════════ -->
+  <footer class="doc-footer">
+    <div class="footer-left">
+      Charte Graphique — Archivage Numérique · CG-09 / 12<br>
+      <div class="kbd-hint">Raccourcis : <span class="kbd">←</span> Précédent <span class="kbd">→</span> Suivant <span class="kbd">i</span> Index</div>
+    </div>
+    <div class="footer-nav">
+      <a href="CG-08-Feedback-Toasts-Modals-Etats.html" class="footer-link" aria-label="Module précédent : CG-08">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Précédent
+      </a>
+      <a href="CG-10-Motion-Design-Animations.html" class="footer-link" aria-label="Module suivant : CG-10">
+        Suivant
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </a>
+    </div>
+      CG-10 — Motion Design
+    </a>
+  </footer>
+
+</div>
+
+<script>
+/* ── Theme ── */
+function toggleTheme() {
+  const html = document.documentElement;
+  html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  setTimeout(drawAll, 50);
+}
+
+/* ── CSS var reader ── */
+function cssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+/* ── Color tokens ── */
+const COLORS = {
+  chart1: '#179E8E', chart2: '#65D5C4', chart3: '#6B6F88',
+  chart4: '#268245', chart5: '#B07412', chart6: '#2855A0',
+};
+
+/* ══════════════════════════════════════════════════════════
+   SPARKLINES
+══════════════════════════════════════════════════════════ */
+function drawSparkline(svgId, data, color, gradientId) {
+  const svg = document.getElementById(svgId);
+  if (!svg) return;
+  const W = 80, H = 32, PAD = 2;
+  const min = Math.min(...data), max = Math.max(...data);
+  const range = max - min || 1;
+
+  const pts = data.map((v, i) => ({
+    x: PAD + (i / (data.length - 1)) * (W - PAD * 2),
+    y: H - PAD - ((v - min) / range) * (H - PAD * 2)
+  }));
+
+  // Smooth curve via Bezier
+  let d = `M ${pts[0].x},${pts[0].y}`;
+  for (let i = 1; i < pts.length; i++) {
+    const prev = pts[i - 1], curr = pts[i];
+    const cpx = (prev.x + curr.x) / 2;
+    d += ` C ${cpx},${prev.y} ${cpx},${curr.y} ${curr.x},${curr.y}`;
+  }
+
+  // Fill area path
+  let fill = d + ` L ${pts[pts.length-1].x},${H} L ${pts[0].x},${H} Z`;
+
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  const stopOpacity = isDark ? '0.22' : '0.14';
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="${gradientId}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${color}" stop-opacity="${stopOpacity}"/>
+        <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${fill}" fill="url(#${gradientId})"/>
+    <path d="${d}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  `;
+}
+
+const sparkData = {
+  s1: [120,145,138,162,178,155,190,184,210,198,225,240],
+  s2: [80,92,85,110,105,120,115,130,128,142,138,155],
+  s3: [15,22,18,32,28,24,40,35,44,38,47,47],
+  s4: [98.1,98.4,97.9,98.6,98.8,99.1,98.5,98.9,98.7,99.0,98.8,98.7],
+};
+
+function drawSparklines() {
+  drawSparkline('spark1', sparkData.s1, COLORS.chart1, 'sg1');
+  drawSparkline('spark2', sparkData.s2, COLORS.chart1, 'sg2');
+  drawSparkline('spark3', sparkData.s3, '#B07412', 'sg3');
+  drawSparkline('spark4', sparkData.s4, COLORS.chart4, 'sg4');
+}
+
+/* ══════════════════════════════════════════════════════════
+   CANVAS CHARTS UTILITY
+══════════════════════════════════════════════════════════ */
+function getThemeColors() {
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  return {
+    bg:       isDark ? '#10121A' : '#FFFFFF',
+    grid:     isDark ? '#1A1D2B' : '#E1E3EE',
+    baseline: isDark ? '#252838' : '#C2C5D6',
+    axisText: isDark ? '#4D5068' : '#9196B0',
+    text:     isDark ? '#F0F1F8' : '#10121A',
+    textSec:  isDark ? '#C2C5D6' : '#3D4158',
+    raised:   isDark ? '#1A1D2B' : '#F0F1F8',
+  };
+}
+
+function setupHiDPI(canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, W: rect.width, H: rect.height, dpr };
+}
+
+/* ── Smooth line from points ── */
+function smoothPath(ctx, pts) {
+  if (pts.length < 2) return;
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) {
+    const prev = pts[i - 1], curr = pts[i];
+    const cpx = (prev.x + curr.x) / 2;
+    ctx.bezierCurveTo(cpx, prev.y, cpx, curr.y, curr.x, curr.y);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   LINE CHART 1 — Mono-série
+══════════════════════════════════════════════════════════ */
+const lineData1 = {
+  labels: ['Mar','Avr','Mai','Jui','Jul','Aoû','Sep','Oct','Nov','Déc','Jan','Fév'],
+  values: [1820,2140,1980,2340,2180,1650,2420,2680,2510,2880,2760,3110],
+};
+
+function drawLine1() {
+  const canvas = document.getElementById('chart-line1');
+  if (!canvas) return;
+  const { ctx, W, H } = setupHiDPI(canvas);
+  const tc = getThemeColors();
+  const PAD = { top: 16, right: 20, bottom: 36, left: 48 };
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top - PAD.bottom;
+
+  ctx.clearRect(0, 0, W, H);
+  const vals = lineData1.values;
+  const min = 0, max = Math.ceil(Math.max(...vals) / 500) * 500;
+  const ticks = 5;
+
+  // Grid lines
+  ctx.font = `10px 'DM Mono', monospace`;
+  ctx.textAlign = 'right';
+  ctx.fillStyle = tc.axisText;
+  for (let i = 0; i <= ticks; i++) {
+    const v = min + (max - min) * (i / ticks);
+    const y = PAD.top + cH - (i / ticks) * cH;
+    ctx.strokeStyle = i === 0 ? tc.baseline : tc.grid;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + cW, y); ctx.stroke();
+    ctx.fillText(v >= 1000 ? (v/1000).toFixed(1)+'k' : v, PAD.left - 6, y + 3.5);
+  }
+
+  // X axis labels
+  ctx.textAlign = 'center';
+  ctx.fillStyle = tc.axisText;
+  lineData1.labels.forEach((l, i) => {
+    const x = PAD.left + (i / (lineData1.labels.length - 1)) * cW;
+    ctx.fillText(l, x, H - 8);
+  });
+
+  // Points
+  const pts = vals.map((v, i) => ({
+    x: PAD.left + (i / (vals.length - 1)) * cW,
+    y: PAD.top + cH - ((v - min) / (max - min)) * cH
+  }));
+
+  // Fill area — SEUL endroit autorisé pour dégradés
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  const grad = ctx.createLinearGradient(0, PAD.top, 0, PAD.top + cH);
+  grad.addColorStop(0, isDark ? 'rgba(23,158,142,0.22)' : 'rgba(23,158,142,0.14)');
+  grad.addColorStop(1, 'rgba(23,158,142,0)');
+  ctx.beginPath();
+  smoothPath(ctx, pts);
+  ctx.lineTo(pts[pts.length-1].x, PAD.top + cH);
+  ctx.lineTo(pts[0].x, PAD.top + cH);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line stroke
+  smoothPath(ctx, pts);
+  ctx.strokeStyle = COLORS.chart1;
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // Dots on hover (store pts for later)
+  canvas._pts = pts;
+  canvas._vals = vals;
+  canvas._labels = lineData1.labels;
+  canvas._PAD = PAD;
+}
+
+/* ── Line1 tooltip ── */
+document.getElementById('chart-line1')?.addEventListener('mousemove', function(e) {
+  const canvas = this;
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const pts = canvas._pts; if (!pts) return;
+  const PAD = canvas._PAD;
+
+  let minDist = Infinity, hoverIdx = 0;
+  pts.forEach((p, i) => {
+    const d = Math.abs(p.x - mx);
+    if (d < minDist) { minDist = d; hoverIdx = i; }
+  });
+
+  const tooltip = document.getElementById('tooltip-line1');
+  if (minDist < 40) {
+    tooltip.innerHTML = `
+      <div class="tooltip-label">${canvas._labels[hoverIdx].toUpperCase()} 2024</div>
+      <div class="tooltip-row">
+        <div class="tooltip-series"><span class="tooltip-dot" style="background:${COLORS.chart1}"></span>Versements</div>
+        <div class="tooltip-val">${canvas._vals[hoverIdx].toLocaleString('fr-FR')}</div>
+      </div>`;
+    tooltip.style.display = 'block';
+    const p = pts[hoverIdx];
+    tooltip.style.left = (p.x + 12) + 'px';
+    tooltip.style.top  = (p.y - 20) + 'px';
+
+    // Draw hover dot
+    const { ctx, W, H } = setupHiDPI(canvas);
+    drawLine1();
+    ctx.beginPath();
+    ctx.arc(p.x * (window.devicePixelRatio||1), p.y * (window.devicePixelRatio||1), 4*(window.devicePixelRatio||1), 0, Math.PI*2);
+  } else {
+    tooltip.style.display = 'none';
+  }
+});
+document.getElementById('chart-line1')?.addEventListener('mouseleave', function() {
+  document.getElementById('tooltip-line1').style.display = 'none';
+});
+
+/* ══════════════════════════════════════════════════════════
+   LINE CHART 2 — Multi-série
+══════════════════════════════════════════════════════════ */
+const lineData2 = {
+  labels: ['Jan','Fév','Mar','Avr','Mai','Jui','Jul','Aoû','Sep','Oct','Nov','Déc'],
+  series: [
+    { name: 'Délibérations', color: COLORS.chart1, values: [220,248,265,242,280,258,244,230,272,289,284,310] },
+    { name: 'Arrêtés',       color: COLORS.chart2, values: [140,155,148,162,158,170,145,138,165,172,142,168] },
+    { name: 'Contrats',      color: COLORS.chart3, values: [80,92,78,105,98,112,88,72,108,115,89,120] },
+    { name: 'Rapports',      color: COLORS.chart4, values: [45,58,52,68,62,74,58,44,70,76,63,82] },
+  ],
+};
+
+function drawLine2() {
+  const canvas = document.getElementById('chart-line2');
+  if (!canvas) return;
+  const { ctx, W, H } = setupHiDPI(canvas);
+  const tc = getThemeColors();
+  const PAD = { top: 16, right: 20, bottom: 36, left: 48 };
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top - PAD.bottom;
+  ctx.clearRect(0, 0, W, H);
+
+  const allVals = lineData2.series.flatMap(s => s.values);
+  const max = Math.ceil(Math.max(...allVals) / 50) * 50;
+  const ticks = 5;
+
+  ctx.font = `10px 'DM Mono', monospace`;
+  ctx.textAlign = 'right';
+  ctx.fillStyle = tc.axisText;
+  for (let i = 0; i <= ticks; i++) {
+    const v = (max * i / ticks);
+    const y = PAD.top + cH - (i / ticks) * cH;
+    ctx.strokeStyle = i === 0 ? tc.baseline : tc.grid;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + cW, y); ctx.stroke();
+    ctx.fillText(v, PAD.left - 6, y + 3.5);
+  }
+  ctx.textAlign = 'center';
+  ctx.fillStyle = tc.axisText;
+  lineData2.labels.forEach((l, i) => {
+    const x = PAD.left + (i / (lineData2.labels.length - 1)) * cW;
+    ctx.fillText(l, x, H - 8);
+  });
+
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+
+  lineData2.series.forEach((s, si) => {
+    const pts = s.values.map((v, i) => ({
+      x: PAD.left + (i / (s.values.length - 1)) * cW,
+      y: PAD.top + cH - (v / max) * cH
+    }));
+
+    // Dégradé sous courbe (autorisé)
+    const grad = ctx.createLinearGradient(0, PAD.top, 0, PAD.top + cH);
+    const alpha = si === 0 ? (isDark ? 0.18 : 0.10) : (isDark ? 0.08 : 0.05);
+    grad.addColorStop(0, s.color.replace('#', 'rgba(') + `,${alpha})`
+      .replace('rgba(', 'rgba(').replace(/([0-9a-f]{2})/gi, (m, hex) => parseInt(hex, 16) + ',').replace(',,', ',').slice(0, -1));
+
+    // Simpler gradient setup
+    const gradFill = ctx.createLinearGradient(0, PAD.top, 0, PAD.top + cH);
+    const r = parseInt(s.color.slice(1,3),16);
+    const g = parseInt(s.color.slice(3,5),16);
+    const b = parseInt(s.color.slice(5,7),16);
+    gradFill.addColorStop(0, `rgba(${r},${g},${b},${alpha})`);
+    gradFill.addColorStop(1, `rgba(${r},${g},${b},0)`);
+
+    ctx.beginPath();
+    smoothPath(ctx, pts);
+    ctx.lineTo(pts[pts.length-1].x, PAD.top + cH);
+    ctx.lineTo(pts[0].x, PAD.top + cH);
+    ctx.closePath();
+    ctx.fillStyle = gradFill;
+    ctx.fill();
+
+    smoothPath(ctx, pts);
+    ctx.strokeStyle = s.color;
+    ctx.lineWidth = si === 0 ? 2 : 1.5;
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    ctx.stroke();
+  });
+
+  canvas._series = lineData2.series;
+  canvas._labels = lineData2.labels;
+  canvas._PAD = PAD;
+  canvas._max = max;
+  canvas._cW = cW; canvas._cH = cH;
+}
+
+document.getElementById('chart-line2')?.addEventListener('mousemove', function(e) {
+  const rect = this.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const s = this._series; if (!s) return;
+  const PAD = this._PAD, cW = this._cW, cH = this._cH;
+
+  const n = s[0].values.length;
+  const idx = Math.round((mx - PAD.left) / cW * (n - 1));
+  if (idx < 0 || idx >= n) { document.getElementById('tooltip-line2').style.display='none'; return; }
+
+  const x = PAD.left + (idx / (n-1)) * cW;
+  const tooltip = document.getElementById('tooltip-line2');
+  let rows = s.map(serie => `
+    <div class="tooltip-row">
+      <div class="tooltip-series"><span class="tooltip-dot" style="background:${serie.color}"></span>${serie.name}</div>
+      <div class="tooltip-val">${serie.values[idx]}</div>
+    </div>`).join('');
+  tooltip.innerHTML = `<div class="tooltip-label">${this._labels[idx].toUpperCase()} 2024</div>${rows}`;
+  tooltip.style.display = 'block';
+  tooltip.style.left = Math.min(x + 12, this.offsetWidth - 160) + 'px';
+  tooltip.style.top = '20px';
+});
+document.getElementById('chart-line2')?.addEventListener('mouseleave', function() {
+  document.getElementById('tooltip-line2').style.display = 'none';
+});
+
+/* ══════════════════════════════════════════════════════════
+   BAR CHART 1 — Vertical
+══════════════════════════════════════════════════════════ */
+const barData1 = {
+  labels: ['Dir.\nUrbanisme','Service\nJuridique','DRH','Finances','Marchés\nPublics','Cabinet\nMaire'],
+  values: [284,198,156,142,210,88],
+};
+
+function drawBar1() {
+  const canvas = document.getElementById('chart-bar1');
+  if (!canvas) return;
+  const { ctx, W, H } = setupHiDPI(canvas);
+  const tc = getThemeColors();
+  const PAD = { top: 24, right: 16, bottom: 44, left: 44 };
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top - PAD.bottom;
+  ctx.clearRect(0, 0, W, H);
+
+  const max = Math.ceil(Math.max(...barData1.values) / 50) * 50;
+  const ticks = 4;
+  ctx.font = `10px 'DM Mono', monospace`;
+  ctx.textAlign = 'right';
+  ctx.fillStyle = tc.axisText;
+  for (let i = 0; i <= ticks; i++) {
+    const v = (max * i / ticks);
+    const y = PAD.top + cH - (i / ticks) * cH;
+    ctx.strokeStyle = i === 0 ? tc.baseline : tc.grid;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + cW, y); ctx.stroke();
+    ctx.fillText(v, PAD.left - 5, y + 3.5);
+  }
+
+  const n = barData1.values.length;
+  const barW = (cW / n) * 0.55;
+  const gap   = cW / n;
+
+  canvas._bars = [];
+  barData1.values.forEach((v, i) => {
+    const x = PAD.left + i * gap + (gap - barW) / 2;
+    const barH = (v / max) * cH;
+    const y = PAD.top + cH - barH;
+
+    const r = parseInt(COLORS.chart1.slice(1,3),16);
+    const g = parseInt(COLORS.chart1.slice(3,5),16);
+    const b = parseInt(COLORS.chart1.slice(5,7),16);
+    ctx.fillStyle = COLORS.chart1;
+    // Rounded top corners
+    ctx.beginPath();
+    ctx.moveTo(x + 2, y); ctx.lineTo(x + barW - 2, y);
+    ctx.quadraticCurveTo(x + barW, y, x + barW, y + 2);
+    ctx.lineTo(x + barW, y + barH); ctx.lineTo(x, y + barH);
+    ctx.lineTo(x, y + 2); ctx.quadraticCurveTo(x, y, x + 2, y);
+    ctx.closePath();
+    ctx.fill();
+
+    // Grain on bar
+    ctx.save();
+    ctx.globalAlpha = 0.32;
+    ctx.fillStyle = ctx.createPattern ? tc.bg : 'transparent';
+    ctx.restore();
+
+    // Value label
+    ctx.fillStyle = tc.axisText;
+    ctx.textAlign = 'center';
+    ctx.font = `10px 'DM Mono', monospace`;
+    ctx.fillText(v, x + barW/2, y - 5);
+
+    // X label (2 lines)
+    const parts = barData1.labels[i].split('\n');
+    ctx.fillStyle = tc.axisText;
+    ctx.font = `10px 'DM Mono', monospace`;
+    parts.forEach((p, li) => ctx.fillText(p, x + barW/2, H - PAD.bottom + 14 + li * 12));
+
+    canvas._bars.push({ x, y, w: barW, h: barH, v, label: barData1.labels[i] });
+  });
+}
+
+document.getElementById('chart-bar1')?.addEventListener('mousemove', function(e) {
+  const rect = this.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const bars = this._bars; if (!bars) return;
+  const tooltip = document.getElementById('tooltip-bar1');
+  const hit = bars.find(b => mx >= b.x && mx <= b.x + b.w && my >= b.y && my <= b.y + b.h);
+  if (hit) {
+    tooltip.innerHTML = `<div class="tooltip-label">${hit.label.replace('\n',' ').toUpperCase()}</div>
+      <div class="tooltip-row"><div class="tooltip-series"><span class="tooltip-dot" style="background:${COLORS.chart1}"></span>Versements</div><div class="tooltip-val">${hit.v}</div></div>`;
+    tooltip.style.display = 'block';
+    tooltip.style.left = (hit.x + hit.w + 8) + 'px';
+    tooltip.style.top = (hit.y) + 'px';
+  } else {
+    tooltip.style.display = 'none';
+  }
+});
+document.getElementById('chart-bar1')?.addEventListener('mouseleave', function() {
+  document.getElementById('tooltip-bar1').style.display = 'none';
+});
+
+/* ══════════════════════════════════════════════════════════
+   BAR CHART 2 — Horizontal
+══════════════════════════════════════════════════════════ */
+const barData2 = {
+  labels: ['Marchés Publics','Urbanisme & PLU','Délibérations','Ressources Humaines','Archives Police','Budget & Finances'],
+  values: [4820,3640,3210,2880,1940,1620],
+};
+
+function drawBar2() {
+  const canvas = document.getElementById('chart-bar2');
+  if (!canvas) return;
+  const { ctx, W, H } = setupHiDPI(canvas);
+  const tc = getThemeColors();
+  const PAD = { top: 8, right: 60, bottom: 8, left: 140 };
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top - PAD.bottom;
+  ctx.clearRect(0, 0, W, H);
+
+  const max = Math.ceil(Math.max(...barData2.values) / 1000) * 1000;
+  const n = barData2.values.length;
+  const barH = (cH / n) * 0.52;
+  const gap   = cH / n;
+
+  barData2.values.forEach((v, i) => {
+    const bW = (v / max) * cW;
+    const y = PAD.top + i * gap + (gap - barH) / 2;
+
+    ctx.fillStyle = COLORS.chart1;
+    ctx.globalAlpha = 1 - i * 0.10;
+    ctx.beginPath();
+    ctx.moveTo(PAD.left, y + 2); ctx.lineTo(PAD.left, y + barH - 2);
+    ctx.lineTo(PAD.left + bW - 2, y + barH - 2);
+    ctx.quadraticCurveTo(PAD.left + bW, y + barH - 2, PAD.left + bW, y + barH - 4);
+    ctx.lineTo(PAD.left + bW, y + 4);
+    ctx.quadraticCurveTo(PAD.left + bW, y + 2, PAD.left + bW - 2, y + 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // Label left
+    ctx.font = `10px 'DM Mono', monospace`;
+    ctx.fillStyle = tc.axisText;
+    ctx.textAlign = 'right';
+    ctx.fillText(barData2.labels[i], PAD.left - 6, y + barH/2 + 3.5);
+
+    // Value right
+    ctx.fillStyle = tc.axisText;
+    ctx.textAlign = 'left';
+    ctx.fillText((v/1000).toFixed(1)+'k', PAD.left + bW + 6, y + barH/2 + 3.5);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════
+   BAR CHART 3 — Grouped
+══════════════════════════════════════════════════════════ */
+const barData3 = {
+  labels: ['Jan','Fév','Mar','Avr','Mai','Jui'],
+  series: [
+    { name: 'PDF/A', color: COLORS.chart1, values: [320,345,310,380,358,402] },
+    { name: 'TIFF',  color: COLORS.chart2, values: [140,162,135,178,155,188] },
+    { name: 'DOCX',  color: COLORS.chart3, values: [80,95,72,110,88,102] },
+  ],
+};
+
+function drawBar3() {
+  const canvas = document.getElementById('chart-bar3');
+  if (!canvas) return;
+  const { ctx, W, H } = setupHiDPI(canvas);
+  const tc = getThemeColors();
+  const PAD = { top: 24, right: 20, bottom: 36, left: 48 };
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top - PAD.bottom;
+  ctx.clearRect(0, 0, W, H);
+
+  const allVals = barData3.series.flatMap(s => s.values);
+  const max = Math.ceil(Math.max(...allVals) / 100) * 100;
+  const ticks = 4;
+
+  ctx.font = `10px 'DM Mono', monospace`;
+  ctx.textAlign = 'right';
+  ctx.fillStyle = tc.axisText;
+  for (let i = 0; i <= ticks; i++) {
+    const v = max * i / ticks;
+    const y = PAD.top + cH - (i / ticks) * cH;
+    ctx.strokeStyle = i === 0 ? tc.baseline : tc.grid;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + cW, y); ctx.stroke();
+    ctx.fillText(v, PAD.left - 5, y + 3.5);
+  }
+
+  const n = barData3.labels.length;
+  const nseries = barData3.series.length;
+  const groupW = cW / n;
+  const barW = groupW * 0.18;
+  const groupGap = groupW * 0.10;
+
+  barData3.labels.forEach((label, gi) => {
+    const groupX = PAD.left + gi * groupW + groupGap;
+
+    barData3.series.forEach((s, si) => {
+      const v = s.values[gi];
+      const bH = (v / max) * cH;
+      const x = groupX + si * (barW + 3);
+      const y = PAD.top + cH - bH;
+
+      ctx.fillStyle = s.color;
+      ctx.beginPath();
+      ctx.moveTo(x + 2, y); ctx.lineTo(x + barW - 2, y);
+      ctx.quadraticCurveTo(x + barW, y, x + barW, y + 2);
+      ctx.lineTo(x + barW, y + bH); ctx.lineTo(x, y + bH);
+      ctx.lineTo(x, y + 2); ctx.quadraticCurveTo(x, y, x + 2, y);
+      ctx.closePath();
+      ctx.fill();
+    });
+
+    // X label
+    ctx.fillStyle = tc.axisText;
+    ctx.textAlign = 'center';
+    ctx.font = `10px 'DM Mono', monospace`;
+    const groupCenterX = groupX + (nseries * (barW + 3)) / 2;
+    ctx.fillText(label, groupCenterX, H - 8);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════
+   BAR STACKED — Palette demo
+══════════════════════════════════════════════════════════ */
+const stackedData = {
+  labels: ['Jan','Fév','Mar','Avr','Mai','Jui'],
+  series: [
+    { name: 'PDF/A',   color: COLORS.chart1, values: [320,345,310,380,358,402] },
+    { name: 'TIFF',    color: COLORS.chart2, values: [140,162,135,178,155,188] },
+    { name: 'DOCX',    color: COLORS.chart3, values: [80,95,72,110,88,102] },
+    { name: 'XML',     color: COLORS.chart4, values: [40,52,38,60,45,58] },
+    { name: 'Autres',  color: COLORS.chart5, values: [25,30,22,35,28,32] },
+  ],
+};
+
+function drawStacked() {
+  const canvas = document.getElementById('chart-stacked');
+  if (!canvas) return;
+  const { ctx, W, H } = setupHiDPI(canvas);
+  const tc = getThemeColors();
+  const PAD = { top: 16, right: 20, bottom: 32, left: 44 };
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top - PAD.bottom;
+  ctx.clearRect(0, 0, W, H);
+
+  const n = stackedData.labels.length;
+  const totals = stackedData.labels.map((_, i) => stackedData.series.reduce((s, ser) => s + ser.values[i], 0));
+  const max = Math.ceil(Math.max(...totals) / 100) * 100;
+
+  // Grid
+  ctx.font = `10px 'DM Mono', monospace`;
+  ctx.textAlign = 'right';
+  ctx.fillStyle = tc.axisText;
+  [0, max/2, max].forEach(v => {
+    const y = PAD.top + cH - (v / max) * cH;
+    ctx.strokeStyle = v === 0 ? tc.baseline : tc.grid;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + cW, y); ctx.stroke();
+    ctx.fillText(v >= 1000 ? (v/1000).toFixed(1)+'k' : v, PAD.left - 5, y + 3.5);
+  });
+
+  const groupW = cW / n;
+  const barW = groupW * 0.55;
+
+  stackedData.labels.forEach((label, gi) => {
+    const x = PAD.left + gi * groupW + (groupW - barW) / 2;
+    let yOff = 0;
+
+    stackedData.series.forEach((s, si) => {
+      const v = s.values[gi];
+      const bH = (v / max) * cH;
+      const y = PAD.top + cH - yOff - bH;
+      ctx.fillStyle = s.color;
+      if (si === stackedData.series.length - 1) {
+        ctx.beginPath();
+        ctx.moveTo(x + 2, y); ctx.lineTo(x + barW - 2, y);
+        ctx.quadraticCurveTo(x + barW, y, x + barW, y + 2);
+        ctx.lineTo(x + barW, y + bH); ctx.lineTo(x, y + bH);
+        ctx.lineTo(x, y + 2); ctx.quadraticCurveTo(x, y, x + 2, y);
+        ctx.closePath();
+      } else {
+        ctx.fillRect(x, y, barW, bH);
+      }
+      ctx.fill();
+      yOff += bH;
+    });
+
+    ctx.fillStyle = tc.axisText;
+    ctx.textAlign = 'center';
+    ctx.font = `10px 'DM Mono', monospace`;
+    ctx.fillText(label, x + barW/2, H - 6);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════
+   DRAW ALL
+══════════════════════════════════════════════════════════ */
+function drawAll() {
+  drawSparklines();
+  drawLine1();
+  drawLine2();
+  drawBar1();
+  drawBar2();
+  drawBar3();
+  drawStacked();
+}
+
+// Initial draw after layout
+requestAnimationFrame(() => {
+  setTimeout(drawAll, 80);
+});
+
+// Redraw on resize
+window.addEventListener('resize', () => {
+  clearTimeout(window._resizeTimer);
+  window._resizeTimer = setTimeout(drawAll, 150);
+});
+
+// Redraw on theme change
+const themeObserver = new MutationObserver(drawAll);
+themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+</script>
+</body>
+</html>
+  </footer>
+
+</div>
+
+<script>
+function toggleNav(btn) {
+  const dropdown = btn.parentElement;
+  const isActive = dropdown.classList.contains('active');
+  document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('active'));
+  if (!isActive) {
+    dropdown.classList.add('active');
+    btn.setAttribute('aria-expanded', 'true');
+  } else {
+    btn.setAttribute('aria-expanded', 'false');
+  }
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.nav-dropdown')) {
+    document.querySelectorAll('.nav-dropdown').forEach(d => {
+      d.classList.remove('active');
+      const btn = d.querySelector('.nav-dropdown-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  switch(e.key) {
+    case 'ArrowLeft':
+      const prevLink = document.querySelector('.footer-link[aria-label*="précédent"]');
+      if (prevLink && !prevLink.classList.contains('disabled')) {
+        window.location.href = prevLink.href;
+      }
+      break;
+    case 'ArrowRight':
+      const nextLink = document.querySelector('.footer-link[aria-label*="suivant"]');
+      if (nextLink && !nextLink.classList.contains('disabled')) {
+        window.location.href = nextLink.href;
+      }
+      break;
+    case 'i':
+    case 'I':
+      window.location.href = 'index.html';
+      break;
+  }
+});
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+}
+</script>
+
+</body>
+</html>

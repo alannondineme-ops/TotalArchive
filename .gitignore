@@ -1,0 +1,81 @@
+# ============================================================
+# .gitignore — Charte Graphique Archivage Numérique
+# ============================================================
+
+# ── OS Files ──
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ── IDE & Editors ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ── Node.js (si jamais utilisé) ──
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log*
+
+# ── Build & Dist ──
+dist/
+build/
+out/
+*.min.js
+*.min.css
+
+# ── Logs ──
+*.log
+logs/
+*.log.*
+
+# ── Temporary Files ──
+*.tmp
+*.temp
+*.cache
+.cache/
+
+# ── Backup Files ──
+*.bak
+*.backup
+*~
+
+# ── Environment Variables ──
+.env
+.env.local
+.env.*.local
+
+# ── Archives ──
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# ── Documentation temporaire ──
+*.draft
+*.wip
+
+# ── Fichiers système Windows ──
+$RECYCLE.BIN/
+
+# ── Fichiers système macOS ──
+.AppleDouble
+.LSOverride
+Icon

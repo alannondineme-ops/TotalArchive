@@ -1,0 +1,2388 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CG-06 — Composants : Boutons, Inputs, Badges, Cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   TOKENS — Charte Graphique Archivage Numérique
+   ============================================================ */
+:root {
+  /* Accent — Sage Slate */
+  --accent-50:  #E8F8F6;
+  --accent-100: #C5EDE9;
+  --accent-200: #8DD9D1;
+  --accent-300: #65D5C4;
+  --accent-400: #2BBFAD;
+  --accent-500: #179E8E;
+  --accent-600: #0E7E72;
+  --accent-700: #0C6259;
+  --accent-800: #094D47;
+  --accent-900: #063835;
+  --accent-subtle-bg:     rgba(23,158,142,0.08);
+  --accent-subtle-border: rgba(23,158,142,0.20);
+
+  /* Gris froids bleutés */
+  --gray-950: #0A0B0F;
+  --gray-900: #10121A;
+  --gray-800: #1A1D2B;
+  --gray-700: #252838;
+  --gray-600: #323548;
+  --gray-500: #4D5068;
+  --gray-400: #6B6F88;
+  --gray-300: #9196B0;
+  --gray-200: #C2C5D6;
+  --gray-100: #E1E3EE;
+  --gray-50:  #F0F1F8;
+  --gray-25:  #F8F9FC;
+
+  /* Fonctionnelles désaturées */
+  --success: #268245;
+  --warning: #B07412;
+  --error:   #9B322C;
+  --info:    #2855A0;
+  --success-subtle: rgba(38,130,69,0.10);
+  --warning-subtle: rgba(176,116,18,0.10);
+  --error-subtle:   rgba(155,50,44,0.10);
+  --info-subtle:    rgba(40,85,160,0.10);
+  --success-border: rgba(38,130,69,0.25);
+  --warning-border: rgba(176,116,18,0.25);
+  --error-border:   rgba(155,50,44,0.25);
+  --info-border:    rgba(40,85,160,0.25);
+
+  /* Typo */
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --text-2xl: 28px;
+  --text-xl:  22px;
+  --text-lg:  18px;
+  --text-md:  14px;
+  --text-base: 13px;
+  --text-sm:  11px;
+  --text-xs:  10px;
+
+  /* Spacing */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px;
+  --space-4: 16px; --space-5: 20px; --space-6: 24px;
+  --space-8: 32px; --space-10: 40px; --space-12: 48px;
+
+  /* Radius */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.20), 0 1px 2px rgba(0,0,0,.12);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.25), 0 2px 4px rgba(0,0,0,.12);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,.30), 0 4px 8px rgba(0,0,0,.14);
+  --shadow-focus: 0 0 0 2px var(--bg-base), 0 0 0 4px var(--accent-500);
+
+  /* Semantic dark (défaut) */
+  --bg-base:    var(--gray-950);
+  --bg-panel:   var(--gray-900);
+  --bg-raised:  var(--gray-800);
+  --border-subtle:  var(--gray-800);
+  --border-default: var(--gray-700);
+  --border-strong:  var(--gray-600);
+  --text-primary:   var(--gray-50);
+  --text-secondary: var(--gray-200);
+  --text-tertiary:  var(--gray-400);
+  --text-placeholder: var(--gray-500);
+}
+
+[data-theme="light"] {
+  --bg-base:    var(--gray-25);
+  --bg-panel:   #FFFFFF;
+  --bg-raised:  var(--gray-100);
+  --border-subtle:  var(--gray-100);
+  --border-default: var(--gray-200);
+  --border-strong:  var(--gray-300);
+  --text-primary:   var(--gray-900);
+  --text-secondary: var(--gray-700);
+  --text-tertiary:  var(--gray-500);
+  --text-placeholder: var(--gray-400);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.65;
+  color: var(--text-primary);
+  background-color: var(--bg-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Grain global — body */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.20;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gray-700); border-radius: 3px; }
+
+/* ============================================================
+   LAYOUT DOCUMENT
+   ============================================================ */
+.doc-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: var(--space-12) var(--space-6);
+}
+
+/* ============================================================
+   HEADER DU DOCUMENT
+   ============================================================ */
+.doc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: var(--space-8);
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: var(--space-10);
+  gap: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.doc-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.doc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--accent-300);
+  background: var(--accent-subtle-bg);
+  border: 1px solid var(--accent-subtle-border);
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  position: relative;
+  overflow: hidden;
+}
+.doc-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 65px 65px;
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.doc-title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.doc-subtitle {
+  font-size: var(--text-md);
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.doc-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+}
+
+.doc-meta-item {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  color: var(--text-placeholder);
+}
+
+.doc-meta-item span {
+  color: var(--text-tertiary);
+}
+
+/* Theme toggle */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px 12px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  transition: all 150ms cubic-bezier(0.34,1.56,0.64,1);
+  margin-top: var(--space-2);
+}
+.theme-toggle:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+.section {
+  margin-bottom: var(--space-12);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--accent-300);
+  white-space: nowrap;
+}
+
+.section-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.section-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.section-desc {
+  font-size: var(--text-base);
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-6);
+  line-height: 1.65;
+}
+
+/* ============================================================
+   PREVIEW ZONES
+   ============================================================ */
+.preview-zone {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  position: relative;
+  overflow: hidden;
+}
+.preview-zone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 110px 110px;
+  opacity: 0.12;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 0;
+}
+.preview-zone > * { position: relative; z-index: 1; }
+
+.preview-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-placeholder);
+  margin-bottom: var(--space-4);
+}
+
+.preview-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.preview-row:last-child { margin-bottom: 0; }
+
+.preview-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.preview-grid {
+  display: grid;
+  gap: var(--space-4);
+}
+.preview-grid-2 { grid-template-columns: 1fr 1fr; }
+.preview-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+.preview-grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+/* ============================================================
+   SPEC TABLE
+   ============================================================ */
+.spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+  margin-top: var(--space-4);
+}
+.spec-table th {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-placeholder);
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.spec-table td {
+  padding: var(--space-2) var(--space-3);
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.spec-table tr:last-child td { border-bottom: none; }
+.spec-table tr:hover td { background: rgba(255,255,255,0.02); }
+.mono { font-family: var(--font-mono); color: var(--accent-300); font-size: var(--text-xs); }
+
+/* ============================================================
+   ██████████ BOUTONS ██████████
+   ============================================================ */
+
+/* Base button */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: var(--text-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 150ms cubic-bezier(0.34,1.56,0.64,1);
+  white-space: nowrap;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Grain sur boutons */
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 65px 65px;
+  opacity: 0.34;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Tailles */
+.btn-sm { padding: 5px 10px; font-size: var(--text-sm); gap: 5px; }
+.btn-sm svg { width: 13px; height: 13px; }
+
+.btn-md { padding: 8px 14px; }
+.btn-md svg { width: 15px; height: 15px; }
+
+.btn-lg { padding: 11px 20px; font-size: 15px; gap: 8px; }
+.btn-lg svg { width: 16px; height: 16px; }
+
+/* Primary */
+.btn-primary {
+  background: var(--accent-500);
+  border-color: var(--accent-600);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+.btn-primary:hover {
+  background: var(--accent-600);
+  border-color: var(--accent-700);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+.btn-primary:active {
+  background: var(--accent-700);
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+.btn-primary:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* Secondary */
+.btn-secondary {
+  background: var(--bg-raised);
+  border-color: var(--border-default);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-sm);
+}
+.btn-secondary:hover {
+  background: var(--gray-700);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.btn-secondary:active {
+  background: var(--gray-800);
+  transform: translateY(0);
+}
+.btn-secondary:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* Ghost */
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-secondary);
+}
+.btn-ghost:hover {
+  background: var(--bg-raised);
+  color: var(--text-primary);
+}
+.btn-ghost:active {
+  background: var(--gray-700);
+}
+.btn-ghost:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* Danger */
+.btn-danger {
+  background: var(--error-subtle);
+  border-color: var(--error-border);
+  color: #DC7070;
+  box-shadow: var(--shadow-sm);
+}
+.btn-danger:hover {
+  background: rgba(155,50,44,0.18);
+  border-color: rgba(155,50,44,0.40);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.btn-danger:active {
+  transform: translateY(0);
+}
+.btn-danger:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-base), 0 0 0 4px var(--error);
+}
+
+/* Accent outline */
+.btn-outline-accent {
+  background: var(--accent-subtle-bg);
+  border-color: var(--accent-subtle-border);
+  color: var(--accent-300);
+  box-shadow: var(--shadow-sm);
+}
+.btn-outline-accent:hover {
+  background: rgba(23,158,142,0.14);
+  border-color: rgba(23,158,142,0.35);
+  transform: translateY(-1px);
+}
+.btn-outline-accent:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* Disabled state */
+.btn:disabled, .btn[aria-disabled="true"] {
+  opacity: 0.38;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none !important;
+}
+
+/* Loading state */
+.btn-loading {
+  pointer-events: none;
+  position: relative;
+}
+.btn-loading .btn-text { opacity: 0.4; }
+.btn-spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.spinner-ring {
+  width: 14px; height: 14px;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-top-color: rgba(255,255,255,0.85);
+  border-radius: 50%;
+  animation: spin 600ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Icon-only button */
+.btn-icon {
+  padding: 7px;
+  aspect-ratio: 1;
+}
+.btn-icon.btn-sm { padding: 5px; }
+.btn-icon.btn-lg { padding: 10px; }
+
+/* ============================================================
+   ██████████ INPUTS ██████████
+   ============================================================ */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.form-label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: -0.01em;
+}
+
+.form-label-required::after {
+  content: ' *';
+  color: #DC7070;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  width: 100%;
+  transition: all 150ms cubic-bezier(0.16,1,0.3,1);
+  -webkit-font-smoothing: antialiased;
+  outline: none;
+  box-shadow: var(--shadow-sm);
+}
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--text-placeholder);
+}
+.form-select { cursor: pointer; appearance: none; }
+
+/* Input icon wrapper */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-wrapper .form-input {
+  padding-left: 36px;
+}
+.input-icon {
+  position: absolute;
+  left: 10px;
+  pointer-events: none;
+  color: var(--text-placeholder);
+}
+.input-icon-right {
+  position: absolute;
+  right: 10px;
+  pointer-events: none;
+  color: var(--text-placeholder);
+}
+
+/* States */
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 2px var(--bg-base), 0 0 0 4px var(--accent-500);
+  background: var(--bg-panel);
+}
+.form-input:hover:not(:focus):not(:disabled),
+.form-select:hover:not(:focus):not(:disabled) {
+  border-color: var(--border-strong);
+}
+
+/* Filled state (JS simulation via class) */
+.form-input.is-filled {
+  border-color: var(--border-strong);
+}
+
+/* Error state */
+.form-field.has-error .form-input,
+.form-field.has-error .form-select,
+.form-field.has-error .form-textarea {
+  border-color: var(--error);
+  background: var(--error-subtle);
+}
+.form-field.has-error .form-input:focus {
+  box-shadow: 0 0 0 2px var(--bg-base), 0 0 0 4px var(--error);
+}
+
+/* Disabled state */
+.form-input:disabled,
+.form-select:disabled,
+.form-textarea:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  background: var(--bg-raised);
+}
+
+/* Help & error text */
+.form-help {
+  font-size: var(--text-sm);
+  color: var(--text-placeholder);
+  line-height: 1.5;
+}
+.form-error-msg {
+  font-size: var(--text-sm);
+  color: #DC7070;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.5;
+}
+
+/* Textarea */
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.65;
+}
+
+/* Select chevron */
+.select-wrapper {
+  position: relative;
+}
+.select-wrapper .form-select { padding-right: 36px; }
+.select-chevron {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--text-placeholder);
+}
+
+/* Checkbox */
+.checkbox-field {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  cursor: pointer;
+}
+.checkbox-input {
+  width: 16px; height: 16px;
+  appearance: none;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 150ms cubic-bezier(0.34,1.56,0.64,1);
+}
+.checkbox-input:checked {
+  background: var(--accent-500);
+  border-color: var(--accent-600);
+}
+.checkbox-input:checked::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 4px;
+  width: 5px; height: 8px;
+  border: 1.5px solid #fff;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+.checkbox-input:indeterminate {
+  background: var(--accent-500);
+  border-color: var(--accent-600);
+}
+.checkbox-input:indeterminate::after {
+  content: '';
+  position: absolute;
+  top: 6px; left: 3px;
+  width: 8px; height: 1.5px;
+  background: #fff;
+}
+.checkbox-input:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+.checkbox-label {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  user-select: none;
+}
+.checkbox-input:disabled { opacity: 0.38; cursor: not-allowed; }
+
+/* Radio */
+.radio-field {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  cursor: pointer;
+}
+.radio-input {
+  width: 16px; height: 16px;
+  appearance: none;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 150ms cubic-bezier(0.34,1.56,0.64,1);
+}
+.radio-input:checked {
+  background: var(--accent-500);
+  border-color: var(--accent-600);
+}
+.radio-input:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 5px; height: 5px;
+  background: #fff;
+  border-radius: 50%;
+}
+.radio-input:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+/* Toggle */
+.toggle-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+}
+.toggle-track {
+  width: 36px; height: 20px;
+  background: var(--gray-700);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  position: relative;
+  transition: all 150ms cubic-bezier(0.34,1.56,0.64,1);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.toggle-track.is-on {
+  background: var(--accent-500);
+  border-color: var(--accent-600);
+}
+.toggle-thumb {
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 14px; height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  transition: all 150ms cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+}
+.toggle-track.is-on .toggle-thumb { left: 18px; }
+.toggle-label { font-size: var(--text-base); color: var(--text-secondary); user-select: none; }
+
+/* ============================================================
+   ██████████ BADGES / CHIPS / TAGS ██████████
+   ============================================================ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: var(--radius-xs);
+  white-space: nowrap;
+  border: 1px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+.badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 65px 65px;
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+.badge svg { position: relative; z-index: 1; }
+.badge span { position: relative; z-index: 1; }
+
+/* Variantes badge */
+.badge-accent   { background: var(--accent-subtle-bg); border-color: var(--accent-subtle-border); color: var(--accent-300); }
+.badge-success  { background: var(--success-subtle); border-color: var(--success-border); color: #5DB882; }
+.badge-warning  { background: var(--warning-subtle); border-color: var(--warning-border); color: #D4993A; }
+.badge-error    { background: var(--error-subtle); border-color: var(--error-border); color: #DC7070; }
+.badge-info     { background: var(--info-subtle); border-color: var(--info-border); color: #6D95D8; }
+.badge-neutral  { background: rgba(255,255,255,0.04); border-color: var(--border-default); color: var(--text-tertiary); }
+
+/* Badge taille medium */
+.badge-md {
+  font-size: var(--text-sm);
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.04em;
+}
+
+/* Dot indicator */
+.badge-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.badge-dot-accent   { background: var(--accent-400); }
+.badge-dot-success  { background: #5DB882; }
+.badge-dot-warning  { background: #D4993A; }
+.badge-dot-error    { background: #DC7070; }
+.badge-dot-info     { background: #6D95D8; }
+
+/* Tag (dismissible) */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xs);
+  padding: 3px 8px;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  cursor: default;
+}
+.tag-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px; height: 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  color: var(--text-placeholder);
+  transition: all 150ms ease;
+}
+.tag-close:hover { background: var(--border-default); color: var(--text-primary); }
+
+/* Count badge */
+.badge-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px; height: 18px;
+  background: var(--accent-500);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  border-radius: 9px;
+  padding: 0 5px;
+}
+
+/* ============================================================
+   ██████████ CARDS ██████████
+   ============================================================ */
+
+/* Card base */
+.card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 110px 110px;
+  opacity: 0.12;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 0;
+}
+.card > * { position: relative; z-index: 1; }
+
+/* Card body */
+.card-body { padding: var(--space-5); }
+
+/* Card header */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border-subtle);
+  gap: var(--space-3);
+}
+
+.card-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.card-icon {
+  width: 32px; height: 32px;
+  background: var(--accent-subtle-bg);
+  border: 1px solid var(--accent-subtle-border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-300);
+  flex-shrink: 0;
+}
+
+.card-title {
+  font-size: var(--text-md);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.card-subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  margin-top: 1px;
+}
+
+/* Card footer */
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+  background: rgba(255,255,255,0.015);
+}
+.card-footer-text {
+  font-size: var(--text-sm);
+  color: var(--text-placeholder);
+}
+
+/* Card cliquable */
+.card-clickable {
+  cursor: pointer;
+  transition: all 150ms cubic-bezier(0.34,1.56,0.64,1);
+}
+.card-clickable:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+.card-clickable:active { transform: translateY(0); box-shadow: var(--shadow-sm); }
+.card-clickable:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+
+/* Card KPI (glassmorphisme) */
+.card-kpi {
+  background: rgba(255,255,255,0.040);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: var(--shadow-md);
+}
+.card-kpi::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.card-kpi-value {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: -0.030em;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+.card-kpi-label {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+.card-kpi-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  margin-top: var(--space-2);
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+}
+.card-kpi-delta.up   { background: var(--success-subtle); color: #5DB882; }
+.card-kpi-delta.down { background: var(--error-subtle); color: #DC7070; }
+
+/* Sparkline placeholder */
+.sparkline {
+  width: 80px; height: 32px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   ██████████ TABLES ██████████
+   ============================================================ */
+.data-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-base);
+  background: var(--bg-panel);
+}
+.data-table thead th {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-placeholder);
+  text-align: left;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  white-space: nowrap;
+  background: rgba(255,255,255,0.015);
+  user-select: none;
+}
+.data-table thead th.sortable { cursor: pointer; }
+.data-table thead th.sortable:hover { color: var(--text-tertiary); }
+.data-table thead th .sort-icon { display: inline-flex; margin-left: 4px; opacity: 0.5; vertical-align: middle; }
+.data-table thead th.sorted .sort-icon { opacity: 1; color: var(--accent-300); }
+
+.data-table tbody td {
+  padding: 10px 16px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+  transition: background 100ms ease;
+}
+.data-table tbody tr:last-child td { border-bottom: none; }
+
+/* Row states */
+.data-table tbody tr:hover td { background: rgba(255,255,255,0.025); }
+.data-table tbody tr.is-selected td { background: var(--accent-subtle-bg); border-bottom-color: rgba(23,158,142,0.12); }
+.data-table tbody tr.is-selected td:first-child { border-left: 2px solid var(--accent-500); padding-left: 14px; }
+
+/* Checkbox column */
+.data-table .col-check { width: 44px; padding-left: 16px; }
+
+/* Status cell */
+.cell-status { display: flex; align-items: center; gap: 6px; }
+
+/* Action cell */
+.cell-actions { display: flex; align-items: center; gap: 4px; }
+
+/* Sortable header arrow */
+.sort-asc, .sort-desc { display: inline-flex; align-items: center; }
+
+/* Empty state */
+.table-empty {
+  padding: var(--space-10) var(--space-6);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+.table-empty-icon {
+  width: 40px; height: 40px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-placeholder);
+}
+.table-empty-title {
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+.table-empty-desc {
+  font-size: var(--text-sm);
+  color: var(--text-placeholder);
+  max-width: 280px;
+  line-height: 1.55;
+}
+
+/* Pagination */
+.table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+  background: rgba(255,255,255,0.015);
+}
+.pagination-info {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-placeholder);
+  letter-spacing: 0.04em;
+}
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+.page-btn {
+  width: 28px; height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  transition: all 150ms ease;
+}
+.page-btn:hover { background: var(--bg-raised); border-color: var(--border-default); color: var(--text-primary); }
+.page-btn.is-active { background: var(--accent-subtle-bg); border-color: var(--accent-subtle-border); color: var(--accent-300); }
+.page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ============================================================
+   DIVIDER
+   ============================================================ */
+.subsection {
+  margin-bottom: var(--space-6);
+}
+.subsection-title {
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.subsection-title::before {
+  content: '';
+  width: 3px; height: 14px;
+  background: var(--accent-500);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* State label */
+.state-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  color: var(--text-placeholder);
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Input form grid */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+
+/* ============================================================
+   NAVIGATION SYSTEM
+   ============================================================ */
+.nav-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-placeholder);
+}
+.nav-breadcrumb a {
+  color: var(--accent-400);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.nav-breadcrumb a:hover { color: var(--accent-300); }
+.nav-breadcrumb-sep { color: var(--border-default); }
+
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.nav-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.nav-dropdown-btn:hover {
+  background: var(--bg-panel);
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
+}
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  min-width: 280px;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1000;
+}
+.nav-dropdown.active .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  transition: all 120ms ease;
+}
+.nav-dropdown-item:hover {
+  background: var(--bg-raised);
+  color: var(--text-secondary);
+}
+.nav-dropdown-item.active {
+  background: var(--accent-subtle-bg);
+  color: var(--accent-300);
+  font-weight: 500;
+}
+.nav-dropdown-item-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-placeholder);
+  min-width: 32px;
+}
+
+/* ============================================================
+   FOOTER DU DOCUMENT
+   ============================================================ */
+.doc-footer {
+  margin-top: var(--space-12);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+.footer-left {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-placeholder);
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+}
+.footer-nav {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: all 150ms ease;
+}
+.footer-link:hover {
+  color: var(--text-secondary);
+  background: var(--bg-raised);
+}
+.footer-link svg { width: 14px; height: 14px; }
+.footer-link.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+.kbd-hint {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-placeholder);
+  margin-top: 8px;
+}
+.kbd {
+  display: inline-block;
+  padding: 2px 5px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 3px;
+  font-size: 9px;
+  margin: 0 2px;
+}
+
+.doc-footer-complete {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  color: var(--accent-300);
+  text-decoration: none;
+  padding: 5px 10px;
+  background: var(--accent-subtle-bg);
+  border: 1px solid var(--accent-subtle-border);
+  border-radius: var(--radius-sm);
+}
+</style>
+</head>
+<body>
+
+<div class="doc-container">
+
+  <!-- ══════════════════════════════════════════════
+       HEADER
+  ══════════════════════════════════════════════ -->
+  <header class="doc-header">
+    <div class="doc-header-left">
+      <!-- Breadcrumb + Menu -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; width: 100%;">
+        <nav class="nav-breadcrumb" aria-label="Fil d'Ariane">
+          <a href="index.html">← Index</a>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>CG-06</span>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>Composants UI</span>
+        </nav>
+        
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-btn" onclick="toggleNav(this)" aria-label="Menu des modules" aria-expanded="false">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+            Tous les modules
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="CG-01-Identite-Palette.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-01</span> Identité & Palette</a>
+            <a href="CG-02-Systeme-Couleurs-Tokens.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-02</span> Couleurs & Tokens</a>
+            <a href="CG-03-Typographie-Echelle.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-03</span> Typographie</a>
+            <a href="CG-04-Espacement-Grille-Layout.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-04</span> Espacement & Grille</a>
+            <a href="CG-05-Effets-Grain-Verre-Ombres-Bordures.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-05</span> Effets & Grain</a>
+            <a href="CG-06-Composants-Boutons-Inputs-Badges-Cards.html" class="nav-dropdown-item active"><span class="nav-dropdown-item-num">CG-06</span> Composants UI</a>
+            <a href="CG-07-Navigation-Sidebar-Topbar-Tabs.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-07</span> Navigation</a>
+            <a href="CG-08-Feedback-Toasts-Modals-Etats.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-08</span> Feedback & États</a>
+            <a href="CG-09-Graphiques-DataViz.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-09</span> Graphiques</a>
+            <a href="CG-10-Motion-Design-Animations.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-10</span> Motion Design</a>
+            <a href="CG-11-Accessibilite-RGAA.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-11</span> Accessibilité</a>
+            <a href="CG-12-Tokens-CSS-Complets-Guide.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-12</span> Tokens CSS</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        <span>Charte Graphique · Module CG-06</span>
+      </div>
+      <h1 class="doc-title">Composants UI</h1>
+      <p class="doc-subtitle">Boutons · Inputs · Badges · Cards · Tables — Tous états &amp; variantes</p>
+    </div>
+    <div class="doc-meta">
+      <div class="doc-meta-item">PROJET <span>Archivage Numérique</span></div>
+      <div class="doc-meta-item">MODULE <span>CG-06 / 12</span></div>
+      <div class="doc-meta-item">VERSION <span>1.0.0</span></div>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Basculer le thème">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        Thème
+      </button>
+    </div>
+  </header>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 01 — BOUTONS
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">01 — Boutons</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Système de boutons</h2>
+    <p class="section-desc">5 variantes · 3 tailles · 6 états par variante. Le grain (opacity 0.34) est appliqué via <code>::after</code> sur tous les boutons. Aucun dégradé. Radius maximum : <code>--radius-sm (4px)</code>.</p>
+
+    <!-- Variantes principales -->
+    <div class="subsection">
+      <div class="subsection-title">Variantes — taille md (défaut)</div>
+      <div class="preview-zone">
+        <div class="preview-row">
+          <button class="btn btn-primary btn-md">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+            Primary
+          </button>
+          <button class="btn btn-secondary btn-md">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Secondary
+          </button>
+          <button class="btn btn-ghost btn-md">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            Ghost
+          </button>
+          <button class="btn btn-outline-accent btn-md">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2v20M2 12h20"/></svg>
+            Accent Outline
+          </button>
+          <button class="btn btn-danger btn-md">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Danger
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tailles -->
+    <div class="subsection">
+      <div class="subsection-title">Tailles — Primary</div>
+      <div class="preview-zone">
+        <div class="preview-row" style="align-items:flex-end">
+          <div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px">
+            <span class="state-label">sm — 30px h.</span>
+            <button class="btn btn-primary btn-sm">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+              Importer
+            </button>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px">
+            <span class="state-label">md — 36px h. (défaut)</span>
+            <button class="btn btn-primary btn-md">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+              Importer
+            </button>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px">
+            <span class="state-label">lg — 42px h.</span>
+            <button class="btn btn-primary btn-lg">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+              Importer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- États spéciaux -->
+    <div class="subsection">
+      <div class="subsection-title">États — Disabled & Loading</div>
+      <div class="preview-zone">
+        <div class="preview-row">
+          <div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px">
+            <span class="state-label">Disabled</span>
+            <button class="btn btn-primary btn-md" disabled>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+              Importer
+            </button>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px">
+            <span class="state-label">Disabled</span>
+            <button class="btn btn-secondary btn-md" disabled>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Modifier
+            </button>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px">
+            <span class="state-label">Loading</span>
+            <button class="btn btn-primary btn-md btn-loading">
+              <span class="btn-text">Enregistrement…</span>
+              <div class="btn-spinner"><div class="spinner-ring"></div></div>
+            </button>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px">
+            <span class="state-label">Loading</span>
+            <button class="btn btn-secondary btn-md btn-loading">
+              <span class="btn-text">Traitement…</span>
+              <div class="btn-spinner" style="--spinner-color:var(--text-tertiary)"><div class="spinner-ring" style="border-top-color:var(--text-secondary);border-color:var(--border-default);border-top-color:var(--accent-400)"></div></div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Icon-only -->
+    <div class="subsection">
+      <div class="subsection-title">Icon-only & Icon-left sans texte</div>
+      <div class="preview-zone">
+        <div class="preview-row">
+          <button class="btn btn-secondary btn-md btn-icon" title="Actualiser" aria-label="Actualiser">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-md btn-icon" title="Filtres" aria-label="Filtres">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-md btn-icon" title="Paramètres" aria-label="Paramètres">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </button>
+          <button class="btn btn-danger btn-sm btn-icon" title="Supprimer" aria-label="Supprimer">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spec table boutons -->
+    <table class="spec-table">
+      <thead>
+        <tr>
+          <th>Variante</th>
+          <th>Background</th>
+          <th>Border</th>
+          <th>Couleur texte</th>
+          <th>Usage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Primary</td><td class="mono">--accent-500</td><td class="mono">--accent-600</td><td>#FFFFFF</td><td>Action principale de la page</td></tr>
+        <tr><td>Secondary</td><td class="mono">--bg-raised</td><td class="mono">--border-default</td><td class="mono">--text-secondary</td><td>Actions secondaires, alternatives</td></tr>
+        <tr><td>Ghost</td><td>transparent</td><td>transparent</td><td class="mono">--text-secondary</td><td>Actions tertiaires, icônes toolbar</td></tr>
+        <tr><td>Outline Accent</td><td class="mono">--accent-subtle-bg</td><td class="mono">--accent-subtle-border</td><td class="mono">--accent-300</td><td>CTA accent sans remplissage fort</td></tr>
+        <tr><td>Danger</td><td class="mono">--error-subtle</td><td class="mono">--error-border</td><td>#DC7070</td><td>Suppression, archivage irréversible</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 02 — INPUTS
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">02 — Inputs</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Champs de formulaire</h2>
+    <p class="section-desc">Label au-dessus · Help text en-dessous. 6 états documentés par type de champ. Focus ring double : <code>2px bg-base + 4px accent-500</code>.</p>
+
+    <!-- Text inputs -->
+    <div class="subsection">
+      <div class="subsection-title">Text input — États</div>
+      <div class="preview-zone">
+        <div class="form-grid">
+          <!-- Empty -->
+          <div class="form-field">
+            <label class="form-label">Titre du document</label>
+            <input class="form-input" type="text" placeholder="Ex. : Délibération du conseil 2024-03…">
+            <span class="form-help">Nom tel qu'il apparaîtra dans le registre officiel.</span>
+          </div>
+          <!-- Filled -->
+          <div class="form-field">
+            <label class="form-label form-label-required">Référence d'archivage</label>
+            <input class="form-input is-filled" type="text" value="ARC-2024-00847-DOC">
+            <span class="form-help">Identifiant unique auto-généré — modifiable avant validation.</span>
+          </div>
+          <!-- With icon -->
+          <div class="form-field">
+            <label class="form-label">Recherche dans le fonds</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input class="form-input" type="text" placeholder="Numéro, titre, date…">
+            </div>
+          </div>
+          <!-- Error -->
+          <div class="form-field has-error">
+            <label class="form-label form-label-required">Date de création</label>
+            <div class="input-wrapper">
+              <input class="form-input" type="text" value="32/13/2024">
+              <svg class="input-icon-right" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#DC7070" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <span class="form-error-msg">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Format invalide. Utilisez JJ/MM/AAAA.
+            </span>
+          </div>
+          <!-- Disabled -->
+          <div class="form-field">
+            <label class="form-label">Créé par</label>
+            <input class="form-input" type="text" value="MARTIN, Sophie — Service Juridique" disabled>
+            <span class="form-help">Champ généré automatiquement, non modifiable.</span>
+          </div>
+          <!-- Select -->
+          <div class="form-field">
+            <label class="form-label form-label-required">Type de document</label>
+            <div class="select-wrapper">
+              <select class="form-select">
+                <option value="">Sélectionner un type…</option>
+                <option selected>Délibération</option>
+                <option>Arrêté municipal</option>
+                <option>Contrat de marché public</option>
+                <option>Rapport d'audit</option>
+                <option>Courrier officiel</option>
+              </select>
+              <svg class="select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Textarea -->
+    <div class="subsection">
+      <div class="subsection-title">Textarea</div>
+      <div class="preview-zone">
+        <div class="form-field">
+          <label class="form-label">Description / Résumé</label>
+          <textarea class="form-textarea" placeholder="Résumé du contenu du document, décision prise, parties impliquées…" rows="3"></textarea>
+          <span class="form-help">Maximum 2000 caractères. Ce résumé est indexé pour la recherche plein texte.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checkbox / Radio / Toggle -->
+    <div class="subsection">
+      <div class="subsection-title">Checkbox · Radio · Toggle</div>
+      <div class="preview-zone">
+        <div class="preview-grid preview-grid-3" style="gap:var(--space-6)">
+          <!-- Checkboxes -->
+          <div>
+            <span class="preview-label">Checkbox</span>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <label class="checkbox-field">
+                <input type="checkbox" class="checkbox-input" checked>
+                <span class="checkbox-label">Versement obligatoire</span>
+              </label>
+              <label class="checkbox-field">
+                <input type="checkbox" class="checkbox-input">
+                <span class="checkbox-label">Confidentiel — accès restreint</span>
+              </label>
+              <label class="checkbox-field">
+                <input type="checkbox" class="checkbox-input" id="indeterminate-cb">
+                <span class="checkbox-label">Sélectionner tout (partiel)</span>
+              </label>
+              <label class="checkbox-field">
+                <input type="checkbox" class="checkbox-input" disabled checked>
+                <span class="checkbox-label" style="opacity:0.42">Archivé définitivement</span>
+              </label>
+            </div>
+          </div>
+          <!-- Radios -->
+          <div>
+            <span class="preview-label">Radio</span>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <label class="radio-field">
+                <input type="radio" name="conservation" class="radio-input" checked>
+                <span class="checkbox-label">Conservation permanente</span>
+              </label>
+              <label class="radio-field">
+                <input type="radio" name="conservation" class="radio-input">
+                <span class="checkbox-label">Durée déterminée (DUA)</span>
+              </label>
+              <label class="radio-field">
+                <input type="radio" name="conservation" class="radio-input">
+                <span class="checkbox-label">Élimination après 5 ans</span>
+              </label>
+              <label class="radio-field">
+                <input type="radio" name="conservation" class="radio-input" disabled>
+                <span class="checkbox-label" style="opacity:0.42">Non définie (désactivé)</span>
+              </label>
+            </div>
+          </div>
+          <!-- Toggles -->
+          <div>
+            <span class="preview-label">Toggle</span>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <label class="toggle-field" onclick="this.querySelector('.toggle-track').classList.toggle('is-on')">
+                <div class="toggle-track is-on"><div class="toggle-thumb"></div></div>
+                <span class="toggle-label">Notifications email actives</span>
+              </label>
+              <label class="toggle-field" onclick="this.querySelector('.toggle-track').classList.toggle('is-on')">
+                <div class="toggle-track"><div class="toggle-thumb"></div></div>
+                <span class="toggle-label">Indexation automatique OCR</span>
+              </label>
+              <label class="toggle-field" onclick="this.querySelector('.toggle-track').classList.toggle('is-on')">
+                <div class="toggle-track is-on"><div class="toggle-thumb"></div></div>
+                <span class="toggle-label">Versionnage activé</span>
+              </label>
+              <label class="toggle-field" style="opacity:0.42;pointer-events:none">
+                <div class="toggle-track is-on"><div class="toggle-thumb"></div></div>
+                <span class="toggle-label">Chiffrement (géré par admin)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 03 — BADGES / CHIPS / TAGS
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">03 — Badges &amp; Tags</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Badges, Chips &amp; Tags</h2>
+    <p class="section-desc">DM Mono · UPPERCASE · Letter-spacing 0.06em. Grain lourd visible (opacity 0.35). 6 variantes sémantiques · 2 tailles · 1 variante dismissible.</p>
+
+    <!-- Badges xs -->
+    <div class="subsection">
+      <div class="subsection-title">Badges — taille xs (défaut)</div>
+      <div class="preview-zone">
+        <div class="preview-row">
+          <span class="badge badge-accent">
+            <span class="badge-dot badge-dot-accent"></span>
+            <span>En cours</span>
+          </span>
+          <span class="badge badge-success">
+            <span class="badge-dot badge-dot-success"></span>
+            <span>Validé</span>
+          </span>
+          <span class="badge badge-warning">
+            <span class="badge-dot badge-dot-warning"></span>
+            <span>En attente</span>
+          </span>
+          <span class="badge badge-error">
+            <span class="badge-dot badge-dot-error"></span>
+            <span>Rejeté</span>
+          </span>
+          <span class="badge badge-info">
+            <span class="badge-dot badge-dot-info"></span>
+            <span>À réviser</span>
+          </span>
+          <span class="badge badge-neutral">
+            <span>Brouillon</span>
+          </span>
+        </div>
+        <!-- Sans dot -->
+        <div class="preview-row" style="margin-top:var(--space-3)">
+          <span class="badge badge-accent"><span>Délibération</span></span>
+          <span class="badge badge-success"><span>Archivé</span></span>
+          <span class="badge badge-warning"><span>DUA: 5 ans</span></span>
+          <span class="badge badge-error"><span>Expiré</span></span>
+          <span class="badge badge-info"><span>OCR requis</span></span>
+          <span class="badge badge-neutral"><span>PDF/A-3</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Badges md -->
+    <div class="subsection">
+      <div class="subsection-title">Badges — taille md</div>
+      <div class="preview-zone">
+        <div class="preview-row">
+          <span class="badge badge-md badge-accent">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>Traitement actif</span>
+          </span>
+          <span class="badge badge-md badge-success">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Versement validé</span>
+          </span>
+          <span class="badge badge-md badge-warning">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span>Signature requise</span>
+          </span>
+          <span class="badge badge-md badge-error">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            <span>Accès refusé</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Count badges -->
+    <div class="subsection">
+      <div class="subsection-title">Count badges &amp; Tags dismissibles</div>
+      <div class="preview-zone">
+        <div class="preview-row" style="align-items:center">
+          <span style="font-size:var(--text-sm);color:var(--text-secondary)">Documents en attente</span>
+          <span class="badge-count">12</span>
+          <span style="margin-left:var(--space-4);font-size:var(--text-sm);color:var(--text-secondary)">Alertes</span>
+          <span class="badge-count" style="background:var(--error)">3</span>
+
+          <div style="margin-left:var(--space-6);display:flex;gap:6px;flex-wrap:wrap">
+            <span class="tag">
+              Juridique
+              <span class="tag-close" aria-label="Retirer le filtre Juridique">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </span>
+            </span>
+            <span class="tag">
+              2024
+              <span class="tag-close" aria-label="Retirer le filtre 2024">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </span>
+            </span>
+            <span class="tag">
+              PDF/A
+              <span class="tag-close" aria-label="Retirer le filtre PDF/A">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 04 — CARDS
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">04 — Cards</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Système de cards</h2>
+    <p class="section-desc">Grain sur toutes les surfaces (opacity 0.12). Glassmorphisme exclusivement sur les cards KPI. Radius max : <code>--radius-md (6px)</code>. Border sans remplissage opaque.</p>
+
+    <!-- Cards KPI -->
+    <div class="subsection">
+      <div class="subsection-title">Cards KPI — Glassmorphisme</div>
+      <div class="preview-zone">
+        <div class="preview-grid preview-grid-4" style="gap:var(--space-4)">
+          <!-- KPI 1 -->
+          <div class="card card-kpi">
+            <div class="card-body">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:var(--space-3)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-300)" stroke-width="1.5" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <svg class="sparkline" viewBox="0 0 80 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <polyline points="0,28 13,22 26,18 39,12 52,15 65,8 80,4" stroke="var(--accent-400)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="card-kpi-value">18 472</div>
+              <div class="card-kpi-label">Documents archivés</div>
+              <div class="card-kpi-delta up">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+                +12.4 % ce mois
+              </div>
+            </div>
+          </div>
+          <!-- KPI 2 -->
+          <div class="card card-kpi">
+            <div class="card-body">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:var(--space-3)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-300)" stroke-width="1.5" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <svg class="sparkline" viewBox="0 0 80 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <polyline points="0,20 13,16 26,22 39,10 52,18 65,14 80,9" stroke="var(--accent-400)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="card-kpi-value">2 341</div>
+              <div class="card-kpi-label">Versements ce trimestre</div>
+              <div class="card-kpi-delta up">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+                +8.1 % vs. N-1
+              </div>
+            </div>
+          </div>
+          <!-- KPI 3 -->
+          <div class="card card-kpi">
+            <div class="card-body">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:var(--space-3)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-300)" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <svg class="sparkline" viewBox="0 0 80 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <polyline points="0,10 13,14 26,11 39,16 52,13 65,18 80,22" stroke="#D4993A" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="card-kpi-value">47</div>
+              <div class="card-kpi-label">En attente de validation</div>
+              <div class="card-kpi-delta down">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                +6 depuis hier
+              </div>
+            </div>
+          </div>
+          <!-- KPI 4 -->
+          <div class="card card-kpi">
+            <div class="card-body">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:var(--space-3)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-300)" stroke-width="1.5" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <svg class="sparkline" viewBox="0 0 80 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <polyline points="0,24 13,20 26,16 39,8 52,6 65,4 80,2" stroke="var(--accent-400)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="card-kpi-value">98.7 %</div>
+              <div class="card-kpi-label">Disponibilité du système</div>
+              <div class="card-kpi-delta up">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+                SLA respecté
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards standard -->
+    <div class="subsection">
+      <div class="subsection-title">Cards standard — Header + Footer + Cliquable</div>
+      <div class="preview-zone">
+        <div class="preview-grid preview-grid-3" style="gap:var(--space-4)">
+          <!-- Card simple header+footer -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-icon">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                </div>
+                <div>
+                  <div class="card-title">Documents récents</div>
+                  <div class="card-subtitle">3 en attente de traitement</div>
+                </div>
+              </div>
+              <span class="badge badge-warning"><span>3</span></span>
+            </div>
+            <div class="card-body">
+              <p style="font-size:var(--text-sm);color:var(--text-tertiary);line-height:1.65">Délibération n°2024-189 · Arrêté municipal 2024-08-14 · Rapport de commission du 21/11/2024</p>
+            </div>
+            <div class="card-footer">
+              <span class="card-footer-text">Mis à jour il y a 12 min</span>
+              <button class="btn btn-ghost btn-sm">Voir tout</button>
+            </div>
+          </div>
+
+          <!-- Card cliquable -->
+          <div class="card card-clickable" tabindex="0" role="button" aria-label="Ouvrir le dossier Marchés publics 2024">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-icon">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <div>
+                  <div class="card-title">Marchés publics 2024</div>
+                  <div class="card-subtitle">Dossier · 847 documents</div>
+                </div>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-placeholder)" stroke-width="1.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+                <div style="display:flex;justify-content:space-between;font-size:var(--text-sm)">
+                  <span style="color:var(--text-tertiary)">Stockage utilisé</span>
+                  <span style="color:var(--text-secondary);font-family:var(--font-mono)">1.24 Go / 5 Go</span>
+                </div>
+                <div style="height:4px;background:var(--bg-raised);border-radius:2px;overflow:hidden">
+                  <div style="height:100%;width:24.8%;background:var(--accent-500);border-radius:2px"></div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <span class="card-footer-text">Dernière activité : 09 fév. 2025</span>
+              <span class="badge badge-accent"><span>Actif</span></span>
+            </div>
+          </div>
+
+          <!-- Card simple body -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-icon" style="background:var(--error-subtle);border-color:var(--error-border);color:#DC7070">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <div>
+                  <div class="card-title">Anomalies détectées</div>
+                  <div class="card-subtitle">Audit d'intégrité — 22/02/2025</div>
+                </div>
+              </div>
+              <button class="btn btn-ghost btn-sm btn-icon" aria-label="Fermer l'alerte">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+                <div style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-secondary)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#DC7070" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  3 hachages SHA-256 invalides
+                </div>
+                <div style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-secondary)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D4993A" stroke-width="1.5" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+                  7 métadonnées incomplètes
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-danger btn-sm">Voir le rapport</button>
+              <button class="btn btn-secondary btn-sm">Ignorer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 05 — TABLES
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">05 — Tables</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Tables de données</h2>
+    <p class="section-desc">Séparation par border légère uniquement — pas de zébrage. Hover state sur les lignes. Ligne sélectionnée avec indicateur accent gauche. Texte tronqué (ellipsis) obligatoire. Colonnes triables.</p>
+
+    <!-- Table remplie -->
+    <div class="subsection">
+      <div class="subsection-title">Table — Documents archivés (avec sélection)</div>
+      <div class="preview-zone" style="padding:0">
+        <div class="data-table-wrap" style="border-radius:var(--radius-md);border:none">
+          <table class="data-table" role="grid" aria-label="Liste des documents archivés">
+            <thead>
+              <tr>
+                <th class="col-check">
+                  <input type="checkbox" class="checkbox-input" style="width:14px;height:14px" aria-label="Sélectionner tout">
+                </th>
+                <th class="sortable sorted" scope="col">
+                  Référence
+                  <span class="sort-icon">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+                  </span>
+                </th>
+                <th class="sortable" scope="col">
+                  Titre du document
+                  <span class="sort-icon">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                  </span>
+                </th>
+                <th scope="col">Type</th>
+                <th class="sortable" scope="col">Date de création</th>
+                <th scope="col">Statut</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Row selected -->
+              <tr class="is-selected">
+                <td class="col-check"><input type="checkbox" class="checkbox-input" style="width:14px;height:14px" checked aria-label="Sélectionner ARC-2025-00102"></td>
+                <td><span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--accent-300)">ARC-2025-00102</span></td>
+                <td>Délibération n°2025-42 — Plan Local d'Urbanisme</td>
+                <td><span class="badge badge-neutral"><span>Délibération</span></span></td>
+                <td><span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-tertiary)">14/02/2025</span></td>
+                <td><span class="badge badge-success"><span class="badge-dot badge-dot-success"></span><span>Validé</span></span></td>
+                <td>
+                  <div class="cell-actions">
+                    <button class="btn btn-ghost btn-sm btn-icon" title="Voir" aria-label="Voir ARC-2025-00102">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                    <button class="btn btn-ghost btn-sm btn-icon" title="Télécharger" aria-label="Télécharger ARC-2025-00102">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <!-- Normal rows -->
+              <tr>
+                <td class="col-check"><input type="checkbox" class="checkbox-input" style="width:14px;height:14px" aria-label="Sélectionner ARC-2025-00089"></td>
+                <td><span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-tertiary)">ARC-2025-00089</span></td>
+                <td>Arrêté de nomination — Responsable des archives</td>
+                <td><span class="badge badge-neutral"><span>Arrêté</span></span></td>
+                <td><span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-tertiary)">07/02/2025</span></td>
+                <td><span class="badge badge-accent"><span class="badge-dot badge-dot-accent"></span><span>En cours</span></span></td>
+                <td>
+                  <div class="cell-actions">
+                    <button class="btn btn-ghost btn-sm btn-icon" title="Voir" aria-label="Voir ARC-2025-00089">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                    <button class="btn btn-ghost btn-sm btn-icon" title="Télécharger" aria-label="Télécharger ARC-2025-00089">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="col-check"><input type="checkbox" class="checkbox-input" style="width:14px;height:14px" aria-label="Sélectionner ARC-2025-00074"></td>
+                <td><span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-tertiary)">ARC-2025-00074</span></td>
+                <td>Rapport d'audit financier — Exercice 2024</td>
+                <td><span class="badge badge-neutral"><span>Rapport</span></span></td>
+                <td><span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-tertiary)">28/01/2025</span></td>
+                <td><span class="badge badge-warning"><span class="badge-dot badge-dot-warning"></span><span>En attente</span></span></td>
+                <td>
+                  <div class="cell-actions">
+                    <button class="btn btn-ghost btn-sm btn-icon" title="Voir" aria-label="Voir ARC-2025-00074">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                    <button class="btn btn-ghost btn-sm btn-icon" title="Télécharger" aria-label="Télécharger ARC-2025-00074">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </button>
+                    <button class="btn btn-danger btn-sm btn-icon" title="Supprimer" aria-label="Supprimer ARC-2025-00074">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="col-check"><input type="checkbox" class="checkbox-input" style="width:14px;height:14px" aria-label="Sélectionner ARC-2024-18847"></td>
+                <td><span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-tertiary)">ARC-2024-18847</span></td>
+                <td>Contrat de marché public — Travaux de voirie secteur nord</td>
+                <td><span class="badge badge-neutral"><span>Contrat</span></span></td>
+                <td><span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-tertiary)">15/12/2024</span></td>
+                <td><span class="badge badge-error"><span class="badge-dot badge-dot-error"></span><span>Rejeté</span></span></td>
+                <td>
+                  <div class="cell-actions">
+                    <button class="btn btn-ghost btn-sm btn-icon" title="Voir" aria-label="Voir ARC-2024-18847">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- Pagination -->
+          <div class="table-pagination">
+            <span class="pagination-info">1–4 sur 18 472 résultats</span>
+            <div class="pagination-controls">
+              <button class="page-btn" disabled aria-label="Page précédente">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <button class="page-btn is-active" aria-label="Page 1" aria-current="page">1</button>
+              <button class="page-btn" aria-label="Page 2">2</button>
+              <button class="page-btn" aria-label="Page 3">3</button>
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);padding:0 4px">…</span>
+              <button class="page-btn" aria-label="Page 4619">4619</button>
+              <button class="page-btn" aria-label="Page suivante">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table vide -->
+    <div class="subsection">
+      <div class="subsection-title">Table — État vide</div>
+      <div class="preview-zone" style="padding:0">
+        <div class="data-table-wrap" style="border-radius:var(--radius-md);border:none">
+          <table class="data-table" role="grid" aria-label="Résultats de recherche vides">
+            <thead>
+              <tr>
+                <th scope="col">Référence</th>
+                <th scope="col">Titre du document</th>
+                <th scope="col">Type</th>
+                <th scope="col">Date</th>
+                <th scope="col">Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="5" style="padding:0;border:none">
+                  <div class="table-empty">
+                    <div class="table-empty-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    </div>
+                    <div class="table-empty-title">Aucun document trouvé</div>
+                    <p class="table-empty-desc">Aucun résultat pour les filtres sélectionnés. Essayez d'élargir la période ou de modifier les critères de recherche.</p>
+                    <button class="btn btn-secondary btn-sm">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      Réinitialiser les filtres
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       FOOTER
+  ══════════════════════════════════════════════ -->
+  <footer class="doc-footer">
+    <div class="footer-left">
+      Charte Graphique — Archivage Numérique · CG-06 / 12<br>
+      <div class="kbd-hint">Raccourcis : <span class="kbd">←</span> Précédent <span class="kbd">→</span> Suivant <span class="kbd">i</span> Index</div>
+    </div>
+    <div class="footer-nav">
+      <a href="CG-05-Effets-Grain-Verre-Ombres-Bordures.html" class="footer-link" aria-label="Module précédent : CG-05">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Précédent
+      </a>
+      <a href="CG-07-Navigation-Sidebar-Topbar-Tabs.html" class="footer-link" aria-label="Module suivant : CG-07">
+        Suivant
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </a>
+    </div>
+      CG-07 — Navigation
+    </a>
+  </footer>
+
+</div>
+
+<script>
+  // Theme toggle
+  function toggleTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+  }
+
+  // Indeterminate checkbox
+  const indCb = document.getElementById('indeterminate-cb');
+  if (indCb) indCb.indeterminate = true;
+
+  // Row selection
+  document.querySelectorAll('.data-table tbody .checkbox-input').forEach(cb => {
+    cb.addEventListener('change', function() {
+      const row = this.closest('tr');
+      if (this.checked) {
+        row.classList.add('is-selected');
+      } else {
+        row.classList.remove('is-selected');
+      }
+    });
+  });
+</script>
+</body>
+</html>
+  </footer>
+
+</div>
+
+<script>
+function toggleNav(btn) {
+  const dropdown = btn.parentElement;
+  const isActive = dropdown.classList.contains('active');
+  document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('active'));
+  if (!isActive) {
+    dropdown.classList.add('active');
+    btn.setAttribute('aria-expanded', 'true');
+  } else {
+    btn.setAttribute('aria-expanded', 'false');
+  }
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.nav-dropdown')) {
+    document.querySelectorAll('.nav-dropdown').forEach(d => {
+      d.classList.remove('active');
+      const btn = d.querySelector('.nav-dropdown-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  switch(e.key) {
+    case 'ArrowLeft':
+      const prevLink = document.querySelector('.footer-link[aria-label*="précédent"]');
+      if (prevLink && !prevLink.classList.contains('disabled')) {
+        window.location.href = prevLink.href;
+      }
+      break;
+    case 'ArrowRight':
+      const nextLink = document.querySelector('.footer-link[aria-label*="suivant"]');
+      if (nextLink && !nextLink.classList.contains('disabled')) {
+        window.location.href = nextLink.href;
+      }
+      break;
+    case 'i':
+    case 'I':
+      window.location.href = 'index.html';
+      break;
+  }
+});
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+}
+</script>
+
+</body>
+</html>

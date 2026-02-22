@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CG-10 — Motion Design & Animations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent-300:#65D5C4; --accent-400:#2BBFAD; --accent-500:#179E8E;
+  --accent-600:#0E7E72; --accent-700:#0C6259;
+  --accent-subtle-bg:rgba(23,158,142,0.08);
+  --accent-subtle-border:rgba(23,158,142,0.20);
+  --gray-950:#0A0B0F; --gray-900:#10121A; --gray-800:#1A1D2B;
+  --gray-700:#252838; --gray-600:#323548; --gray-500:#4D5068;
+  --gray-400:#6B6F88; --gray-300:#9196B0; --gray-200:#C2C5D6;
+  --gray-100:#E1E3EE; --gray-50:#F0F1F8; --gray-25:#F8F9FC;
+  --success:#268245; --warning:#B07412; --error:#9B322C;
+  --success-subtle:rgba(38,130,69,0.10); --success-border:rgba(38,130,69,0.25);
+  --warning-subtle:rgba(176,116,18,0.10); --warning-border:rgba(176,116,18,0.25);
+  --error-subtle:rgba(155,50,44,0.10); --error-border:rgba(155,50,44,0.25);
+  --font-sans:'Plus Jakarta Sans',sans-serif;
+  --font-mono:'DM Mono',monospace;
+  --text-2xl:28px; --text-xl:22px; --text-lg:18px; --text-md:14px;
+  --text-base:13px; --text-sm:11px; --text-xs:10px;
+  --radius-xs:2px; --radius-sm:4px; --radius-md:6px; --radius-lg:8px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.20),0 1px 2px rgba(0,0,0,.12);
+  --shadow-md:0 4px 12px rgba(0,0,0,.25),0 2px 4px rgba(0,0,0,.12);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.30),0 4px 8px rgba(0,0,0,.14);
+  --shadow-xl:0 16px 48px rgba(0,0,0,.40),0 8px 16px rgba(0,0,0,.20);
+  --ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+  --ease-out-fast:cubic-bezier(0.16,1,0.3,1);
+  --ease-in-out:cubic-bezier(0.4,0,0.2,1);
+  --dur-instant:100ms; --dur-fast:150ms; --dur-base:180ms;
+  --dur-slow:200ms; --dur-max:250ms;
+  --bg-base:var(--gray-950); --bg-panel:var(--gray-900); --bg-raised:var(--gray-800);
+  --border-subtle:var(--gray-800); --border-default:var(--gray-700); --border-strong:var(--gray-600);
+  --text-primary:var(--gray-50); --text-secondary:var(--gray-200);
+  --text-tertiary:var(--gray-400); --text-placeholder:var(--gray-500);
+}
+[data-theme="light"] {
+  --bg-base:var(--gray-25); --bg-panel:#FFFFFF; --bg-raised:var(--gray-100);
+  --border-subtle:var(--gray-100); --border-default:var(--gray-200); --border-strong:var(--gray-300);
+  --text-primary:var(--gray-900); --text-secondary:#3D4158;
+  --text-tertiary:var(--gray-500); --text-placeholder:var(--gray-400);
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+
+body {
+  font-family:var(--font-sans); font-size:var(--text-base); line-height:1.65;
+  color:var(--text-primary); background:var(--bg-base);
+  -webkit-font-smoothing:antialiased; min-height:100vh; overflow-x:hidden; position:relative;
+}
+/* Global theme transition */
+body, body * {
+  transition-property: background-color, border-color, color;
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-in-out);
+}
+/* Reset for animated elements */
+.no-transition, .no-transition * { transition: none !important; }
+
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:1000;
+  opacity:0.20; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:180px 180px;
+}
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--gray-700); border-radius:3px; }
+
+/* ── Layout ── */
+.doc-container { max-width:1080px; margin:0 auto; padding:48px 24px; }
+.doc-header {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  padding-bottom:32px; border-bottom:1px solid var(--border-subtle);
+  margin-bottom:40px; gap:24px; flex-wrap:wrap;
+}
+.doc-header-left { display:flex; flex-direction:column; gap:12px; }
+.doc-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--font-mono); font-size:var(--text-xs); font-weight:500;
+  letter-spacing:0.10em; text-transform:uppercase; color:var(--accent-300);
+  background:var(--accent-subtle-bg); border:1px solid var(--accent-subtle-border);
+  padding:5px 10px; border-radius:var(--radius-sm); position:relative; overflow:hidden;
+}
+.doc-badge::before {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:65px 65px; opacity:0.35; mix-blend-mode:overlay; pointer-events:none;
+}
+.doc-title { font-size:var(--text-2xl); font-weight:700; letter-spacing:-0.035em; line-height:1.2; }
+.doc-subtitle { font-size:var(--text-md); color:var(--text-tertiary); }
+.doc-meta { display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+.doc-meta-item { font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:0.06em; color:var(--text-placeholder); }
+.doc-meta-item span { color:var(--text-tertiary); }
+
+.theme-btn {
+  display:inline-flex; align-items:center; gap:8px; padding:6px 12px;
+  background:var(--bg-raised); border:1px solid var(--border-default);
+  border-radius:var(--radius-sm); cursor:pointer; font-family:var(--font-sans);
+  font-size:var(--text-sm); color:var(--text-secondary); margin-top:8px;
+}
+.theme-btn:hover { border-color:var(--border-strong); color:var(--text-primary); }
+
+.section { margin-bottom:48px; }
+.section-header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+.section-label { font-family:var(--font-mono); font-size:var(--text-xs); font-weight:500; letter-spacing:0.10em; text-transform:uppercase; color:var(--accent-300); white-space:nowrap; }
+.section-line { flex:1; height:1px; background:var(--border-subtle); }
+.section-title { font-size:var(--text-lg); font-weight:600; letter-spacing:-0.025em; margin-bottom:8px; }
+.section-desc { font-size:var(--text-base); color:var(--text-tertiary); margin-bottom:24px; line-height:1.65; }
+.subsection { margin-bottom:24px; }
+.subsection-title { font-size:var(--text-md); font-weight:500; color:var(--text-secondary); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.subsection-title::before { content:''; width:3px; height:14px; background:var(--accent-500); border-radius:2px; flex-shrink:0; }
+
+.preview-zone {
+  background:var(--bg-panel); border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md); padding:24px; position:relative; overflow:hidden;
+}
+.preview-zone::before {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:110px 110px; opacity:0.12; mix-blend-mode:overlay; pointer-events:none; z-index:0;
+}
+.preview-zone > * { position:relative; z-index:1; }
+
+.code-block {
+  background:var(--gray-950); border:1px solid var(--border-subtle);
+  border-radius:var(--radius-sm); padding:14px 16px;
+  font-family:var(--font-mono); font-size:var(--text-xs); line-height:1.8;
+  color:var(--gray-300); overflow-x:auto; white-space:pre;
+  position:relative; overflow:hidden;
+}
+.code-block::before {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:65px 65px; opacity:0.10; mix-blend-mode:overlay; pointer-events:none;
+}
+.ck-prop   { color:#65D5C4; }
+.ck-val    { color:#D4993A; }
+.ck-comment{ color:#4D5068; }
+.ck-selector{ color:#9196B0; }
+.ck-at     { color:#6D95D8; }
+
+.spec-table { width:100%; border-collapse:collapse; font-size:var(--text-sm); margin-top:16px; }
+.spec-table th { font-family:var(--font-mono); font-size:var(--text-xs); font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-placeholder); text-align:left; padding:8px 12px; border-bottom:1px solid var(--border-subtle); }
+.spec-table td { padding:8px 12px; color:var(--text-secondary); border-bottom:1px solid var(--border-subtle); }
+.spec-table tr:last-child td { border-bottom:none; }
+.spec-table tr:hover td { background:rgba(255,255,255,0.02); }
+.mono { font-family:var(--font-mono); color:var(--accent-300); font-size:var(--text-xs); }
+
+/* ── Triggers ── */
+.trigger-btn {
+  display:inline-flex; align-items:center; gap:6px; padding:7px 13px;
+  background:var(--accent-subtle-bg); border:1px solid var(--accent-subtle-border);
+  border-radius:var(--radius-sm); cursor:pointer; font-family:var(--font-sans);
+  font-size:var(--text-md); font-weight:500; color:var(--accent-300);
+  position:relative; overflow:hidden;
+}
+.trigger-btn::after {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:65px 65px; opacity:0.34; mix-blend-mode:overlay; pointer-events:none;
+}
+.trigger-btn:hover { background:rgba(23,158,142,0.14); border-color:rgba(23,158,142,0.35); }
+
+/* ── Animations ── */
+@keyframes toastIn {
+  from { opacity:0; transform:translateY(-14px) scale(0.97); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+@keyframes toastOut {
+  from { opacity:1; transform:translateY(0) scale(1); max-height:80px; margin-bottom:8px; }
+  to   { opacity:0; transform:translateY(-8px) scale(0.96); max-height:0; margin-bottom:0; padding-top:0; padding-bottom:0; }
+}
+@keyframes modalIn {
+  from { opacity:0; transform:scale(0.96) translateY(8px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
+@keyframes backdropIn {
+  from { opacity:0; }
+  to   { opacity:1; }
+}
+@keyframes entryScale {
+  from { opacity:0; transform:scale(0.94) translateY(6px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
+@keyframes entryUp {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes staggerIn {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes spinAnim { to { transform:rotate(360deg); } }
+@keyframes skelPulse {
+  0%   { background-position:200% center; }
+  100% { background-position:-200% center; }
+}
+@keyframes progressDrain {
+  from { width:100%; }
+  to   { width:0%; }
+}
+
+/* ── Components ── */
+.hover-card {
+  background:var(--bg-panel); border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md); padding:14px; cursor:pointer;
+  position:relative; overflow:hidden;
+  transition: transform 150ms var(--ease-spring),
+              box-shadow 150ms var(--ease-spring),
+              border-color 150ms var(--ease-spring);
+}
+.hover-card::before {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:110px 110px; opacity:0.12; mix-blend-mode:overlay; pointer-events:none; z-index:0;
+}
+.hover-card > * { position:relative; z-index:1; }
+.hover-card:hover { transform:translateY(-1px); box-shadow:var(--shadow-md); border-color:var(--border-strong); }
+.hover-card:active { transform:translateY(0); box-shadow:var(--shadow-sm); }
+
+.btn-primary {
+  display:inline-flex; align-items:center; gap:6px; padding:8px 14px;
+  background:var(--accent-500); border:1px solid var(--accent-600);
+  border-radius:var(--radius-sm); color:#fff; font-family:var(--font-sans);
+  font-size:var(--text-md); font-weight:500; cursor:pointer;
+  transition: background-color 150ms var(--ease-spring),
+              transform 150ms var(--ease-spring),
+              box-shadow 150ms var(--ease-spring);
+  box-shadow:var(--shadow-sm); position:relative; overflow:hidden;
+}
+.btn-primary::after {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:65px 65px; opacity:0.34; mix-blend-mode:overlay; pointer-events:none;
+}
+.btn-primary:hover { background:var(--accent-600); transform:translateY(-1px); box-shadow:var(--shadow-md); }
+.btn-primary:active { background:var(--accent-700); transform:translateY(0); box-shadow:var(--shadow-sm); }
+
+.btn-secondary {
+  display:inline-flex; align-items:center; gap:6px; padding:8px 14px;
+  background:var(--bg-raised); border:1px solid var(--border-default);
+  border-radius:var(--radius-sm); color:var(--text-secondary); font-family:var(--font-sans);
+  font-size:var(--text-md); font-weight:500; cursor:pointer;
+  transition: background-color 150ms var(--ease-spring),
+              transform 150ms var(--ease-spring),
+              border-color 150ms ease;
+  box-shadow:var(--shadow-sm); position:relative; overflow:hidden;
+}
+.btn-secondary::after {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:65px 65px; opacity:0.34; mix-blend-mode:overlay; pointer-events:none;
+}
+.btn-secondary:hover { background:var(--gray-700); border-color:var(--border-strong); transform:translateY(-1px); color:var(--text-primary); }
+.btn-secondary:active { transform:translateY(0); }
+
+.focus-el {
+  display:inline-flex; align-items:center; gap:8px; padding:8px 14px;
+  background:var(--bg-raised); border:1px solid var(--border-default);
+  border-radius:var(--radius-sm); font-family:var(--font-sans);
+  font-size:var(--text-md); color:var(--text-secondary); cursor:pointer; outline:none;
+  transition: box-shadow 150ms var(--ease-spring), border-color 150ms ease;
+}
+.focus-el:focus-visible {
+  border-color:var(--accent-500);
+  box-shadow:0 0 0 2px var(--bg-base), 0 0 0 4px var(--accent-500);
+}
+
+.skel {
+  background:var(--bg-raised); border-radius:var(--radius-sm);
+  position:relative; overflow:hidden;
+}
+.skel::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.04) 50%,transparent 100%);
+  background-size:200% 100%;
+  animation:skelPulse 1.6s ease-in-out infinite;
+}
+
+/* Easing track */
+.easing-track {
+  height:44px; background:var(--bg-raised); border:1px solid var(--border-subtle);
+  border-radius:var(--radius-sm); position:relative; overflow:hidden;
+  display:flex; align-items:center; cursor:pointer; flex:1;
+}
+.easing-runner {
+  width:36px; height:30px; background:var(--accent-500); border-radius:var(--radius-sm);
+  position:absolute; left:4px; display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+}
+.easing-runner::before {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:65px 65px; opacity:0.34; mix-blend-mode:overlay; pointer-events:none;
+}
+
+/* Toast demo */
+.demo-toast {
+  display:flex; align-items:flex-start; gap:10px;
+  background:rgba(16,18,26,0.88); backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:var(--radius-lg); padding:11px 13px;
+  box-shadow:var(--shadow-xl); width:100%; max-width:340px;
+  position:relative; overflow:hidden;
+  animation:toastIn 180ms var(--ease-spring) both;
+}
+.demo-toast::before {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:110px 110px; opacity:0.16; mix-blend-mode:overlay; pointer-events:none;
+}
+.demo-toast::after {
+  content:''; position:absolute; top:0; left:10%; right:10%; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);
+  pointer-events:none;
+}
+.demo-toast > * { position:relative; z-index:1; }
+.demo-toast.leaving { animation:toastOut 160ms var(--ease-out-fast) forwards; overflow:hidden; }
+
+.toast-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:3px; }
+.toast-progress {
+  position:absolute; bottom:0; left:0; height:2px; border-radius:0 0 var(--radius-lg) var(--radius-lg);
+  animation:progressDrain 4s linear forwards;
+}
+
+/* Modal demo */
+.demo-backdrop {
+  position:fixed; inset:0; background:rgba(0,0,0,0.60);
+  backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  z-index:2000; display:flex; align-items:center; justify-content:center;
+  animation:backdropIn 200ms var(--ease-out-fast) both;
+}
+.demo-modal {
+  background:var(--bg-panel); border:1px solid var(--border-subtle);
+  border-radius:var(--radius-lg); box-shadow:var(--shadow-xl);
+  width:380px; max-width:90vw;
+  animation:modalIn 200ms var(--ease-spring) both;
+  position:relative; overflow:hidden;
+}
+.demo-modal::before {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:110px 110px; opacity:0.12; mix-blend-mode:overlay; pointer-events:none; z-index:0;
+}
+.demo-modal > * { position:relative; z-index:1; }
+
+/* Sidebar demo */
+.sidebar-wrap {
+  display:flex; overflow:hidden; border-radius:var(--radius-md);
+  border:1px solid var(--border-subtle); height:180px;
+}
+.sidebar-panel-demo {
+  width:180px; flex-shrink:0;
+  background:rgba(255,255,255,0.030);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border-right:1px solid rgba(255,255,255,0.07);
+  padding:12px; display:flex; flex-direction:column; gap:6px;
+  transform:translateX(0); opacity:1;
+  transition:transform 250ms var(--ease-in-out), opacity 250ms var(--ease-in-out),
+             width 250ms var(--ease-in-out);
+  position:relative; overflow:hidden;
+}
+.sidebar-panel-demo::before {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:110px 110px; opacity:0.14; mix-blend-mode:overlay; pointer-events:none;
+}
+.sidebar-panel-demo.closed { transform:translateX(-100%); opacity:0; width:0; }
+.sidebar-panel-demo > * { position:relative; z-index:1; }
+.sidebar-content-demo {
+  flex:1; background:var(--bg-base); padding:12px;
+  display:flex; flex-direction:column; gap:7px;
+}
+
+/* Nav item demo */
+.nav-item-demo {
+  display:flex; align-items:center; gap:8px; padding:6px 8px;
+  border-radius:var(--radius-sm); cursor:pointer;
+  color:var(--text-tertiary); font-size:12px;
+  position:relative;
+  transition:background-color 100ms ease, color 100ms ease;
+}
+.nav-item-demo:hover { background:rgba(255,255,255,0.04); color:var(--text-secondary); }
+.nav-item-demo.is-active {
+  background:var(--accent-subtle-bg); color:var(--accent-300); font-weight:500;
+}
+.nav-item-demo.is-active::before {
+  content:''; position:absolute; left:0; top:4px; bottom:4px;
+  width:2px; background:var(--accent-500); border-radius:2px;
+}
+
+/* Timing pills */
+.timing-pill {
+  display:inline-flex; align-items:center;
+  font-family:var(--font-mono); font-size:var(--text-xs); font-weight:500;
+  padding:3px 8px; border-radius:var(--radius-xs);
+  background:var(--accent-subtle-bg); border:1px solid var(--accent-subtle-border);
+  color:var(--accent-300); letter-spacing:0.04em; white-space:nowrap;
+}
+.timing-pill.err { background:var(--error-subtle); border-color:var(--error-border); color:#DC7070; }
+.timing-pill.ok  { background:var(--success-subtle); border-color:var(--success-border); color:#5DB882; }
+
+/* Hierarchy bar */
+.hier-row {
+  display:flex; align-items:center; gap:12px; padding:9px 0;
+  border-bottom:1px solid var(--border-subtle);
+}
+.hier-row:last-child { border-bottom:none; }
+.hier-bar { height:3px; border-radius:2px; background:var(--accent-500); flex-shrink:0; }
+
+/* Navigation system */
+.nav-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-placeholder);
+}
+.nav-breadcrumb a {
+  color: var(--accent-400);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.nav-breadcrumb a:hover { color: var(--accent-300); }
+.nav-breadcrumb-sep { color: var(--border-default); }
+
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.nav-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.nav-dropdown-btn:hover {
+  background: var(--bg-panel);
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
+}
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  min-width: 280px;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1000;
+}
+.nav-dropdown.active .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  transition: all 120ms ease;
+}
+.nav-dropdown-item:hover {
+  background: var(--bg-raised);
+  color: var(--text-secondary);
+}
+.nav-dropdown-item.active {
+  background: var(--accent-subtle-bg);
+  color: var(--accent-300);
+  font-weight: 500;
+}
+.nav-dropdown-item-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-placeholder);
+  min-width: 32px;
+}
+
+/* Doc footer */
+.doc-footer {
+  margin-top:48px; padding-top:24px; border-top:1px solid var(--border-subtle);
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+}
+.footer-left { font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-placeholder); letter-spacing:0.06em; line-height:1.8; }
+.footer-nav {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: all 150ms ease;
+}
+.footer-link:hover {
+  color: var(--text-secondary);
+  background: var(--bg-raised);
+}
+.footer-link svg { width: 14px; height: 14px; }
+.footer-link.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+.kbd-hint {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-placeholder);
+  margin-top: 8px;
+}
+.kbd {
+  display: inline-block;
+  padding: 2px 5px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 3px;
+  font-size: 9px;
+  margin: 0 2px;
+}
+</style>
+</head>
+<body>
+
+<div class="doc-container">
+
+  <!-- HEADER -->
+  <header class="doc-header">
+    <div class="doc-header-left">
+      <!-- Breadcrumb + Menu -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; width: 100%;">
+        <nav class="nav-breadcrumb" aria-label="Fil d'Ariane">
+          <a href="index.html">← Index</a>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>CG-10</span>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>Motion Design</span>
+        </nav>
+        
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-btn" onclick="toggleNav(this)" aria-label="Menu des modules" aria-expanded="false">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+            Tous les modules
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="CG-01-Identite-Palette.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-01</span> Identité & Palette</a>
+            <a href="CG-02-Systeme-Couleurs-Tokens.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-02</span> Couleurs & Tokens</a>
+            <a href="CG-03-Typographie-Echelle.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-03</span> Typographie</a>
+            <a href="CG-04-Espacement-Grille-Layout.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-04</span> Espacement & Grille</a>
+            <a href="CG-05-Effets-Grain-Verre-Ombres-Bordures.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-05</span> Effets & Grain</a>
+            <a href="CG-06-Composants-Boutons-Inputs-Badges-Cards.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-06</span> Composants UI</a>
+            <a href="CG-07-Navigation-Sidebar-Topbar-Tabs.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-07</span> Navigation</a>
+            <a href="CG-08-Feedback-Toasts-Modals-Etats.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-08</span> Feedback & États</a>
+            <a href="CG-09-Graphiques-DataViz.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-09</span> Graphiques</a>
+            <a href="CG-10-Motion-Design-Animations.html" class="nav-dropdown-item active"><span class="nav-dropdown-item-num">CG-10</span> Motion Design</a>
+            <a href="CG-11-Accessibilite-RGAA.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-11</span> Accessibilité</a>
+            <a href="CG-12-Tokens-CSS-Complets-Guide.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-12</span> Tokens CSS</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Charte Graphique · Module CG-10
+      </div>
+      <h1 class="doc-title">Motion Design &amp; Animations</h1>
+      <p class="doc-subtitle">Courbes · Timings · Entrées · Sorties · Stagger · Hover · Focus · Dark/Light</p>
+    </div>
+    <div class="doc-meta">
+      <div class="doc-meta-item">PROJET <span>Archivage Numérique</span></div>
+      <div class="doc-meta-item">MODULE <span>CG-10 / 12</span></div>
+      <div class="doc-meta-item">VERSION <span>1.0.0</span></div>
+      <button class="theme-btn" onclick="toggleTheme()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        Thème (200ms)
+      </button>
+    </div>
+  </header>
+
+
+  <!-- ══ 01 — COURBES & TIMINGS ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">01 — Courbes &amp; Timings</span><div class="section-line"></div></div>
+    <h2 class="section-title">Courbes d'accélération &amp; durées autorisées</h2>
+    <p class="section-desc">Le système utilise <strong>3 courbes uniquement</strong>. Toutes les durées restent entre 100ms et 250ms. Aucune animation UI ne dépasse 250ms — au-delà l'interface est perçue comme lente en usage intensif 8h/jour.</p>
+
+    <div class="subsection">
+      <div class="subsection-title">Visualiseur interactif — cliquer sur la piste pour animer</div>
+      <div class="preview-zone">
+        <div style="display:flex;flex-direction:column;gap:14px">
+
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="width:196px;flex-shrink:0">
+              <div style="font-size:var(--text-sm);font-weight:500;color:var(--text-secondary);margin-bottom:2px">Spring — entrées UI</div>
+              <div class="mono">cubic-bezier(0.34,1.56,0.64,1)</div>
+              <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);margin-top:1px">--ease-spring · 150–200ms</div>
+            </div>
+            <div class="easing-track" onclick="runEase(this,'spring',180)" title="Cliquer pour animer">
+              <div class="easing-runner no-transition" id="r-spring">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" style="position:relative;z-index:1" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+            <span class="timing-pill ok">180ms</span>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="width:196px;flex-shrink:0">
+              <div style="font-size:var(--text-sm);font-weight:500;color:var(--text-secondary);margin-bottom:2px">Ease-out rapide — sorties</div>
+              <div class="mono">cubic-bezier(0.16,1,0.3,1)</div>
+              <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);margin-top:1px">--ease-out-fast · 150–180ms</div>
+            </div>
+            <div class="easing-track" onclick="runEase(this,'out',160)" title="Cliquer pour animer">
+              <div class="easing-runner no-transition" id="r-out">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" style="position:relative;z-index:1" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+            <span class="timing-pill ok">160ms</span>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="width:196px;flex-shrink:0">
+              <div style="font-size:var(--text-sm);font-weight:500;color:var(--text-secondary);margin-bottom:2px">Ease in-out — transitions lentes</div>
+              <div class="mono">cubic-bezier(0.4,0,0.2,1)</div>
+              <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);margin-top:1px">--ease-in-out · 200–250ms</div>
+            </div>
+            <div class="easing-track" onclick="runEase(this,'inout',220)" title="Cliquer pour animer">
+              <div class="easing-runner no-transition" id="r-inout">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" style="position:relative;z-index:1" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+            <span class="timing-pill ok">220ms</span>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:16px;opacity:0.45">
+            <div style="width:196px;flex-shrink:0">
+              <div style="font-size:var(--text-sm);font-weight:500;color:#DC7070;margin-bottom:2px;display:flex;align-items:center;gap:5px">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                INTERDIT — trop lente
+              </div>
+              <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder)">ease · &gt;300ms</div>
+            </div>
+            <div class="easing-track" style="cursor:not-allowed">
+              <div class="easing-runner no-transition" style="background:var(--error);left:4px">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" style="position:relative;z-index:1" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </div>
+            </div>
+            <span class="timing-pill err">&gt;250ms</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Tokens CSS — variables d'animation</div>
+      <div class="code-block"><span class="ck-selector">:root</span> {
+  <span class="ck-comment">/* 3 courbes autorisées */</span>
+  <span class="ck-prop">--ease-spring</span>:    <span class="ck-val">cubic-bezier(0.34, 1.56, 0.64, 1)</span>;  <span class="ck-comment">/* entrées avec rebond */</span>
+  <span class="ck-prop">--ease-out-fast</span>:  <span class="ck-val">cubic-bezier(0.16, 1, 0.3, 1)</span>;     <span class="ck-comment">/* sorties rapides */</span>
+  <span class="ck-prop">--ease-in-out</span>:    <span class="ck-val">cubic-bezier(0.4, 0, 0.2, 1)</span>;       <span class="ck-comment">/* transitions lentes */</span>
+
+  <span class="ck-comment">/* Durées — plage STRICTE : 100ms–250ms */</span>
+  <span class="ck-prop">--dur-instant</span>:  <span class="ck-val">100ms</span>;  <span class="ck-comment">/* :active, checked immédiat */</span>
+  <span class="ck-prop">--dur-fast</span>:     <span class="ck-val">150ms</span>;  <span class="ck-comment">/* hover, focus, badges */</span>
+  <span class="ck-prop">--dur-base</span>:     <span class="ck-val">180ms</span>;  <span class="ck-comment">/* toasts, nav items, dropdowns */</span>
+  <span class="ck-prop">--dur-slow</span>:     <span class="ck-val">200ms</span>;  <span class="ck-comment">/* modals, cards, stagger */</span>
+  <span class="ck-prop">--dur-max</span>:      <span class="ck-val">250ms</span>;  <span class="ck-comment">/* sidebar, transition thème — MAXIMUM */</span>
+}</div>
+    </div>
+
+    <table class="spec-table">
+      <thead><tr><th>Durée</th><th>Courbe</th><th>Usage</th><th>Règle</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">100ms</td><td class="mono">--ease-spring</td><td>States actif, checked, selected</td><td>Réponse instantanée clavier/clic</td></tr>
+        <tr><td class="mono">150ms</td><td class="mono">--ease-spring</td><td>Hover btn/card, focus ring, badge</td><td>Défaut — toutes interactions survol</td></tr>
+        <tr><td class="mono">180ms</td><td class="mono">--ease-spring</td><td>Toast entrée, nav item, dropdown open</td><td>Entrées légères avec rebond perceptible</td></tr>
+        <tr><td class="mono">200ms</td><td class="mono">--ease-spring</td><td>Modal, card entrée, stagger items</td><td>Entrées substantielles</td></tr>
+        <tr><td class="mono">250ms</td><td class="mono">--ease-in-out</td><td>Sidebar, thème dark/light</td><td>MAXIMUM absolu — jamais dépassé</td></tr>
+        <tr><td style="color:#DC7070" class="mono">&gt;250ms</td><td>—</td><td style="color:#DC7070">INTERDIT</td><td style="color:#DC7070">Interface perçue comme lente</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══ 02 — ENTRÉES & SORTIES ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">02 — Entrées &amp; Sorties</span><div class="section-line"></div></div>
+    <h2 class="section-title">Patterns d'entrée et de sortie</h2>
+    <p class="section-desc"><strong>Entrées</strong> : scale+opacity ou translateY+opacity · Spring 200ms. <strong>Sorties</strong> : opacity seule ou scale minimal · Ease-out-fast 160ms. Les sorties doivent toujours être <em>plus rapides</em> que les entrées pour ne pas bloquer le flux de travail.</p>
+
+    <div class="preview-zone">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="mono" style="color:var(--text-placeholder)">Scale + Opacity</div>
+          <div style="font-size:var(--text-sm);color:var(--text-tertiary)">Modals, panels principaux</div>
+          <div style="background:rgba(0,0,0,0.20);border-radius:var(--radius-md);min-height:100px;display:flex;align-items:center;justify-content:center" id="stage-scale">
+            <div class="hover-card" id="el-scale" style="width:110px;padding:12px">
+              <div class="skel" style="height:8px;width:65%;margin-bottom:6px"></div>
+              <div class="skel" style="height:6px;width:80%"></div>
+            </div>
+          </div>
+          <button class="trigger-btn" onclick="replay('scale')" style="font-size:var(--text-sm);justify-content:center">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+            Rejouer
+          </button>
+          <div class="code-block" style="font-size:9px"><span class="ck-at">@keyframes</span> entryScale {
+  from {
+    <span class="ck-prop">opacity</span>: <span class="ck-val">0</span>;
+    <span class="ck-prop">transform</span>: <span class="ck-val">scale(0.94)
+               translateY(6px)</span>;
+  }
+}
+<span class="ck-comment">/* 200ms spring */</span></div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="mono" style="color:var(--text-placeholder)">TranslateY + Opacity</div>
+          <div style="font-size:var(--text-sm);color:var(--text-tertiary)">Rows, nav items, dropdowns</div>
+          <div style="background:rgba(0,0,0,0.20);border-radius:var(--radius-md);min-height:100px;display:flex;align-items:center;justify-content:center" id="stage-up">
+            <div class="hover-card" id="el-up" style="width:110px;padding:12px">
+              <div class="skel" style="height:8px;width:65%;margin-bottom:6px"></div>
+              <div class="skel" style="height:6px;width:80%"></div>
+            </div>
+          </div>
+          <button class="trigger-btn" onclick="replay('up')" style="font-size:var(--text-sm);justify-content:center">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+            Rejouer
+          </button>
+          <div class="code-block" style="font-size:9px"><span class="ck-at">@keyframes</span> entryUp {
+  from {
+    <span class="ck-prop">opacity</span>: <span class="ck-val">0</span>;
+    <span class="ck-prop">transform</span>: <span class="ck-val">translateY(10px)</span>;
+  }
+}
+<span class="ck-comment">/* 180ms ease-out-fast */</span></div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="mono" style="color:var(--text-placeholder)">Sortie — Opacity seule</div>
+          <div style="font-size:var(--text-sm);color:var(--text-tertiary)">Toasts, alertes, dropdowns</div>
+          <div style="background:rgba(0,0,0,0.20);border-radius:var(--radius-md);min-height:100px;display:flex;align-items:center;justify-content:center" id="stage-exit">
+            <div class="hover-card" id="el-exit" style="width:110px;padding:12px">
+              <div class="skel" style="height:8px;width:65%;margin-bottom:6px"></div>
+              <div class="skel" style="height:6px;width:80%"></div>
+            </div>
+          </div>
+          <button class="trigger-btn" onclick="replayExit()" style="font-size:var(--text-sm);justify-content:center">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+            Rejouer
+          </button>
+          <div class="code-block" style="font-size:9px"><span class="ck-comment">/* 160ms ease-out-fast */</span>
+from { <span class="ck-prop">opacity</span>: <span class="ck-val">1</span>; <span class="ck-prop">transform</span>: <span class="ck-val">scale(1)</span> }
+to   { <span class="ck-prop">opacity</span>: <span class="ck-val">0</span>;
+       <span class="ck-prop">transform</span>: <span class="ck-val">scale(0.97)
+                  translateY(-6px)</span> }
+<span class="ck-comment">/* Toujours + rapide qu'entrée */</span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <table class="spec-table">
+      <thead><tr><th>Type</th><th>From</th><th>Durée</th><th>Courbe</th></tr></thead>
+      <tbody>
+        <tr><td>Entrée scale</td><td class="mono">scale(0.94) translateY(6px) opacity:0</td><td class="mono">200ms</td><td class="mono">--ease-spring</td></tr>
+        <tr><td>Entrée slide</td><td class="mono">translateY(10px) opacity:0</td><td class="mono">180ms</td><td class="mono">--ease-out-fast</td></tr>
+        <tr><td>Entrée toast</td><td class="mono">translateY(-12px) scale(0.97) opacity:0</td><td class="mono">180ms</td><td class="mono">--ease-spring</td></tr>
+        <tr><td>Sortie fade</td><td class="mono">scale(0.97) translateY(-6px) opacity:1 → 0</td><td class="mono">160ms</td><td class="mono">--ease-out-fast</td></tr>
+        <tr><td>Sortie modal</td><td class="mono">scale(0.96) translateY(4px) opacity:1 → 0</td><td class="mono">160ms</td><td class="mono">--ease-out-fast</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══ 03 — STAGGER ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">03 — Stagger</span><div class="section-line"></div></div>
+    <h2 class="section-title">Staggered reveals — listes &amp; grilles</h2>
+    <p class="section-desc">Délai inter-items : <strong>40ms</strong>. Maximum 6 items avec stagger (au-delà : pas de décalage pour raisons de performance). Les éléments les plus importants s'animent en premier (hiérarchie temporelle).</p>
+
+    <div class="subsection">
+      <div class="subsection-title">Démo interactive — Liste de documents archivés</div>
+      <div class="preview-zone">
+        <div style="margin-bottom:12px">
+          <button class="trigger-btn" onclick="replayStagger()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+            Rejouer l'animation stagger
+          </button>
+        </div>
+        <div id="stagger-list" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Code CSS — Stagger 40ms × n</div>
+      <div class="code-block"><span class="ck-at">@keyframes</span> <span class="ck-selector">staggerIn</span> {
+  from { <span class="ck-prop">opacity</span>: <span class="ck-val">0</span>; <span class="ck-prop">transform</span>: <span class="ck-val">translateY(8px)</span>; }
+  to   { <span class="ck-prop">opacity</span>: <span class="ck-val">1</span>; <span class="ck-prop">transform</span>: <span class="ck-val">translateY(0)</span>; }
+}
+
+<span class="ck-selector">.stagger-item</span> { <span class="ck-prop">animation</span>: <span class="ck-val">staggerIn 200ms var(--ease-out-fast) both</span>; }
+<span class="ck-selector">.stagger-item:nth-child(1)</span> { <span class="ck-prop">animation-delay</span>: <span class="ck-val">0ms</span>; }
+<span class="ck-selector">.stagger-item:nth-child(2)</span> { <span class="ck-prop">animation-delay</span>: <span class="ck-val">40ms</span>; }
+<span class="ck-selector">.stagger-item:nth-child(3)</span> { <span class="ck-prop">animation-delay</span>: <span class="ck-val">80ms</span>; }
+<span class="ck-selector">.stagger-item:nth-child(4)</span> { <span class="ck-prop">animation-delay</span>: <span class="ck-val">120ms</span>; }
+<span class="ck-selector">.stagger-item:nth-child(5)</span> { <span class="ck-prop">animation-delay</span>: <span class="ck-val">160ms</span>; }
+<span class="ck-selector">.stagger-item:nth-child(6)</span> { <span class="ck-prop">animation-delay</span>: <span class="ck-val">200ms</span>; }
+<span class="ck-comment">/* Au-delà de 6 items : supprimer le stagger */</span></div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Hiérarchie temporelle sur page de tableau de bord</div>
+      <div class="preview-zone">
+        <div style="display:flex;flex-direction:column">
+          <div class="hier-row">
+            <div style="width:52px;flex-shrink:0;font-family:var(--font-mono);font-size:var(--text-xs);color:var(--accent-300)">0ms</div>
+            <div class="hier-bar" style="width:16px"></div>
+            <div style="flex:1;font-size:var(--text-sm);color:var(--text-secondary)">Titre de page, breadcrumb, actions principales</div>
+            <span class="timing-pill">Priorité 1</span>
+          </div>
+          <div class="hier-row">
+            <div style="width:52px;flex-shrink:0;font-family:var(--font-mono);font-size:var(--text-xs);color:var(--accent-300)">40ms</div>
+            <div class="hier-bar" style="width:36px"></div>
+            <div style="flex:1;font-size:var(--text-sm);color:var(--text-secondary)">Cards KPI et métriques secondaires</div>
+            <span class="timing-pill">Priorité 2</span>
+          </div>
+          <div class="hier-row">
+            <div style="width:52px;flex-shrink:0;font-family:var(--font-mono);font-size:var(--text-xs);color:var(--accent-300)">80ms</div>
+            <div class="hier-bar" style="width:56px"></div>
+            <div style="flex:1;font-size:var(--text-sm);color:var(--text-secondary)">Graphiques, charts, sparklines</div>
+            <span class="timing-pill">Priorité 3</span>
+          </div>
+          <div class="hier-row">
+            <div style="width:52px;flex-shrink:0;font-family:var(--font-mono);font-size:var(--text-xs);color:var(--accent-300)">120ms</div>
+            <div class="hier-bar" style="width:76px"></div>
+            <div style="flex:1;font-size:var(--text-sm);color:var(--text-secondary)">Listes de documents (stagger interne)</div>
+            <span class="timing-pill">Priorité 4</span>
+          </div>
+          <div class="hier-row">
+            <div style="width:52px;flex-shrink:0;font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder)">160ms+</div>
+            <div class="hier-bar" style="width:96px;background:var(--gray-600)"></div>
+            <div style="flex:1;font-size:var(--text-sm);color:var(--text-tertiary)">Badges, métadonnées, actions secondaires</div>
+            <span class="timing-pill" style="background:rgba(255,255,255,0.03);border-color:var(--border-default);color:var(--text-placeholder)">Détail</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 04 — COMPOSANTS ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">04 — Composants</span><div class="section-line"></div></div>
+    <h2 class="section-title">Animations par composant — démos interactives</h2>
+    <p class="section-desc">Chaque composant du système a son animation précisément calibrée. Toutes sont interactives et jouables.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+      <!-- Toast -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="subsection-title">Toast (entrée haut · sortie auto 4s)</div>
+        <div class="preview-zone" style="min-height:120px;display:flex;flex-direction:column;gap:10px">
+          <button class="trigger-btn" onclick="showToast()" style="font-size:var(--text-sm)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Déclencher un toast
+          </button>
+          <div id="toast-demo-zone" style="display:flex;flex-direction:column;gap:8px;align-items:flex-start"></div>
+        </div>
+        <div class="code-block" style="font-size:9px"><span class="ck-at">@keyframes</span> toastIn {
+  from { <span class="ck-prop">opacity</span>:<span class="ck-val">0</span>;
+    <span class="ck-prop">transform</span>:<span class="ck-val">translateY(-14px) scale(0.97)</span>; }
+}
+<span class="ck-comment">/* 180ms --ease-spring */</span>
+<span class="ck-comment">/* Sortie : 160ms --ease-out-fast */</span>
+<span class="ck-comment">/* Auto-dismiss barre 4s linear */</span></div>
+      </div>
+
+      <!-- Modal -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="subsection-title">Modal (backdrop + surface simultanés)</div>
+        <div class="preview-zone" style="min-height:120px;display:flex;flex-direction:column;gap:10px">
+          <button class="trigger-btn" onclick="showModal()" style="font-size:var(--text-sm)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Ouvrir une modal
+          </button>
+          <div style="font-size:var(--text-sm);color:var(--text-tertiary)">Backdrop blur fade + scale spring — simultanés</div>
+        </div>
+        <div class="code-block" style="font-size:9px"><span class="ck-comment">/* Backdrop */</span>
+from: <span class="ck-val">opacity:0</span> · 200ms ease-out-fast
+<span class="ck-prop">background</span>: <span class="ck-val">rgba(0,0,0,0.6)</span>
+<span class="ck-prop">backdrop-filter</span>: <span class="ck-val">blur(4px)</span>
+
+<span class="ck-comment">/* Surface modal */</span>
+from: <span class="ck-val">scale(0.96) translateY(8px) opacity:0</span>
+<span class="ck-comment">/* 200ms --ease-spring */</span></div>
+      </div>
+
+      <!-- Sidebar -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="subsection-title">Sidebar open/close (translateX 250ms)</div>
+        <div class="preview-zone" style="padding:12px">
+          <div class="sidebar-wrap" id="sidebar-wrap">
+            <div class="sidebar-panel-demo" id="sidebar-panel">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+                <div style="width:16px;height:16px;background:var(--accent-500);border-radius:3px;flex-shrink:0"></div>
+                <div style="font-size:11px;font-weight:600;color:var(--text-primary)">ArchivNET</div>
+              </div>
+              <div class="nav-item-demo is-active">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                Tableau de bord
+              </div>
+              <div class="nav-item-demo">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+                Documents
+              </div>
+              <div class="nav-item-demo">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                Recherche
+              </div>
+            </div>
+            <div class="sidebar-content-demo">
+              <div class="skel" style="height:9px;width:55%"></div>
+              <div class="skel" style="height:9px;width:80%"></div>
+              <div class="skel" style="height:44px;border-radius:var(--radius-sm)"></div>
+              <div class="skel" style="height:30px;border-radius:var(--radius-sm)"></div>
+            </div>
+          </div>
+          <div style="margin-top:10px">
+            <button class="trigger-btn" onclick="toggleSidebar()" id="sidebar-btn" style="font-size:var(--text-sm)">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 3H3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/><path d="M9 3v18"/></svg>
+              Fermer la sidebar
+            </button>
+          </div>
+        </div>
+        <div class="code-block" style="font-size:9px"><span class="ck-selector">.sidebar</span> {
+  <span class="ck-prop">transition</span>: <span class="ck-val">transform 250ms --ease-in-out,
+               opacity 250ms --ease-in-out,
+               width 250ms --ease-in-out</span>;
+}
+<span class="ck-selector">.sidebar.closed</span> {
+  <span class="ck-prop">transform</span>: <span class="ck-val">translateX(-100%)</span>;
+  <span class="ck-prop">opacity</span>: <span class="ck-val">0</span>; <span class="ck-prop">width</span>: <span class="ck-val">0</span>;
+}</div>
+      </div>
+
+      <!-- Card hover + focus -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="subsection-title">Card hover · Btn · Focus ring</div>
+        <div class="preview-zone">
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="font-size:var(--text-sm);color:var(--text-tertiary)">Survolez, cliquez, tabulez (Tab)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div class="hover-card">
+                <div style="font-size:var(--text-sm);font-weight:500;color:var(--text-secondary);margin-bottom:3px">Délibérations</div>
+                <div class="mono">284 docs</div>
+              </div>
+              <div class="hover-card">
+                <div style="font-size:var(--text-sm);font-weight:500;color:var(--text-secondary);margin-bottom:3px">Arrêtés</div>
+                <div class="mono">142 docs</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn-primary">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                Versement
+              </button>
+              <button class="btn-secondary">Annuler</button>
+              <button class="focus-el">Focus ring</button>
+            </div>
+          </div>
+        </div>
+        <div class="code-block" style="font-size:9px"><span class="ck-selector">.card</span> { <span class="ck-prop">transition</span>: <span class="ck-val">transform 150ms spring</span> }
+<span class="ck-selector">.card:hover</span>  { <span class="ck-prop">transform</span>: <span class="ck-val">translateY(-1px)</span> }
+<span class="ck-selector">.card:active</span>  { <span class="ck-prop">transform</span>: <span class="ck-val">translateY(0)</span> }
+
+<span class="ck-selector">:focus-visible</span> {
+  <span class="ck-prop">box-shadow</span>: <span class="ck-val">0 0 0 2px --bg-base,
+               0 0 0 4px --accent-500</span>;
+  <span class="ck-comment">/* 150ms --ease-spring */</span>
+}</div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══ 05 — CATALOGUE COMPLET ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">05 — Catalogue</span><div class="section-line"></div></div>
+    <h2 class="section-title">Catalogue complet — toutes les animations du système</h2>
+    <p class="section-desc">Référence exhaustive indexée. Chaque animation nommée, durée, courbe, transform from/to, et usage précis.</p>
+
+    <table class="spec-table">
+      <thead><tr><th>Nom</th><th>Durée</th><th>Courbe</th><th>From → To</th><th>Usage</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">toastIn</td><td class="mono">180ms</td><td class="mono">--ease-spring</td><td style="font-size:var(--text-xs)">translateY(-14px) scale(0.97) op:0 → 0 1</td><td>Apparition toast</td></tr>
+        <tr><td class="mono">toastOut</td><td class="mono">160ms</td><td class="mono">--ease-out-fast</td><td style="font-size:var(--text-xs)">op:1 scale(1) → op:0 scale(0.97)</td><td>Disparition toast</td></tr>
+        <tr><td class="mono">modalIn</td><td class="mono">200ms</td><td class="mono">--ease-spring</td><td style="font-size:var(--text-xs)">scale(0.96) translateY(8px) op:0 → 1</td><td>Ouverture modal</td></tr>
+        <tr><td class="mono">backdropIn</td><td class="mono">200ms</td><td class="mono">--ease-out-fast</td><td style="font-size:var(--text-xs)">op:0 → op:1 + blur(4px)</td><td>Backdrop modal/drawer</td></tr>
+        <tr><td class="mono">entryScale</td><td class="mono">200ms</td><td class="mono">--ease-spring</td><td style="font-size:var(--text-xs)">scale(0.94) translateY(6px) op:0 → 1</td><td>Cards, panels principaux</td></tr>
+        <tr><td class="mono">entryUp</td><td class="mono">180ms</td><td class="mono">--ease-out-fast</td><td style="font-size:var(--text-xs)">translateY(10px) op:0 → 1</td><td>Rows, nav items, dropdowns</td></tr>
+        <tr><td class="mono">staggerIn</td><td class="mono">200ms + 40ms×n</td><td class="mono">--ease-out-fast</td><td style="font-size:var(--text-xs)">translateY(8px) op:0 → 1</td><td>Listes — 6 items max</td></tr>
+        <tr><td>sidebar toggle</td><td class="mono">250ms</td><td class="mono">--ease-in-out</td><td style="font-size:var(--text-xs)">translateX(-100%) op:0 ↔ 0 1</td><td>Open/close sidebar</td></tr>
+        <tr><td>theme switch</td><td class="mono">200ms</td><td class="mono">--ease-in-out</td><td style="font-size:var(--text-xs)">bg/color dark ↔ light</td><td>Transition globale dark/light</td></tr>
+        <tr><td>hover card</td><td class="mono">150ms</td><td class="mono">--ease-spring</td><td style="font-size:var(--text-xs)">translateY(0) shadow-sm → (-1px) shadow-md</td><td>Cards cliquables</td></tr>
+        <tr><td>hover btn-primary</td><td class="mono">150ms</td><td class="mono">--ease-spring</td><td style="font-size:var(--text-xs)">accent-500 translateY(0) → accent-600 (-1px)</td><td>Bouton primaire</td></tr>
+        <tr><td>active btn</td><td class="mono">100ms</td><td class="mono">--ease-spring</td><td style="font-size:var(--text-xs)">translateY(0) shadow-sm</td><td>:active tous boutons</td></tr>
+        <tr><td>focus ring</td><td class="mono">150ms</td><td class="mono">--ease-spring</td><td style="font-size:var(--text-xs)">box-shadow:none → 2+4px accent ring</td><td>Focus clavier :focus-visible</td></tr>
+        <tr><td>spinner</td><td class="mono">700ms ∞</td><td class="mono">linear</td><td style="font-size:var(--text-xs)">rotate(0°) → rotate(360°)</td><td>Loaders, boutons loading</td></tr>
+        <tr><td>skeleton pulse</td><td class="mono">1600ms ∞</td><td class="mono">ease-in-out</td><td style="font-size:var(--text-xs)">gradient sweep 200% → -200%</td><td>Skeleton loading</td></tr>
+        <tr><td>donut fill</td><td class="mono">1000ms</td><td class="mono">--ease-spring</td><td style="font-size:var(--text-xs)">stroke-dashoffset: total → target</td><td>Cercles SVG de progression</td></tr>
+        <tr><td>progress bar</td><td class="mono">400ms</td><td class="mono">--ease-spring</td><td style="font-size:var(--text-xs)">width: 0% → n%</td><td>Barres de progression</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Règles interdites -->
+    <div style="margin-top:20px;background:var(--error-subtle);border:1px solid var(--error-border);border-radius:var(--radius-sm);padding:14px 16px">
+      <div style="font-size:var(--text-md);font-weight:600;color:#DC7070;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Animations strictement interdites
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="font-size:var(--text-sm);color:var(--text-secondary);display:flex;align-items:center;gap:6px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#DC7070" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Durée &gt; 250ms sur toute interaction UI</div>
+        <div style="font-size:var(--text-sm);color:var(--text-secondary);display:flex;align-items:center;gap:6px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#DC7070" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Animations en boucle sur éléments non-loader</div>
+        <div style="font-size:var(--text-sm);color:var(--text-secondary);display:flex;align-items:center;gap:6px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#DC7070" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Stagger au-delà de 6 items</div>
+        <div style="font-size:var(--text-sm);color:var(--text-secondary);display:flex;align-items:center;gap:6px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#DC7070" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Parallax ou scroll-driven décoratif</div>
+        <div style="font-size:var(--text-sm);color:var(--text-secondary);display:flex;align-items:center;gap:6px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#DC7070" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Translation &gt; 14px ou rotation arbitraire</div>
+        <div style="font-size:var(--text-sm);color:var(--text-secondary);display:flex;align-items:center;gap:6px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#DC7070" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Transition <code style="font-family:var(--font-mono);font-size:9px">width</code> / <code style="font-family:var(--font-mono);font-size:9px">height</code> (reflow)</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- FOOTER -->
+  <footer class="doc-footer">
+    <div class="footer-left">
+      Charte Graphique — Archivage Numérique · CG-10 / 12<br>
+      <div class="kbd-hint">Raccourcis : <span class="kbd">←</span> Précédent <span class="kbd">→</span> Suivant <span class="kbd">i</span> Index</div>
+    </div>
+    <div class="footer-nav">
+      <a href="CG-09-Graphiques-DataViz.html" class="footer-link" aria-label="Module précédent : CG-09">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Précédent
+      </a>
+      <a href="CG-11-Accessibilite-RGAA.html" class="footer-link" aria-label="Module suivant : CG-11">
+        Suivant
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </a>
+    </div>
+      CG-11 — Accessibilité
+    </a>
+  </footer>
+
+</div>
+
+<script>
+/* ── Theme ── */
+function toggleTheme() {
+  const html = document.documentElement;
+  html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+
+/* ── Easing visualizer ── */
+const EASINGS = {
+  spring: 'cubic-bezier(0.34,1.56,0.64,1)',
+  out:    'cubic-bezier(0.16,1,0.3,1)',
+  inout:  'cubic-bezier(0.4,0,0.2,1)',
+};
+
+function runEase(track, type, dur) {
+  const runner = track.querySelector('.easing-runner');
+  if (!runner) return;
+  const trackW = track.offsetWidth;
+  const runW   = runner.offsetWidth;
+  const endX   = trackW - runW - 4;
+
+  runner.style.transition = 'none';
+  runner.style.left = '4px';
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    runner.style.transition = `left ${dur}ms ${EASINGS[type]}`;
+    runner.style.left = endX + 'px';
+    setTimeout(() => {
+      runner.style.transition = `left ${dur}ms ${EASINGS[type]}`;
+      runner.style.left = '4px';
+    }, dur + 600);
+  }));
+}
+
+/* ── Entry replays ── */
+function replay(type) {
+  const el = document.getElementById('el-' + type);
+  if (!el) return;
+  el.style.animation = 'none';
+  el.style.opacity = '0';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    if (type === 'scale') {
+      el.style.animation = 'entryScale 200ms cubic-bezier(0.34,1.56,0.64,1) both';
+    } else {
+      el.style.animation = 'entryUp 180ms cubic-bezier(0.16,1,0.3,1) both';
+    }
+  }));
+}
+
+function replayExit() {
+  const el = document.getElementById('el-exit');
+  if (!el) return;
+  el.style.opacity = '1';
+  el.style.transform = 'none';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    el.style.transition = 'opacity 160ms cubic-bezier(0.16,1,0.3,1), transform 160ms cubic-bezier(0.16,1,0.3,1)';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(-6px) scale(0.97)';
+    setTimeout(() => {
+      el.style.transition = 'none';
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    }, 1400);
+  }));
+}
+
+/* ── Stagger list ── */
+const DOCS = [
+  { ref:'ARC-2025-00102', title:'Délibération n°2025-42 — Plan Local d\'Urbanisme', type:'Délibération', dot:'#5DB882' },
+  { ref:'ARC-2025-00089', title:'Arrêté de nomination — Responsable des archives',  type:'Arrêté',       dot:'#2BBFAD' },
+  { ref:'ARC-2025-00074', title:'Rapport d\'audit financier — Exercice 2024',        type:'Rapport',      dot:'#D4993A' },
+  { ref:'ARC-2024-18847', title:'Contrat de marché public — Travaux de voirie nord', type:'Contrat',      dot:'#DC7070' },
+  { ref:'ARC-2024-18612', title:'Procès-verbal — Commission urbanisme 12/11/2024',   type:'PV',           dot:'#5DB882' },
+  { ref:'ARC-2024-18440', title:'Note de service — Directive gestion documentaire',  type:'Note',         dot:'#6D95D8' },
+];
+
+function buildStaggerItem(doc, idx) {
+  const item = document.createElement('div');
+  item.style.cssText = `
+    display:flex; align-items:center; gap:12px; padding:10px 12px;
+    background:var(--bg-raised); border:1px solid var(--border-subtle);
+    border-radius:var(--radius-sm); position:relative; overflow:hidden;
+    animation: staggerIn 200ms cubic-bezier(0.16,1,0.3,1) ${idx * 40}ms both;
+  `;
+  item.innerHTML = `
+    <div style="width:7px;height:7px;border-radius:50%;background:${doc.dot};flex-shrink:0;box-shadow:0 0 5px ${doc.dot}66"></div>
+    <div style="flex:1;overflow:hidden">
+      <div style="font-size:var(--text-sm);font-weight:500;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${doc.title}</div>
+      <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-placeholder);margin-top:1px;letter-spacing:0.04em">${doc.ref}</div>
+    </div>
+    <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-placeholder);background:var(--bg-panel);border:1px solid var(--border-subtle);border-radius:2px;padding:2px 6px;flex-shrink:0">${doc.type}</div>
+  `;
+  return item;
+}
+
+function replayStagger() {
+  const list = document.getElementById('stagger-list');
+  list.innerHTML = '';
+  DOCS.forEach((doc, i) => {
+    setTimeout(() => list.appendChild(buildStaggerItem(doc, i)), 10);
+  });
+}
+replayStagger();
+
+/* ── Toast demo ── */
+let toastCount = 0;
+const TOAST_TYPES = [
+  { dot:'#5DB882', progress:'#5DB882', title:'Versement archivé',       desc:'ARC-2025-00' + (102 + Math.floor(Math.random()*10)) + ' — SHA-256 vérifié.' },
+  { dot:'#D4993A', progress:'#D4993A', title:'Certificat expirant',     desc:'Renouvellement requis avant le 01/03/2025.' },
+  { dot:'#DC7070', progress:'#DC7070', title:'Erreur de traitement OCR', desc:'3 fichiers n\'ont pas pu être analysés.' },
+  { dot:'#6D95D8', progress:'#6D95D8', title:'Maintenance planifiée',    desc:'Indisponibilité le 25/02 · 02h00–04h00.' },
+];
+
+function showToast() {
+  const zone = document.getElementById('toast-demo-zone');
+  const t = TOAST_TYPES[toastCount++ % TOAST_TYPES.length];
+
+  const toast = document.createElement('div');
+  toast.className = 'demo-toast';
+  toast.innerHTML = `
+    <div class="toast-dot" style="background:${t.dot};box-shadow:0 0 5px ${t.dot}66"></div>
+    <div style="flex:1">
+      <div style="font-size:var(--text-md);font-weight:600;color:var(--gray-50);margin-bottom:2px">${t.title}</div>
+      <div style="font-size:var(--text-sm);color:var(--gray-300)">${t.desc}</div>
+    </div>
+    <button onclick="dismissToast(this.closest('.demo-toast'))" style="background:none;border:none;cursor:pointer;color:var(--gray-400);padding:2px;border-radius:2px;display:flex;align-items:center;position:relative;z-index:1" aria-label="Fermer">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="toast-progress" style="background:${t.progress}"></div>
+  `;
+  zone.insertBefore(toast, zone.firstChild);
+
+  const timer = setTimeout(() => dismissToast(toast), 4200);
+  toast._timer = timer;
+}
+
+function dismissToast(toast) {
+  if (!toast || !toast.parentNode) return;
+  clearTimeout(toast._timer);
+  toast.classList.add('leaving');
+  setTimeout(() => toast.remove(), 200);
+}
+
+/* ── Modal demo ── */
+function showModal() {
+  const bd = document.createElement('div');
+  bd.className = 'demo-backdrop';
+  bd.innerHTML = `
+    <div class="demo-modal" role="dialog" aria-modal="true" aria-labelledby="dm-title">
+      <div style="padding:20px 20px 16px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+        <div style="display:flex;align-items:flex-start;gap:12px">
+          <div style="width:36px;height:36px;border-radius:var(--radius-md);background:var(--accent-subtle-bg);border:1px solid var(--accent-subtle-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;overflow:hidden">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-300)" stroke-width="1.5" style="position:relative;z-index:1" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div>
+            <div id="dm-title" style="font-size:var(--text-lg);font-weight:600;letter-spacing:-0.025em;color:var(--text-primary)">Informations du document</div>
+            <div style="font-size:var(--text-sm);color:var(--text-tertiary)">ARC-2025-00102 · lecture seule</div>
+          </div>
+        </div>
+        <button onclick="closeModal(this)" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);cursor:pointer;color:var(--text-tertiary);background:transparent;border:none;position:relative;z-index:1" aria-label="Fermer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div style="height:1px;background:var(--border-subtle)"></div>
+      <div style="padding:16px 20px 20px;font-size:var(--text-base);color:var(--text-secondary);line-height:1.65">
+        Ce document a été archivé le <strong>14/02/2025</strong> par <strong>MARTIN, Sophie</strong>. Format PDF/A-3b, 2.4 Mo. DUA 30 ans (conservation permanente).
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+          <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:8px">
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-placeholder);letter-spacing:0.06em;margin-bottom:2px">RÉFÉRENCE</div>
+            <div style="font-family:var(--font-mono);font-size:var(--text-sm);color:var(--text-primary)">ARC-2025-00102</div>
+          </div>
+          <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:8px">
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-placeholder);letter-spacing:0.06em;margin-bottom:2px">TYPE</div>
+            <div style="font-size:var(--text-sm);color:var(--text-primary)">Délibération</div>
+          </div>
+        </div>
+      </div>
+      <div style="height:1px;background:var(--border-subtle)"></div>
+      <div style="padding:14px 20px;display:flex;justify-content:flex-end;gap:8px;background:rgba(255,255,255,0.015)">
+        <button onclick="closeModal(this)" class="btn-secondary" style="font-size:var(--text-sm);padding:6px 12px">Fermer</button>
+        <button class="btn-primary" style="font-size:var(--text-sm);padding:6px 12px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Télécharger
+        </button>
+      </div>
+    </div>
+  `;
+  bd.addEventListener('click', (e) => { if (e.target === bd) closeModal(bd); });
+  document.body.appendChild(bd);
+}
+
+function closeModal(el) {
+  const bd = el.closest('.demo-backdrop') || el;
+  if (!bd) return;
+  bd.style.animation = 'backdropIn 160ms cubic-bezier(0.16,1,0.3,1) reverse forwards';
+  const modal = bd.querySelector('.demo-modal');
+  if (modal) {
+    modal.style.animation = 'modalIn 160ms cubic-bezier(0.16,1,0.3,1) reverse forwards';
+  }
+  setTimeout(() => bd.remove(), 180);
+}
+
+/* ── Sidebar toggle ── */
+let sidebarOpen = true;
+function toggleSidebar() {
+  const panel = document.getElementById('sidebar-panel');
+  const btn   = document.getElementById('sidebar-btn');
+  sidebarOpen = !sidebarOpen;
+  panel.classList.toggle('closed', !sidebarOpen);
+  btn.innerHTML = sidebarOpen
+    ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 3H3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/><path d="M9 3v18"/></svg> Fermer la sidebar`
+    : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 3H3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/><path d="M9 3v18"/></svg> Ouvrir la sidebar`;
+}
+</script>
+</body>
+</html>
+  </footer>
+
+</div>
+
+<script>
+function toggleNav(btn) {
+  const dropdown = btn.parentElement;
+  const isActive = dropdown.classList.contains('active');
+  document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('active'));
+  if (!isActive) {
+    dropdown.classList.add('active');
+    btn.setAttribute('aria-expanded', 'true');
+  } else {
+    btn.setAttribute('aria-expanded', 'false');
+  }
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.nav-dropdown')) {
+    document.querySelectorAll('.nav-dropdown').forEach(d => {
+      d.classList.remove('active');
+      const btn = d.querySelector('.nav-dropdown-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  switch(e.key) {
+    case 'ArrowLeft':
+      const prevLink = document.querySelector('.footer-link[aria-label*="précédent"]');
+      if (prevLink && !prevLink.classList.contains('disabled')) {
+        window.location.href = prevLink.href;
+      }
+      break;
+    case 'ArrowRight':
+      const nextLink = document.querySelector('.footer-link[aria-label*="suivant"]');
+      if (nextLink && !nextLink.classList.contains('disabled')) {
+        window.location.href = nextLink.href;
+      }
+      break;
+    case 'i':
+    case 'I':
+      window.location.href = 'index.html';
+      break;
+  }
+});
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+}
+</script>
+
+</body>
+</html>

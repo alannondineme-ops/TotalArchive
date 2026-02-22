@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CG-01 — Identité & Palette · Archivage Numérique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     RESET & BASE
+  ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* Cold gray scale — base du système */
+    --gray-950: #0A0B0F;
+    --gray-900: #10121A;
+    --gray-850: #14161F;
+    --gray-800: #1A1D2B;
+    --gray-700: #252836;
+    --gray-600: #353848;
+    --gray-500: #4D5068;
+    --gray-400: #6B6F88;
+    --gray-300: #9498B0;
+    --gray-200: #C2C5D6;
+    --gray-100: #E3E5F0;
+    --gray-50:  #F0F1F8;
+
+    /* Option A — Indigo Dusk */
+    --a-50:   #EEF0FF;
+    --a-100:  #D8DBFF;
+    --a-200:  #B3B9FF;
+    --a-300:  #8690FA;
+    --a-400:  #6270F3;
+    --a-500:  #4454E8;
+    --a-600:  #3340CC;
+    --a-700:  #2830A8;
+    --a-800:  #1F2480;
+    --a-900:  #171B5C;
+
+    /* Option B — Cerulean Steel */
+    --b-50:   #EBF5FF;
+    --b-100:  #CDEAFF;
+    --b-200:  #9DD3FF;
+    --b-300:  #65B8FA;
+    --b-400:  #369BF0;
+    --b-500:  #1480D8;
+    --b-600:  #0D65B0;
+    --b-700:  #0A4E8A;
+    --b-800:  #083A66;
+    --b-900:  #052849;
+
+    /* Option C — Sage Slate */
+    --c-50:   #EDFAF8;
+    --c-100:  #D0F4EE;
+    --c-200:  #9FE8DC;
+    --c-300:  #65D5C4;
+    --c-400:  #36BCAB;
+    --c-500:  #179E8E;
+    --c-600:  #0E7E72;
+    --c-700:  #0C6259;
+    --c-800:  #094A43;
+    --c-900:  #063530;
+
+    --font-main: 'Plus Jakarta Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+    --radius: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+
+    /* Semantic tokens (dark mode par défaut) */
+    --bg-base: var(--gray-950);
+    --bg-panel: var(--gray-900);
+    --bg-raised: var(--gray-800);
+    --border-subtle: var(--gray-800);
+    --border-default: var(--gray-700);
+    --border-strong: var(--gray-600);
+    --text-primary: var(--gray-50);
+    --text-secondary: var(--gray-200);
+    --text-tertiary: var(--gray-400);
+    --text-placeholder: var(--gray-500);
+  }
+
+  /* Light mode */
+  [data-theme="light"] {
+    --bg-base: #F8F9FC;
+    --bg-panel: #FFFFFF;
+    --bg-raised: var(--gray-100);
+    --border-subtle: var(--gray-100);
+    --border-default: var(--gray-200);
+    --border-strong: var(--gray-300);
+    --text-primary: var(--gray-900);
+    --text-secondary: #3D4158;
+    --text-tertiary: var(--gray-500);
+    --text-placeholder: var(--gray-400);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  /* Smooth theme transitions */
+  body, body * {
+    transition-property: background-color, border-color, color;
+    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  body {
+    font-family: var(--font-main);
+    background: var(--bg-base);
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ============================================================
+     GRAIN OVERLAY — niveau 10 (sérigraphie lourde)
+  ============================================================ */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    opacity: 0.18;
+    mix-blend-mode: overlay;
+  }
+
+  /* ============================================================
+     LAYOUT
+  ============================================================ */
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 64px 40px 120px;
+  }
+
+  /* ============================================================
+     HEADER DU DOCUMENT
+  ============================================================ */
+  .doc-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 80px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--gray-800);
+  }
+
+  .doc-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    border: 1px solid var(--gray-700);
+    padding: 4px 10px;
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+  }
+
+  .doc-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--a-500);
+    display: block;
+  }
+
+  .doc-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--gray-50);
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .doc-subtitle {
+    font-size: 13px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .doc-meta {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-placeholder);
+    line-height: 1.8;
+  }
+
+  .theme-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    transition: all 150ms ease;
+  }
+  .theme-btn:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+  }
+
+  /* ============================================================
+     SECTIONS
+  ============================================================ */
+  .section {
+    margin-bottom: 72px;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gray-500);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gray-800);
+  }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--gray-100);
+    letter-spacing: -0.025em;
+    margin-bottom: 6px;
+  }
+
+  .section-desc {
+    font-size: 13px;
+    color: var(--gray-400);
+    max-width: 560px;
+    line-height: 1.65;
+  }
+
+  /* ============================================================
+     MANIFESTE DESIGN
+  ============================================================ */
+  .manifesto-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+    margin-top: 28px;
+  }
+
+  .manifesto-card {
+    background: var(--gray-900);
+    border: 1px solid var(--gray-800);
+    padding: 24px 20px;
+    border-radius: var(--radius-md);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .manifesto-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 120px;
+    opacity: 0.09;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  .manifesto-number {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--gray-600);
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+
+  .manifesto-word {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--gray-100);
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+  }
+
+  .manifesto-text {
+    font-size: 12px;
+    color: var(--gray-500);
+    line-height: 1.6;
+  }
+
+  /* ============================================================
+     RÈGLES FONDAMENTALES
+  ============================================================ */
+  .rules-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 28px;
+  }
+
+  .rule-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--gray-900);
+    border: 1px solid var(--gray-800);
+    border-radius: var(--radius);
+  }
+
+  .rule-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .rule-allow { color: #2D9596; }
+  .rule-forbid { color: #8B3A3A; }
+
+  .rule-content {}
+  .rule-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gray-200);
+    margin-bottom: 2px;
+  }
+  .rule-desc {
+    font-size: 11px;
+    color: var(--gray-500);
+    line-height: 1.5;
+  }
+
+  /* ============================================================
+     COULEURS — PROPOSITIONS
+  ============================================================ */
+  .color-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-top: 28px;
+  }
+
+  .color-option {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--gray-800);
+    background: var(--gray-900);
+    cursor: pointer;
+    transition: border-color 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+  }
+
+  .color-option::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 100px;
+    opacity: 0.12;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .color-option:hover { border-color: var(--gray-600); }
+
+  .color-option-a:hover { border-color: var(--a-600); }
+  .color-option-b:hover { border-color: var(--b-600); }
+  .color-option-c:hover { border-color: var(--c-600); }
+
+  .color-swatch-main {
+    height: 88px;
+    display: flex;
+    align-items: flex-end;
+    padding: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .color-swatch-main::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 140px;
+    opacity: 0.22;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  .swatch-a { background: var(--a-500); }
+  .swatch-b { background: var(--b-500); }
+  .swatch-c { background: var(--c-500); }
+
+  .swatch-hex {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.08em;
+    position: relative;
+    z-index: 2;
+  }
+
+  .color-scale {
+    display: flex;
+    height: 20px;
+  }
+
+  .scale-step {
+    flex: 1;
+  }
+
+  .color-info {
+    padding: 16px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .color-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-100);
+    letter-spacing: -0.01em;
+    margin-bottom: 2px;
+  }
+
+  .color-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 2px;
+    margin-bottom: 10px;
+  }
+
+  .tag-a { background: rgba(68,84,232,0.15); color: var(--a-300); border: 1px solid rgba(68,84,232,0.25); }
+  .tag-b { background: rgba(20,128,216,0.15); color: var(--b-300); border: 1px solid rgba(20,128,216,0.25); }
+  .tag-c { background: rgba(23,158,142,0.15); color: var(--c-300); border: 1px solid rgba(23,158,142,0.25); }
+
+  .color-rationale {
+    font-size: 11px;
+    color: var(--gray-500);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+
+  .color-used-by {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--gray-600);
+    letter-spacing: 0.06em;
+  }
+
+  .color-divider {
+    height: 1px;
+    background: var(--gray-800);
+    margin: 12px 0;
+  }
+
+  .color-props {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .color-prop {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+  }
+
+  .color-prop-label { color: var(--gray-600); }
+  .color-prop-value { color: var(--gray-300); font-family: var(--font-mono); }
+
+  .recommended-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(68,84,232,0.2);
+    border: 1px solid rgba(68,84,232,0.4);
+    color: var(--a-300);
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: 2px;
+    z-index: 3;
+  }
+
+  /* ============================================================
+     NUANCES DÉTAILLÉES
+  ============================================================ */
+  .nuances-section {
+    margin-top: 32px;
+  }
+
+  .nuances-title {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--gray-400);
+    margin-bottom: 10px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.06em;
+  }
+
+  .nuances-row {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 6px;
+    align-items: center;
+  }
+
+  .nuance-swatch {
+    flex: 1;
+    height: 36px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 4px;
+    transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .nuance-swatch:hover { transform: scaleY(1.15); }
+
+  .nuance-label {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.04em;
+  }
+
+  .nuance-label-dark { color: rgba(0,0,0,0.3); }
+
+  /* ============================================================
+     TYPOGRAPHIE PREVIEW
+  ============================================================ */
+  .typo-showcase {
+    background: var(--gray-900);
+    border: 1px solid var(--gray-800);
+    border-radius: var(--radius-lg);
+    padding: 28px 28px 24px;
+    margin-top: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .typo-showcase::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 100px;
+    opacity: 0.08;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  .typo-font-name {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gray-600);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .typo-font-name::after {
+    content: '';
+    height: 1px;
+    flex: 1;
+    background: var(--gray-800);
+  }
+
+  .typo-sample-display {
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--gray-50);
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .typo-sample-body {
+    font-size: 13px;
+    color: var(--gray-400);
+    line-height: 1.65;
+    max-width: 480px;
+    margin-bottom: 20px;
+  }
+
+  .typo-sample-caption {
+    font-size: 11px;
+    color: var(--gray-600);
+    font-weight: 400;
+  }
+
+  .typo-mono-sample {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray-500);
+    margin-top: 8px;
+    letter-spacing: 0.04em;
+  }
+
+  .typo-scale {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--gray-800);
+  }
+
+  .typo-scale-row {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+
+  .typo-scale-meta {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--gray-600);
+    width: 80px;
+    flex-shrink: 0;
+    letter-spacing: 0.06em;
+  }
+
+  .typo-scale-sample {
+    color: var(--gray-200);
+  }
+
+  /* ============================================================
+     ATMOSPHÈRE & RÉFÉRENCES
+  ============================================================ */
+  .refs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  .ref-card {
+    background: var(--gray-900);
+    border: 1px solid var(--gray-800);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ref-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 80px;
+    opacity: 0.07;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  .ref-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .ref-dot-linear { background: #5E6AD2; color: white; }
+  .ref-dot-notion { background: #191919; color: white; border: 1px solid #333; }
+  .ref-dot-github { background: #161B22; color: white; border: 1px solid #333; }
+
+  .ref-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-200);
+    margin-bottom: 4px;
+  }
+
+  .ref-insight {
+    font-size: 11px;
+    color: var(--gray-500);
+    line-height: 1.5;
+  }
+
+  .ref-trait {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--gray-600);
+    border: 1px solid var(--gray-800);
+    padding: 2px 6px;
+    border-radius: 2px;
+    margin-top: 8px;
+  }
+
+  /* ============================================================
+     NAVIGATION SYSTEM
+  ============================================================ */
+  .nav-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gray-500);
+    margin-bottom: 16px;
+  }
+  .nav-breadcrumb a {
+    color: var(--a-400);
+    text-decoration: none;
+    transition: color 150ms ease;
+  }
+  .nav-breadcrumb a:hover { color: var(--a-300); }
+  .nav-breadcrumb-sep { color: var(--gray-700); }
+
+  .nav-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  .nav-dropdown-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--gray-900);
+    border: 1px solid var(--gray-800);
+    border-radius: var(--radius);
+    color: var(--gray-300);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 150ms ease;
+  }
+  .nav-dropdown-btn:hover {
+    background: var(--gray-850);
+    border-color: var(--gray-700);
+    color: var(--gray-200);
+  }
+  .nav-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    background: var(--gray-900);
+    border: 1px solid var(--gray-800);
+    border-radius: var(--radius-md);
+    padding: 6px;
+    min-width: 280px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 1000;
+  }
+  .nav-dropdown.active .nav-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .nav-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    color: var(--gray-400);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    transition: all 120ms ease;
+  }
+  .nav-dropdown-item:hover {
+    background: var(--gray-850);
+    color: var(--gray-200);
+  }
+  .nav-dropdown-item.active {
+    background: rgba(68,84,232,0.12);
+    color: var(--a-300);
+    font-weight: 500;
+  }
+  .nav-dropdown-item-num {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--gray-600);
+    min-width: 32px;
+  }
+
+  /* ============================================================
+     FOOTER
+  ============================================================ */
+  .doc-footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gray-800);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-left {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gray-600);
+  }
+
+  .footer-nav {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .footer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--gray-400);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    transition: all 150ms ease;
+  }
+  .footer-link:hover {
+    color: var(--gray-200);
+    background: var(--gray-900);
+  }
+  .footer-link svg { width: 14px; height: 14px; }
+  .footer-link.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .kbd-hint {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--gray-700);
+    margin-top: 8px;
+    text-align: center;
+  }
+  .kbd {
+    display: inline-block;
+    padding: 2px 5px;
+    background: var(--gray-900);
+    border: 1px solid var(--gray-800);
+    border-radius: 3px;
+    font-size: 9px;
+    margin: 0 2px;
+  }
+
+  /* ============================================================
+     GLASS COMPONENTS (pour illustration)
+  ============================================================ */
+  .glass-demo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  .glass-card {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 90px;
+    opacity: 0.14;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  .glass-card-title {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--gray-300);
+    margin-bottom: 4px;
+  }
+
+  .glass-card-value {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--gray-50);
+    letter-spacing: -0.03em;
+  }
+
+  .glass-card-sub {
+    font-size: 10px;
+    color: var(--gray-500);
+    margin-top: 2px;
+    font-family: var(--font-mono);
+  }
+
+  /* ============================================================
+     DÉCISION PANEL
+  ============================================================ */
+  .decision-panel {
+    background: var(--gray-900);
+    border: 1px solid var(--gray-800);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-top: 28px;
+  }
+
+  .decision-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gray-300);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .decision-title svg { color: var(--a-400); }
+
+  .decision-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--gray-800);
+  }
+
+  .decision-row:last-child { border-bottom: none; }
+
+  .decision-key {
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  .decision-val {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray-200);
+    background: var(--gray-800);
+    padding: 2px 8px;
+    border-radius: var(--radius);
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--gray-950); }
+  ::-webkit-scrollbar-thumb { background: var(--gray-700); border-radius: 3px; }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ========== HEADER ========== -->
+  <header class="doc-header">
+    <div>
+      <!-- Breadcrumb + Menu -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <nav class="nav-breadcrumb" aria-label="Fil d'Ariane">
+          <a href="index.html">← Index</a>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>CG-01</span>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>Identité & Palette</span>
+        </nav>
+        
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-btn" onclick="toggleNav(this)" aria-label="Menu des modules" aria-expanded="false">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+            Tous les modules
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="CG-01-Identite-Palette.html" class="nav-dropdown-item active"><span class="nav-dropdown-item-num">CG-01</span> Identité & Palette</a>
+            <a href="CG-02-Systeme-Couleurs-Tokens.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-02</span> Couleurs & Tokens</a>
+            <a href="CG-03-Typographie-Echelle.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-03</span> Typographie</a>
+            <a href="CG-04-Espacement-Grille-Layout.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-04</span> Espacement & Grille</a>
+            <a href="CG-05-Effets-Grain-Verre-Ombres-Bordures.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-05</span> Effets & Grain</a>
+            <a href="CG-06-Composants-Boutons-Inputs-Badges-Cards.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-06</span> Composants UI</a>
+            <a href="CG-07-Navigation-Sidebar-Topbar-Tabs.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-07</span> Navigation</a>
+            <a href="CG-08-Feedback-Toasts-Modals-Etats.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-08</span> Feedback & États</a>
+            <a href="CG-09-Graphiques-DataViz.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-09</span> Graphiques</a>
+            <a href="CG-10-Motion-Design-Animations.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-10</span> Motion Design</a>
+            <a href="CG-11-Accessibilite-RGAA.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-11</span> Accessibilité</a>
+            <a href="CG-12-Tokens-CSS-Complets-Guide.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-12</span> Tokens CSS</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-badge">Charte Graphique · Module CG-01</div>
+      <h1 class="doc-title">Identité Visuelle & Système de Couleurs</h1>
+      <p class="doc-subtitle">Fondations : philosophie, palette d'accent, atmosphère, typographie</p>
+    </div>
+    <div class="doc-meta">
+      Archivage Numérique<br>
+      Administration Publique<br>
+      v1.0 — 2026<br>
+      <br>
+      Statut : Draft · Review
+      <button class="theme-btn" onclick="toggleTheme()" aria-label="Basculer le thème">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        </svg>
+        Thème
+      </button>
+    </div>
+  </header>
+
+
+  <!-- ========== MANIFESTE ========== -->
+  <section class="section">
+    <div class="section-label">01 — Manifeste</div>
+    <h2 class="section-title">Philosophie du design</h2>
+    <p class="section-desc">Un système d'archivage public n'est pas un outil de divertissement. Il doit incarner la confiance, la précision et la durabilité — comme les documents qu'il conserve. Le design n'est pas décoration : il est infrastructure.</p>
+
+    <div class="manifesto-grid">
+      <div class="manifesto-card">
+        <div class="manifesto-number">01 / Précise</div>
+        <div class="manifesto-word">Chaque pixel a une raison.</div>
+        <div class="manifesto-text">Aucun élément décoratif sans fonction. La hiérarchie visuelle est mathématique, prévisible. L'agent retrouve l'information en moins de 2 secondes — toujours au même endroit.</div>
+      </div>
+      <div class="manifesto-card">
+        <div class="manifesto-number">02 / Discrète</div>
+        <div class="manifesto-word">L'interface s'efface devant le contenu.</div>
+        <div class="manifesto-text">Couleurs désaturées, typographie compacte, animations furtives. L'interface ne crie pas. Elle murmure. Ce qui est important ressort non par emphase, mais par contraste maîtrisé.</div>
+      </div>
+      <div class="manifesto-card">
+        <div class="manifesto-number">03 / Fiable</div>
+        <div class="manifesto-word">Cohérence absolue, partout, toujours.</div>
+        <div class="manifesto-text">Un bouton primary est toujours identique. Un état d'erreur est toujours traité pareil. Le système de tokens garantit cette cohérence du premier composant au dernier écran.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========== RÈGLES FONDAMENTALES ========== -->
+  <section class="section">
+    <div class="section-label">02 — Règles fondamentales</div>
+    <h2 class="section-title">Ce qui est permis. Ce qui est interdit.</h2>
+    <p class="section-desc">Ces règles s'appliquent à tout composant, tout écran, tout état — sans exception.</p>
+
+    <div class="rules-grid">
+      <!-- AUTORISÉ -->
+      <div class="rule-row">
+        <svg class="rule-icon rule-allow" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M4 10l4 4 8-8"/>
+        </svg>
+        <div class="rule-content">
+          <div class="rule-title">Icônes SVG Lucide uniquement</div>
+          <div class="rule-desc">Taille 14–16px. Stroke 1.5px. Jamais de glyphe ASCII, emoji, ou font-icon.</div>
+        </div>
+      </div>
+
+      <div class="rule-row">
+        <svg class="rule-icon rule-allow" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M4 10l4 4 8-8"/>
+        </svg>
+        <div class="rule-content">
+          <div class="rule-title">Border-radius discret ≥ 4px</div>
+          <div class="rule-desc">Boutons et inputs : 4px. Cards : 6–8px. Modals : 8px. Pas de 12px ou plus.</div>
+        </div>
+      </div>
+
+      <div class="rule-row">
+        <svg class="rule-icon rule-allow" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M4 10l4 4 8-8"/>
+        </svg>
+        <div class="rule-content">
+          <div class="rule-title">Grain texturel sur tous les composants</div>
+          <div class="rule-desc">SVG feTurbulence. Visible sur boutons (fort), cartes (moyen), fonds (très fort, effet brouillard).</div>
+        </div>
+      </div>
+
+      <div class="rule-row">
+        <svg class="rule-icon rule-allow" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M4 10l4 4 8-8"/>
+        </svg>
+        <div class="rule-content">
+          <div class="rule-title">Glassmorphism ciblé</div>
+          <div class="rule-desc">Réservé à : sidebar, cards de données, toasts. Backdrop-blur 12–16px. Fond rgba(255,255,255,0.03–0.05).</div>
+        </div>
+      </div>
+
+      <div class="rule-row">
+        <svg class="rule-icon rule-allow" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M4 10l4 4 8-8"/>
+        </svg>
+        <div class="rule-content">
+          <div class="rule-title">Dégradés uniquement sur les graphiques</div>
+          <div class="rule-desc">Sous les courbes statistiques. Transparence marquée. Jamais sur un bouton, card, ou fond d'écran.</div>
+        </div>
+      </div>
+
+      <div class="rule-row">
+        <svg class="rule-icon rule-allow" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M4 10l4 4 8-8"/>
+        </svg>
+        <div class="rule-content">
+          <div class="rule-title">Animations spring 150–200ms</div>
+          <div class="rule-desc">cubic-bezier(0.34, 1.56, 0.64, 1) pour les apparitions. ease-out pour les disparitions.</div>
+        </div>
+      </div>
+
+      <!-- INTERDIT -->
+      <div class="rule-row">
+        <svg class="rule-icon rule-forbid" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M5 5l10 10M15 5L5 15"/>
+        </svg>
+        <div class="rule-content">
+          <div class="rule-title">Dégradés sur les éléments UI</div>
+          <div class="rule-desc">Aucun background: linear-gradient sur boutons, inputs, cards, headers, ou fonds de page.</div>
+        </div>
+      </div>
+
+      <div class="rule-row">
+        <svg class="rule-icon rule-forbid" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M5 5l10 10M15 5L5 15"/>
+        </svg>
+        <div class="rule-content">
+          <div class="rule-title">Grandes typographies ostentatoires</div>
+          <div class="rule-desc">Titre max 28px. Body 12–13px. Label 10–11px. Jamais de hero text 40–60px dans l'application.</div>
+        </div>
+      </div>
+
+      <div class="rule-row">
+        <svg class="rule-icon rule-forbid" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M5 5l10 10M15 5L5 15"/>
+        </svg>
+        <div class="rule-content">
+          <div class="rule-title">Ombres trop visibles</div>
+          <div class="rule-desc">box-shadow en rgba(0,0,0,0.04–0.12) maximum. Simulation de profondeur Z uniquement.</div>
+        </div>
+      </div>
+
+      <div class="rule-row">
+        <svg class="rule-icon rule-forbid" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M5 5l10 10M15 5L5 15"/>
+        </svg>
+        <div class="rule-content">
+          <div class="rule-title">ASCII / Emoji dans les interfaces</div>
+          <div class="rule-desc">Interdit sur tout le territoire des interfaces. Aucune exception.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========== COULEURS ========== -->
+  <section class="section">
+    <div class="section-label">03 — Palette d'accent</div>
+    <h2 class="section-title">Trois propositions de couleur d'accent</h2>
+    <p class="section-desc">Chaque option est présentée avec ses 10 nuances, son usage UX recommandé et sa justification. La teinte recommendée est marquée. Toutes sont désaturées, adaptées à un usage institutionnel prolongé (8h/jour).</p>
+
+    <div class="color-options">
+
+      <!-- Option A — Indigo Dusk -->
+      <div class="color-option color-option-a">
+        <div class="recommended-badge">Recommandé</div>
+
+        <div class="color-swatch-main swatch-a">
+          <span class="swatch-hex">#4454E8</span>
+        </div>
+
+        <div class="color-scale">
+          <div class="scale-step" style="background:var(--a-50)"></div>
+          <div class="scale-step" style="background:var(--a-100)"></div>
+          <div class="scale-step" style="background:var(--a-200)"></div>
+          <div class="scale-step" style="background:var(--a-300)"></div>
+          <div class="scale-step" style="background:var(--a-400)"></div>
+          <div class="scale-step" style="background:var(--a-500)"></div>
+          <div class="scale-step" style="background:var(--a-600)"></div>
+          <div class="scale-step" style="background:var(--a-700)"></div>
+          <div class="scale-step" style="background:var(--a-800)"></div>
+          <div class="scale-step" style="background:var(--a-900)"></div>
+        </div>
+
+        <div class="color-info">
+          <div class="color-name">Indigo Dusk</div>
+          <div class="color-tag tag-a">Option A</div>
+          <div class="color-rationale">Indigo légèrement désaturé. Évoque l'autorité et la technologie sans agressivité. Lisible sur fond sombre (ratio WCAG AA : 4.8:1 sur gray-950). Utilisé par Linear, Clerk, Liveblocks.</div>
+          <div class="color-divider"></div>
+          <div class="color-props">
+            <div class="color-prop">
+              <span class="color-prop-label">Primary</span>
+              <span class="color-prop-value">#4454E8</span>
+            </div>
+            <div class="color-prop">
+              <span class="color-prop-label">Hover</span>
+              <span class="color-prop-value">#3340CC</span>
+            </div>
+            <div class="color-prop">
+              <span class="color-prop-label">Subtle bg</span>
+              <span class="color-prop-value">rgba(68,84,232,0.10)</span>
+            </div>
+            <div class="color-prop">
+              <span class="color-prop-label">WCAG ratio</span>
+              <span class="color-prop-value">4.8 : 1</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Option B — Cerulean Steel -->
+      <div class="color-option color-option-b">
+        <div class="color-swatch-main swatch-b">
+          <span class="swatch-hex">#1480D8</span>
+        </div>
+
+        <div class="color-scale">
+          <div class="scale-step" style="background:var(--b-50)"></div>
+          <div class="scale-step" style="background:var(--b-100)"></div>
+          <div class="scale-step" style="background:var(--b-200)"></div>
+          <div class="scale-step" style="background:var(--b-300)"></div>
+          <div class="scale-step" style="background:var(--b-400)"></div>
+          <div class="scale-step" style="background:var(--b-500)"></div>
+          <div class="scale-step" style="background:var(--b-600)"></div>
+          <div class="scale-step" style="background:var(--b-700)"></div>
+          <div class="scale-step" style="background:var(--b-800)"></div>
+          <div class="scale-step" style="background:var(--b-900)"></div>
+        </div>
+
+        <div class="color-info">
+          <div class="color-name">Cerulean Steel</div>
+          <div class="color-tag tag-b">Option B</div>
+          <div class="color-rationale">Bleu céruléen ancré, plus classique et institutionnel. Associé à la confiance dans les études UX (banques, services publics). Parfait avec les gris froids. Utilisé par GitHub, Tailwind, Supabase.</div>
+          <div class="color-divider"></div>
+          <div class="color-props">
+            <div class="color-prop">
+              <span class="color-prop-label">Primary</span>
+              <span class="color-prop-value">#1480D8</span>
+            </div>
+            <div class="color-prop">
+              <span class="color-prop-label">Hover</span>
+              <span class="color-prop-value">#0D65B0</span>
+            </div>
+            <div class="color-prop">
+              <span class="color-prop-label">Subtle bg</span>
+              <span class="color-prop-value">rgba(20,128,216,0.10)</span>
+            </div>
+            <div class="color-prop">
+              <span class="color-prop-label">WCAG ratio</span>
+              <span class="color-prop-value">4.5 : 1</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Option C — Sage Slate -->
+      <div class="color-option color-option-c">
+        <div class="color-swatch-main swatch-c">
+          <span class="swatch-hex">#179E8E</span>
+        </div>
+
+        <div class="color-scale">
+          <div class="scale-step" style="background:var(--c-50)"></div>
+          <div class="scale-step" style="background:var(--c-100)"></div>
+          <div class="scale-step" style="background:var(--c-200)"></div>
+          <div class="scale-step" style="background:var(--c-300)"></div>
+          <div class="scale-step" style="background:var(--c-400)"></div>
+          <div class="scale-step" style="background:var(--c-500)"></div>
+          <div class="scale-step" style="background:var(--c-600)"></div>
+          <div class="scale-step" style="background:var(--c-700)"></div>
+          <div class="scale-step" style="background:var(--c-800)"></div>
+          <div class="scale-step" style="background:var(--c-900)"></div>
+        </div>
+
+        <div class="color-info">
+          <div class="color-name">Sage Slate</div>
+          <div class="color-tag tag-c">Option C</div>
+          <div class="color-rationale">Teal sage désaturé. Rare dans les interfaces publiques — différenciation maximale. Évoque la sérénité, la nature, la permanence. Tranche distinctement avec les gris froids sans agressivité.</div>
+          <div class="color-divider"></div>
+          <div class="color-props">
+            <div class="color-prop">
+              <span class="color-prop-label">Primary</span>
+              <span class="color-prop-value">#179E8E</span>
+            </div>
+            <div class="color-prop">
+              <span class="color-prop-label">Hover</span>
+              <span class="color-prop-value">#0E7E72</span>
+            </div>
+            <div class="color-prop">
+              <span class="color-prop-label">Subtle bg</span>
+              <span class="color-prop-value">rgba(23,158,142,0.10)</span>
+            </div>
+            <div class="color-prop">
+              <span class="color-prop-label">WCAG ratio</span>
+              <span class="color-prop-value">4.6 : 1</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ========== TYPOGRAPHIE ========== -->
+  <section class="section">
+    <div class="section-label">04 — Typographie</div>
+    <h2 class="section-title">Plus Jakarta Sans + DM Mono</h2>
+    <p class="section-desc">Duo humaniste + monospace. Plus Jakarta Sans pour son caractère chaleureux mais discipliné, adapté aux interfaces denses. DM Mono pour les données, références, timestamps — jamais pour le contenu courant.</p>
+
+    <div class="typo-showcase">
+      <div class="typo-font-name">Plus Jakarta Sans — Humaniste · Variable 300–700</div>
+
+      <div class="typo-sample-display">Archivage Numérique</div>
+      <div class="typo-sample-body">Le système garantit la traçabilité, l'intégrité et la pérennité des documents administratifs. Chaque action est journalisée, chaque modification versionnée, chaque accès contrôlé.</div>
+      <div class="typo-sample-caption">Légende · Métadonnées · Labels de formulaire</div>
+      <div class="typo-mono-sample">DOC-2026-00843 · 2026-02-18T10:30:00Z · SHA-256: a1b2c3d4...</div>
+
+      <div class="typo-scale">
+        <div class="typo-scale-row">
+          <span class="typo-scale-meta">28px / 700</span>
+          <span class="typo-scale-sample" style="font-size:28px;font-weight:700;color:var(--gray-50);letter-spacing:-0.035em;line-height:1">Titre de page</span>
+        </div>
+        <div class="typo-scale-row">
+          <span class="typo-scale-meta">18px / 600</span>
+          <span class="typo-scale-sample" style="font-size:18px;font-weight:600;color:var(--gray-100);letter-spacing:-0.02em">Section principale</span>
+        </div>
+        <div class="typo-scale-row">
+          <span class="typo-scale-meta">14px / 500</span>
+          <span class="typo-scale-sample" style="font-size:14px;font-weight:500;color:var(--gray-200)">Sous-section · Navigation active</span>
+        </div>
+        <div class="typo-scale-row">
+          <span class="typo-scale-meta">13px / 400</span>
+          <span class="typo-scale-sample" style="font-size:13px;color:var(--gray-300)">Corps du texte standard — lecture principale de l'interface</span>
+        </div>
+        <div class="typo-scale-row">
+          <span class="typo-scale-meta">12px / 400</span>
+          <span class="typo-scale-sample" style="font-size:12px;color:var(--gray-400)">Description secondaire · Texte d'aide · Placeholder</span>
+        </div>
+        <div class="typo-scale-row">
+          <span class="typo-scale-meta">11px / 400</span>
+          <span class="typo-scale-sample" style="font-size:11px;color:var(--gray-500)">Légende · Timestamp · Métadonnées secondaires</span>
+        </div>
+        <div class="typo-scale-row">
+          <span class="typo-scale-meta">10px mono</span>
+          <span class="typo-scale-sample" style="font-size:10px;color:var(--gray-600);font-family:var(--font-mono);letter-spacing:0.1em">LABEL · BADGE · CODE · REFERENCE</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========== RÉFÉRENCES ========== -->
+  <section class="section">
+    <div class="section-label">05 — Références visuelles</div>
+    <h2 class="section-title">Ce qu'on emprunte. Ce qu'on dépasse.</h2>
+    <p class="section-desc">Pas de copie — une synthèse élaborée. On prend la densité maîtrisée de Linear, la sobriété typographique de Notion, et la rigueur systémique de GitHub. Puis on applique notre grain, notre verre, notre atmosphère froide unique.</p>
+
+    <div class="refs-grid">
+      <div class="ref-card">
+        <div class="ref-dot ref-dot-linear">Li</div>
+        <div class="ref-name">Linear</div>
+        <div class="ref-insight">Densité parfaite. Spacing System 4/8/12/16/24/32px. Navigation sidebar épurée. Transitions spring ultra-précises. On emprunte : les proportions et la vitesse.</div>
+        <div class="ref-trait">Proportions · Spacing · Motion</div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-dot ref-dot-notion">No</div>
+        <div class="ref-name">Notion</div>
+        <div class="ref-insight">Sobriété typographique absolue. La hiérarchie se fait par la taille et le poids — jamais par la couleur. Sidebar collapsible élégante. On emprunte : la retenue de la couleur et la clarté.</div>
+        <div class="ref-trait">Typographie · Hiérarchie · Sidebar</div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-dot ref-dot-github">Gh</div>
+        <div class="ref-name">GitHub</div>
+        <div class="ref-insight">Système de tokens le plus complet du marché (Primer). Gris froids bleutés. Tables de données traitées avec excellence. On emprunte : le système de couleurs fonctionnelles et la densité des tableaux.</div>
+        <div class="ref-trait">Tokens · Tables · Couleurs fonct.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========== ILLUSTRATION GLASSMORPHISM ========== -->
+  <section class="section">
+    <div class="section-label">06 — Glassmorphisme</div>
+    <h2 class="section-title">Usage ciblé de l'effet verre</h2>
+    <p class="section-desc">Le glassmorphisme n'est pas appliqué partout. Il est réservé aux composants qui flottent au-dessus du contenu : sidebar, cards de KPI, toasts. Sur fond grain lourd, l'effet verre crée une profondeur sans artificiel.</p>
+
+    <div class="glass-demo">
+      <div class="glass-card">
+        <div class="glass-card-title">Documents actifs</div>
+        <div class="glass-card-value">14 382</div>
+        <div class="glass-card-sub">+47 aujourd'hui · DOC-2026</div>
+      </div>
+      <div class="glass-card">
+        <div class="glass-card-title">En attente de validation</div>
+        <div class="glass-card-value">83</div>
+        <div class="glass-card-sub">12 en retard · Workflow actif</div>
+      </div>
+      <div class="glass-card" style="grid-column: span 2;">
+        <div class="glass-card-title">Dernier document archivé</div>
+        <div class="glass-card-value" style="font-size:14px;font-weight:500;letter-spacing:-0.01em">Délibération du conseil municipal — Séance du 15 janvier 2026</div>
+        <div class="glass-card-sub">DOC-2026-00843 · Validé par Marie Archiviste · il y a 4 minutes</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========== DÉCISIONS TECHNIQUES ========== -->
+  <section class="section">
+    <div class="section-label">07 — Tokens fondamentaux</div>
+    <h2 class="section-title">Décisions techniques actées</h2>
+    <p class="section-desc">Ces valeurs seront exprimées en CSS Custom Properties dans CG-12. Elles gouvernent tout le système.</p>
+
+    <div class="decision-panel">
+      <div class="decision-title">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Décisions validées — CG-01
+      </div>
+
+      <div class="decision-row">
+        <span class="decision-key">Famille typographique principale</span>
+        <span class="decision-val">Plus Jakarta Sans</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Famille typographique mono</span>
+        <span class="decision-val">DM Mono</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Thèmes</span>
+        <span class="decision-val">Dark + Light (switch)</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Gris de base</span>
+        <span class="decision-val">Froids bleutés (style GitHub)</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Border-radius boutons</span>
+        <span class="decision-val">4px</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Border-radius cards</span>
+        <span class="decision-val">6–8px</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Grain</span>
+        <span class="decision-val">SVG feTurbulence — niveau lourd (brouillard)</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Animation timing</span>
+        <span class="decision-val">150–200ms · Spring cubic-bezier(0.34,1.56,0.64,1)</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Glassmorphism cibles</span>
+        <span class="decision-val">Sidebar · Cards KPI · Toasts</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Densité</span>
+        <span class="decision-val">Aéré — style Linear/Vercel</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Couleur d'accent · Décision en attente</span>
+        <span class="decision-val">Option A / B / C → à valider</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Icônes</span>
+        <span class="decision-val">Lucide SVG · 14–16px · Stroke 1.5px</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Navigation</span>
+        <span class="decision-val">Sidebar verticale fixe gauche</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Tables</span>
+        <span class="decision-val">Séparation par border légère uniquement</span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="doc-footer">
+    <div class="footer-left">
+      Charte Graphique — Archivage Numérique · CG-01 / 12<br>
+      <div class="kbd-hint">Raccourcis : <span class="kbd">←</span> Précédent <span class="kbd">→</span> Suivant <span class="kbd">i</span> Index</div>
+    </div>
+    <div class="footer-nav">
+      <a href="index.html" class="footer-link disabled" aria-label="Module précédent">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Précédent
+      </a>
+      <a href="CG-02-Systeme-Couleurs-Tokens.html" class="footer-link" aria-label="Module suivant : CG-02">
+        Suivant
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+// Theme toggle
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+}
+
+// Navigation dropdown
+function toggleNav(btn) {
+  const dropdown = btn.parentElement;
+  const isActive = dropdown.classList.contains('active');
+  
+  // Close all dropdowns
+  document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('active'));
+  
+  if (!isActive) {
+    dropdown.classList.add('active');
+    btn.setAttribute('aria-expanded', 'true');
+  } else {
+    btn.setAttribute('aria-expanded', 'false');
+  }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.nav-dropdown')) {
+    document.querySelectorAll('.nav-dropdown').forEach(d => {
+      d.classList.remove('active');
+      const btn = d.querySelector('.nav-dropdown-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  // Ignore if user is typing in an input
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  
+  switch(e.key) {
+    case 'ArrowLeft':
+      // Previous module (disabled for CG-01)
+      break;
+    case 'ArrowRight':
+      // Next module
+      window.location.href = 'CG-02-Systeme-Couleurs-Tokens.html';
+      break;
+    case 'i':
+    case 'I':
+      // Index
+      window.location.href = 'index.html';
+      break;
+  }
+});
+</script>
+
+</body>
+</html>

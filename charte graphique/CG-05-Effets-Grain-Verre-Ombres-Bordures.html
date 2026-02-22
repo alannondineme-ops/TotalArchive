@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CG-05 — Effets : Grain, Verre, Ombres & Bordures · Archivage Numérique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --accent-300:  #65D5C4;
+  --accent-400:  #36BCAB;
+  --accent-500:  #179E8E;
+  --accent-600:  #0E7E72;
+  --accent-subtle-bg:     rgba(23,158,142,0.08);
+  --accent-subtle-border: rgba(23,158,142,0.20);
+
+  --gray-950: #0A0B0F;
+  --gray-900: #10121A;
+  --gray-850: #14161F;
+  --gray-800: #1A1D2B;
+  --gray-700: #252838;
+  --gray-600: #353848;
+  --gray-500: #4D5068;
+  --gray-400: #6B6F88;
+  --gray-300: #9498B0;
+  --gray-200: #C2C5D6;
+  --gray-50:  #F0F1F8;
+
+  --bg-base:     var(--gray-950);
+  --bg-elevated: var(--gray-900);
+  --bg-subtle:   var(--gray-800);
+  --border-subtle:  var(--gray-800);
+  --border-default: var(--gray-700);
+  --text-primary:   var(--gray-50);
+  --text-secondary: var(--gray-200);
+  --text-tertiary:  var(--gray-400);
+
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Light mode */
+[data-theme="light"] {
+  --bg-base: #F8F9FC;
+  --bg-elevated: #FFFFFF;
+  --bg-subtle: var(--gray-100);
+  --border-subtle: var(--gray-100);
+  --border-default: var(--gray-200);
+  --text-primary: var(--gray-900);
+  --text-secondary: #3D4158;
+  --text-tertiary: var(--gray-500);
+}
+
+html { scroll-behavior: smooth; }
+
+/* Smooth theme transitions */
+body, body * {
+  transition-property: background-color, border-color, color;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-base);
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* GRAIN GLOBAL — brouillard lourd */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 180px; opacity: 0.20; mix-blend-mode: overlay;
+}
+
+.page { max-width: 1100px; margin: 0 auto; padding: 64px 40px 120px; }
+
+/* ── DOC HEADER ── */
+.doc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 80px; padding-bottom: 32px; border-bottom: 1px solid var(--border-subtle); }
+.doc-badge { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-tertiary); border: 1px solid var(--border-default); padding: 4px 10px; border-radius: var(--radius-sm); margin-bottom: 18px; }
+.doc-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-500); flex-shrink: 0; }
+.doc-title { font-size: 28px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.035em; line-height: 1.15; margin-bottom: 8px; }
+.doc-subtitle { font-size: 13px; color: var(--text-tertiary); }
+.doc-meta { text-align: right; font-family: var(--font-mono); font-size: 10px; color: var(--gray-500); line-height: 1.9; }
+
+.theme-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  transition: all 150ms ease;
+}
+.theme-btn:hover {
+  border-color: var(--border-default);
+  color: var(--text-primary);
+}
+
+/* ── SECTION ── */
+.section { margin-bottom: 72px; }
+.section-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gray-500); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border-subtle); }
+.section-title { font-size: 18px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.025em; margin-bottom: 6px; }
+.section-desc { font-size: 13px; color: var(--text-tertiary); max-width: 620px; line-height: 1.65; }
+
+
+/* ══════════════════════════════════════
+   SECTION 01 — GRAIN
+══════════════════════════════════════ */
+
+/* SVG grain URLs — 3 niveaux */
+.grain-light::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px; opacity: 0.10; mix-blend-mode: overlay;
+}
+.grain-medium::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 110px; opacity: 0.15; mix-blend-mode: overlay;
+}
+.grain-heavy::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 70px; opacity: 0.32; mix-blend-mode: overlay;
+}
+
+.grain-showcase {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  margin-top: 28px;
+}
+.grain-card {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  cursor: default;
+  position: relative;
+}
+.grain-swatch {
+  height: 120px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 12px;
+  background: var(--gray-800);
+}
+.grain-zero { background: var(--gray-800); }
+.grain-info {
+  padding: 14px;
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--border-subtle);
+  position: relative;
+  overflow: hidden;
+}
+.grain-info::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 80px; opacity: 0.08; mix-blend-mode: overlay;
+}
+.grain-name { font-size: 11px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; position: relative; z-index: 2; }
+.grain-spec { font-family: var(--font-mono); font-size: 9px; color: var(--accent-300); margin-bottom: 6px; position: relative; z-index: 2; }
+.grain-usage { font-size: 10px; color: var(--gray-500); line-height: 1.5; position: relative; z-index: 2; }
+.grain-tag {
+  display: inline-block;
+  font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.08em;
+  padding: 2px 6px; border-radius: 2px;
+  background: var(--accent-subtle-bg); color: var(--accent-300);
+  border: 1px solid var(--accent-subtle-border);
+  margin-top: 8px; position: relative; z-index: 2;
+}
+.grain-label-float {
+  font-family: var(--font-mono); font-size: 8px; color: rgba(255,255,255,0.4);
+  position: relative; z-index: 3;
+}
+
+/* Bouton avec grain fort visible */
+.grain-btn-demo {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px;
+  background: var(--accent-500);
+  border-radius: var(--radius-sm);
+  font-size: 11px; font-weight: 500; color: white;
+  border: none; cursor: default;
+  position: relative; overflow: hidden;
+  margin-top: 20px;
+}
+.grain-btn-demo::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 60px; opacity: 0.38; mix-blend-mode: overlay;
+}
+.grain-btn-label { position: relative; z-index: 2; }
+
+.grain-btn-row {
+  display: flex; gap: 10px; align-items: center; margin-top: 20px; flex-wrap: wrap;
+}
+.grain-note { font-size: 11px; color: var(--gray-500); font-style: italic; margin-top: 8px; }
+
+
+/* ══════════════════════════════════════
+   SECTION 02 — GLASSMORPHISM
+══════════════════════════════════════ */
+.glass-showcase {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 28px;
+}
+.glass-scene {
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+/* fond de scène avec formes floues */
+.glass-scene::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 140px 100px at 20% 30%, rgba(23,158,142,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 100px 80px at 80% 70%, rgba(107,111,136,0.20) 0%, transparent 70%),
+    var(--gray-850);
+}
+.glass-scene-label {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--gray-600);
+  position: relative; z-index: 2;
+}
+
+/* Composant verre */
+.glass-component {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  position: relative; z-index: 2; overflow: hidden;
+}
+.glass-component::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 100px; opacity: 0.16; mix-blend-mode: overlay;
+}
+/* Inner highlight — reflet en haut */
+.glass-component::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+}
+
+.glass-comp-title { font-size: 10px; color: var(--gray-400); margin-bottom: 4px; position: relative; z-index: 2; }
+.glass-comp-value { font-size: 20px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.03em; position: relative; z-index: 2; }
+.glass-comp-sub { font-family: var(--font-mono); font-size: 9px; color: var(--gray-500); margin-top: 2px; position: relative; z-index: 2; }
+
+/* Toast glass */
+.glass-toast {
+  background: rgba(20,22,31,0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  display: flex; align-items: center; gap: 10px;
+  position: relative; z-index: 2; overflow: hidden;
+  max-width: 320px;
+}
+.glass-toast::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 80px; opacity: 0.18; mix-blend-mode: overlay;
+}
+.glass-toast::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+}
+.toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; position: relative; z-index: 2; }
+.toast-text { font-size: 12px; color: var(--text-primary); font-weight: 500; position: relative; z-index: 2; }
+.toast-sub { font-size: 10px; color: var(--gray-400); position: relative; z-index: 2; }
+
+.glass-specs-row {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; margin-top: 28px;
+}
+.glass-spec-card {
+  background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md); padding: 16px; position: relative; overflow: hidden;
+}
+.glass-spec-card::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 80px; opacity: 0.08; mix-blend-mode: overlay;
+}
+.gsc-target { font-size: 11px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px; position: relative; z-index: 2; }
+.gsc-prop { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border-subtle); position: relative; z-index: 2; }
+.gsc-prop:last-child { border-bottom: none; }
+.gsc-k { font-size: 10px; color: var(--gray-500); }
+.gsc-v { font-family: var(--font-mono); font-size: 9px; color: var(--accent-300); }
+
+
+/* ══════════════════════════════════════
+   SECTION 03 — OMBRES
+══════════════════════════════════════ */
+.shadow-showcase {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 28px;
+}
+.shadow-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  position: relative; overflow: hidden;
+}
+.shadow-card::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 80px; opacity: 0.08; mix-blend-mode: overlay;
+}
+.shadow-subject {
+  width: 60px; height: 60px; border-radius: var(--radius-md);
+  background: var(--gray-700);
+  position: relative;
+  flex-shrink: 0;
+}
+.shadow-info { text-align: center; }
+.shadow-name { font-size: 11px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.shadow-val  { font-family: var(--font-mono); font-size: 9px; color: var(--accent-300); line-height: 1.6; }
+.shadow-use  { font-size: 10px; color: var(--gray-500); margin-top: 4px; line-height: 1.5; }
+
+/* Ombres réelles appliquées */
+.sh-none   { box-shadow: none; border: 1px solid var(--border-default); }
+.sh-sm     { box-shadow: 0 1px 3px rgba(0,0,0,0.20), 0 1px 2px rgba(0,0,0,0.12); }
+.sh-md     { box-shadow: 0 4px 12px rgba(0,0,0,0.25), 0 2px 4px rgba(0,0,0,0.12); }
+.sh-lg     { box-shadow: 0 8px 24px rgba(0,0,0,0.30), 0 4px 8px rgba(0,0,0,0.14); }
+.sh-focus  { box-shadow: 0 0 0 2px var(--gray-950), 0 0 0 4px var(--accent-500); border: 1px solid var(--border-default); }
+
+/* Focus ring demo */
+.focus-ring-demo {
+  margin-top: 28px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+  position: relative; overflow: hidden;
+}
+.focus-ring-demo::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 80px; opacity: 0.08; mix-blend-mode: overlay;
+}
+.focus-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.focus-label { font-family: var(--font-mono); font-size: 9px; color: var(--gray-600); letter-spacing: 0.08em; }
+.focus-el {
+  padding: 6px 12px; border-radius: var(--radius-sm);
+  font-size: 11px; font-weight: 500; cursor: default;
+  position: relative;
+}
+.focus-el-btn {
+  background: var(--accent-500); color: white;
+  overflow: hidden;
+}
+.focus-el-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 55px; opacity: 0.35; mix-blend-mode: overlay;
+}
+.focus-el-input { background: var(--bg-subtle); border: 1px solid var(--border-default); color: var(--text-secondary); }
+.fr-default {}
+.fr-focus { box-shadow: 0 0 0 2px var(--gray-950), 0 0 0 4px var(--accent-500); }
+.fr-focus-err { box-shadow: 0 0 0 2px var(--gray-950), 0 0 0 4px rgba(155,50,44,0.7); border-color: #9B322C !important; }
+
+
+/* ══════════════════════════════════════
+   SECTION 04 — BORDURES & RADIUS
+══════════════════════════════════════ */
+.border-radius-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 28px;
+}
+.br-card {
+  background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md); padding: 16px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  position: relative; overflow: hidden;
+}
+.br-card::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 80px; opacity: 0.08; mix-blend-mode: overlay;
+}
+.br-subject {
+  width: 56px; height: 56px; background: var(--gray-700);
+  border: 1px solid var(--border-default);
+}
+.br-token { font-family: var(--font-mono); font-size: 9px; color: var(--accent-300); }
+.br-val   { font-size: 11px; font-weight: 600; color: var(--text-primary); }
+.br-usage { font-size: 10px; color: var(--gray-500); text-align: center; line-height: 1.4; }
+
+.border-types {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; margin-top: 16px;
+}
+.border-type-card {
+  background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md); padding: 16px;
+  position: relative; overflow: hidden;
+}
+.border-type-card::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 80px; opacity: 0.08; mix-blend-mode: overlay;
+}
+.bt-name { font-size: 11px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; position: relative; z-index: 2; }
+.bt-val  { font-family: var(--font-mono); font-size: 9px; color: var(--accent-300); margin-bottom: 8px; position: relative; z-index: 2; }
+.bt-desc { font-size: 10px; color: var(--gray-500); line-height: 1.5; position: relative; z-index: 2; }
+.bt-demo {
+  height: 32px; border-radius: var(--radius-sm);
+  margin-top: 10px; position: relative; z-index: 2;
+}
+.bt-demo-subtle { background: var(--bg-subtle); border: 1px solid var(--gray-800); }
+.bt-demo-default { background: var(--bg-subtle); border: 1px solid var(--gray-700); }
+.bt-demo-strong  { background: var(--bg-subtle); border: 1px solid var(--gray-600); }
+.bt-demo-focus   { background: var(--bg-subtle); border: 1px solid var(--accent-500); box-shadow: 0 0 0 1px rgba(23,158,142,0.25); }
+.bt-demo-accent  { background: var(--accent-subtle-bg); border: 1px solid var(--accent-subtle-border); }
+.bt-demo-error   { background: rgba(155,50,44,0.08); border: 1px solid rgba(155,50,44,0.28); }
+
+
+/* ══════════════════════════════════════
+   SECTION 05 — HIGHLIGHT REFLET
+══════════════════════════════════════ */
+.highlight-demo {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 28px;
+}
+.hl-card {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+.hl-swatch {
+  height: 80px;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+/* Reflet top */
+.hl-swatch::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+  z-index: 3;
+}
+.hl-label { font-size: 10px; color: rgba(255,255,255,0.4); position: relative; z-index: 2; font-family: var(--font-mono); }
+.hl-grain::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 60px; opacity: 0.34; mix-blend-mode: overlay;
+}
+.hl-info { padding: 12px 14px; background: var(--bg-elevated); border-top: 1px solid var(--border-subtle); }
+.hl-info-title { font-size: 10px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.hl-info-code  { font-family: var(--font-mono); font-size: 9px; color: var(--accent-300); }
+
+
+/* ══════════════════════════════════════
+   CODE BLOCK
+══════════════════════════════════════ */
+.code-block {
+  background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md); padding: 20px 24px; margin-top: 28px;
+  overflow-x: auto; position: relative;
+}
+.code-block::after {
+  content: ''; position: absolute; inset: 0; border-radius: var(--radius-md); pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 100px; opacity: 0.07; mix-blend-mode: overlay;
+}
+.code-lang {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--accent-400); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.code-lang::after { content: ''; flex: 1; height: 1px; background: var(--border-subtle); }
+pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); line-height: 1.75; white-space: pre; position: relative; z-index: 2; }
+.c-comment { color: var(--gray-600); }
+.c-var     { color: var(--accent-300); }
+.c-val     { color: var(--gray-300); }
+.c-prop    { color: var(--gray-400); }
+
+/* NAVIGATION SYSTEM */
+.nav-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--gray-500);
+  margin-bottom: 16px;
+}
+.nav-breadcrumb a {
+  color: var(--accent-400);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.nav-breadcrumb a:hover { color: var(--accent-300); }
+.nav-breadcrumb-sep { color: var(--gray-700); }
+
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.nav-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--gray-900);
+  border: 1px solid var(--gray-800);
+  border-radius: var(--radius-sm);
+  color: var(--gray-300);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.nav-dropdown-btn:hover {
+  background: var(--gray-850);
+  border-color: var(--gray-700);
+  color: var(--gray-200);
+}
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--gray-900);
+  border: 1px solid var(--gray-800);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  min-width: 280px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1000;
+}
+.nav-dropdown.active .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  color: var(--gray-400);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  transition: all 120ms ease;
+}
+.nav-dropdown-item:hover {
+  background: var(--gray-850);
+  color: var(--gray-200);
+}
+.nav-dropdown-item.active {
+  background: rgba(23,158,142,0.12);
+  color: var(--accent-300);
+  font-weight: 500;
+}
+.nav-dropdown-item-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--gray-600);
+  min-width: 32px;
+}
+
+/* NAVIGATION SYSTEM */
+.nav-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--gray-500);
+  margin-bottom: 16px;
+}
+.nav-breadcrumb a {
+  color: var(--accent-400);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.nav-breadcrumb a:hover { color: var(--accent-300); }
+.nav-breadcrumb-sep { color: var(--gray-700); }
+
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.nav-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--gray-900);
+  border: 1px solid var(--gray-800);
+  border-radius: var(--radius-sm);
+  color: var(--gray-300);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.nav-dropdown-btn:hover {
+  background: var(--gray-850);
+  border-color: var(--gray-700);
+  color: var(--gray-200);
+}
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--gray-900);
+  border: 1px solid var(--gray-800);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  min-width: 280px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1000;
+}
+.nav-dropdown.active .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  color: var(--gray-400);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  transition: all 120ms ease;
+}
+.nav-dropdown-item:hover {
+  background: var(--gray-850);
+  color: var(--gray-200);
+}
+.nav-dropdown-item.active {
+  background: rgba(23,158,142,0.12);
+  color: var(--accent-300);
+  font-weight: 500;
+}
+.nav-dropdown-item-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--gray-600);
+  min-width: 32px;
+}
+
+/* FOOTER */
+.doc-footer { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+.footer-left { font-family: var(--font-mono); font-size: 10px; color: var(--gray-600); line-height: 1.8; }
+.footer-nav {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--gray-400);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: all 150ms ease;
+}
+.footer-link:hover {
+  color: var(--gray-200);
+  background: var(--gray-900);
+}
+.footer-link svg { width: 14px; height: 14px; }
+.footer-link.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+.kbd-hint {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--gray-700);
+  margin-top: 8px;
+}
+.kbd {
+  display: inline-block;
+  padding: 2px 5px;
+  background: var(--gray-900);
+  border: 1px solid var(--gray-800);
+  border-radius: 3px;
+  font-size: 9px;
+  margin: 0 2px;
+}
+.footer-next { font-size: 11px; color: var(--text-tertiary); display: flex; align-items: center; gap: 6px; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--gray-950); }
+::-webkit-scrollbar-thumb { background: var(--gray-700); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="doc-header">
+    <div>
+      <!-- Breadcrumb + Menu -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <nav class="nav-breadcrumb" aria-label="Fil d'Ariane">
+          <a href="index.html">← Index</a>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>CG-05</span>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>Effets & Grain</span>
+        </nav>
+        
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-btn" onclick="toggleNav(this)" aria-label="Menu des modules" aria-expanded="false">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+            Tous les modules
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="CG-01-Identite-Palette.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-01</span> Identité & Palette</a>
+            <a href="CG-02-Systeme-Couleurs-Tokens.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-02</span> Couleurs & Tokens</a>
+            <a href="CG-03-Typographie-Echelle.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-03</span> Typographie</a>
+            <a href="CG-04-Espacement-Grille-Layout.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-04</span> Espacement & Grille</a>
+            <a href="CG-05-Effets-Grain-Verre-Ombres-Bordures.html" class="nav-dropdown-item active"><span class="nav-dropdown-item-num">CG-05</span> Effets & Grain</a>
+            <a href="CG-06-Composants-Boutons-Inputs-Badges-Cards.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-06</span> Composants UI</a>
+            <a href="CG-07-Navigation-Sidebar-Topbar-Tabs.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-07</span> Navigation</a>
+            <a href="CG-08-Feedback-Toasts-Modals-Etats.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-08</span> Feedback & États</a>
+            <a href="CG-09-Graphiques-DataViz.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-09</span> Graphiques</a>
+            <a href="CG-10-Motion-Design-Animations.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-10</span> Motion Design</a>
+            <a href="CG-11-Accessibilite-RGAA.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-11</span> Accessibilité</a>
+            <a href="CG-12-Tokens-CSS-Complets-Guide.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-12</span> Tokens CSS</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-badge"><span class="doc-badge-dot"></span>Charte Graphique · Module CG-05</div>
+      <h1 class="doc-title">Effets visuels<br>Grain · Verre · Ombres · Bordures</h1>
+      <p class="doc-subtitle">Spécifications techniques complètes de chaque effet · CSS prêt à l'emploi</p>
+    </div>
+    <div class="doc-meta">
+      Archivage Numérique<br>
+      Administration Publique<br>
+      v1.0 — 2026<br><br>
+      Grain : SVG feTurbulence<br>
+      Glass : backdrop-blur<br>
+      Ombres : rgba Z-depth
+      <button class="theme-btn" onclick="toggleTheme()" aria-label="Basculer le thème">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        </svg>
+        Thème
+      </button>
+    </div>
+  </header>
+
+
+  <!-- ══ 01 — GRAIN ══ -->
+  <section class="section">
+    <div class="section-label">01 — Effet grain</div>
+    <h2 class="section-title">Grain SVG feTurbulence — 3 niveaux codifiés</h2>
+    <p class="section-desc">Le grain est l'empreinte sensorielle du système. Il transforme des surfaces numériques lisses en matières vivantes — comme une affiche sérigraphiée. Trois niveaux sont définis selon la visibilité souhaitée. Le grain global de la page (body::before) est en brouillard lourd, opacity 0.20.</p>
+
+    <div class="grain-showcase">
+
+      <!-- ZÉRO (référence) -->
+      <div class="grain-card">
+        <div class="grain-swatch grain-zero">
+          <span class="grain-label-float">Aucun grain</span>
+        </div>
+        <div class="grain-info">
+          <div class="grain-name">Référence — Sans grain</div>
+          <div class="grain-spec">Interdit dans le système</div>
+          <div class="grain-usage">Surface plate, froide, synthétique. Montre pourquoi le grain est indispensable — aucun caractère, aucune chaleur.</div>
+        </div>
+      </div>
+
+      <!-- LÉGER -->
+      <div class="grain-card">
+        <div class="grain-swatch grain-light" style="position:relative;">
+          <span class="grain-label-float" style="position:relative;z-index:3">Grain léger</span>
+        </div>
+        <div class="grain-info">
+          <div class="grain-name">Léger</div>
+          <div class="grain-spec">baseFreq: 0.72 · opacity: 0.10</div>
+          <div class="grain-usage">Grain discret, perceptible à l'examen attentif. Utilisé sur les fonds de sections et les headers.</div>
+          <span class="grain-tag">Fonds de page · Headers</span>
+        </div>
+      </div>
+
+      <!-- MOYEN -->
+      <div class="grain-card">
+        <div class="grain-swatch grain-medium" style="position:relative;">
+          <span class="grain-label-float" style="position:relative;z-index:3">Grain moyen</span>
+        </div>
+        <div class="grain-info">
+          <div class="grain-name">Moyen</div>
+          <div class="grain-spec">baseFreq: 0.88 · opacity: 0.15</div>
+          <div class="grain-usage">Grain perceptible au premier regard. Donne du caractère aux cartes, panels et surfaces de composants.</div>
+          <span class="grain-tag">Cards · Sidebars · Panels</span>
+        </div>
+      </div>
+
+      <!-- FORT -->
+      <div class="grain-card">
+        <div class="grain-swatch grain-heavy" style="position:relative;background:var(--accent-500)">
+          <span class="grain-label-float" style="position:relative;z-index:3">Grain fort</span>
+        </div>
+        <div class="grain-info">
+          <div class="grain-name">Fort — Sérigraphique</div>
+          <div class="grain-spec">baseFreq: 0.95 · opacity: 0.32–0.38</div>
+          <div class="grain-usage">Grain très visible, texture sérigraphiée. Obligatoire sur les boutons primaires et les badges colorés.</div>
+          <span class="grain-tag">Boutons primaires · Badges accentués</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Boutons avec grain -->
+    <div style="margin-top:28px;background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:24px;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.88\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:100px;opacity:0.08;mix-blend-mode:overlay;"></div>
+      <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gray-600);margin-bottom:16px;position:relative;z-index:2;">Démonstration — Grain sur boutons</div>
+      <div class="grain-btn-row">
+        <!-- Primary grain fort -->
+        <div class="grain-btn-demo">
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" style="position:relative;z-index:2"><path stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>
+          <span class="grain-btn-label">Nouveau document</span>
+        </div>
+
+        <!-- Ghost -->
+        <div style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:transparent;border:1px solid var(--border-default);border-radius:var(--radius-sm);font-size:11px;font-weight:500;color:var(--gray-300);cursor:default;position:relative;overflow:hidden;">
+          <span style="position:relative;z-index:2">Annuler</span>
+          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:60px;opacity:0.12;mix-blend-mode:overlay;"></div>
+        </div>
+
+        <!-- Danger -->
+        <div style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:rgba(155,50,44,0.15);border:1px solid rgba(155,50,44,0.3);border-radius:var(--radius-sm);font-size:11px;font-weight:500;color:#CF6860;cursor:default;position:relative;overflow:hidden;">
+          <span style="position:relative;z-index:2">Supprimer</span>
+          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:60px;opacity:0.20;mix-blend-mode:overlay;"></div>
+        </div>
+
+        <!-- Badge -->
+        <div style="display:inline-flex;align-items:center;gap:4px;padding:4px 9px;background:var(--accent-subtle-bg);border:1px solid var(--accent-subtle-border);border-radius:2px;font-size:10px;font-weight:500;color:var(--accent-300);font-family:var(--font-mono);cursor:default;position:relative;overflow:hidden;letter-spacing:0.06em;">
+          <span style="position:relative;z-index:2">VALIDÉ</span>
+          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:45px;opacity:0.28;mix-blend-mode:overlay;"></div>
+        </div>
+      </div>
+      <p class="grain-note" style="position:relative;z-index:2;margin-top:14px">Regardez de près les boutons — le grain est visible et tactile, notamment sur le bouton primaire Sage Slate et le badge.</p>
+    </div>
+  </section>
+
+
+  <!-- ══ 02 — GLASSMORPHISM ══ -->
+  <section class="section">
+    <div class="section-label">02 — Glassmorphisme</div>
+    <h2 class="section-title">Verre poli — 3 composants cibles</h2>
+    <p class="section-desc">Le glassmorphisme est réservé aux composants qui flottent visuellement au-dessus du contenu : sidebar, cards de KPI, toasts. Il ne s'applique jamais aux boutons, inputs, tables ou fonds de page. Le grain renforce l'effet sur chaque surface vitrée.</p>
+
+    <div class="glass-showcase">
+
+      <!-- CARD KPI -->
+      <div class="glass-scene">
+        <div class="glass-scene-label">Cards KPI — glassmorphism</div>
+        <div class="glass-component">
+          <div class="glass-comp-title">Documents actifs</div>
+          <div class="glass-comp-value">14 382</div>
+          <div class="glass-comp-sub">+47 aujourd'hui · DOC-2026</div>
+        </div>
+        <div class="glass-component">
+          <div class="glass-comp-title">En attente de validation</div>
+          <div class="glass-comp-value">83</div>
+          <div class="glass-comp-sub">12 en retard · Workflow actif</div>
+        </div>
+      </div>
+
+      <!-- TOASTS -->
+      <div class="glass-scene">
+        <div class="glass-scene-label">Toasts — glassmorphisme lourd</div>
+
+        <!-- Success toast -->
+        <div class="glass-toast">
+          <div class="toast-dot" style="background:#268245"></div>
+          <div style="position:relative;z-index:2">
+            <div class="toast-text">Document validé avec succès</div>
+            <div class="toast-sub">DOC-2026-00843 · il y a 2s</div>
+          </div>
+        </div>
+
+        <!-- Warning toast -->
+        <div class="glass-toast">
+          <div class="toast-dot" style="background:#B07412"></div>
+          <div style="position:relative;z-index:2">
+            <div class="toast-text">Workflow en retard</div>
+            <div class="toast-sub">12 dossiers nécessitent une action</div>
+          </div>
+        </div>
+
+        <!-- Error toast -->
+        <div class="glass-toast">
+          <div class="toast-dot" style="background:#9B322C"></div>
+          <div style="position:relative;z-index:2">
+            <div class="toast-text">Erreur de synchronisation</div>
+            <div class="toast-sub">Réessayez dans quelques instants</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Specs verre par cible -->
+    <div class="glass-specs-row">
+      <div class="glass-spec-card">
+        <div class="gsc-target">Sidebar</div>
+        <div class="gsc-prop"><span class="gsc-k">background</span><span class="gsc-v">rgba(255,255,255,0.030)</span></div>
+        <div class="gsc-prop"><span class="gsc-k">backdrop-filter</span><span class="gsc-v">blur(12px)</span></div>
+        <div class="gsc-prop"><span class="gsc-k">border-right</span><span class="gsc-v">1px solid rgba(255,255,255,0.08)</span></div>
+        <div class="gsc-prop"><span class="gsc-k">grain opacity</span><span class="gsc-v">0.16</span></div>
+        <div class="gsc-prop"><span class="gsc-k">highlight top</span><span class="gsc-v">non appliqué</span></div>
+      </div>
+      <div class="glass-spec-card">
+        <div class="gsc-target">Cards KPI</div>
+        <div class="gsc-prop"><span class="gsc-k">background</span><span class="gsc-v">rgba(255,255,255,0.040)</span></div>
+        <div class="gsc-prop"><span class="gsc-k">backdrop-filter</span><span class="gsc-v">blur(14px)</span></div>
+        <div class="gsc-prop"><span class="gsc-k">border</span><span class="gsc-v">1px solid rgba(255,255,255,0.09)</span></div>
+        <div class="gsc-prop"><span class="gsc-k">grain opacity</span><span class="gsc-v">0.15</span></div>
+        <div class="gsc-prop"><span class="gsc-k">highlight top</span><span class="gsc-v">rgba(255,255,255,0.12)</span></div>
+      </div>
+      <div class="glass-spec-card">
+        <div class="gsc-target">Toasts</div>
+        <div class="gsc-prop"><span class="gsc-k">background</span><span class="gsc-v">rgba(20,22,31,0.82)</span></div>
+        <div class="gsc-prop"><span class="gsc-k">backdrop-filter</span><span class="gsc-v">blur(16px)</span></div>
+        <div class="gsc-prop"><span class="gsc-k">border</span><span class="gsc-v">1px solid rgba(255,255,255,0.10)</span></div>
+        <div class="gsc-prop"><span class="gsc-k">grain opacity</span><span class="gsc-v">0.18</span></div>
+        <div class="gsc-prop"><span class="gsc-k">highlight top</span><span class="gsc-v">rgba(255,255,255,0.15)</span></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 03 — OMBRES ══ -->
+  <section class="section">
+    <div class="section-label">03 — Ombres de profondeur</div>
+    <h2 class="section-title">4 niveaux Z. Jamais décoratifs — toujours fonctionnels.</h2>
+    <p class="section-desc">Les ombres simulent la hauteur Z d'un composant dans l'espace. Elles ne sont jamais utilisées pour "faire joli" — elles indiquent la hiérarchie de couches. Plus un composant est haut (modal > dropdown > card > base), plus son ombre est prononcée.</p>
+
+    <div class="shadow-showcase">
+      <div class="shadow-card">
+        <div class="shadow-subject sh-none"></div>
+        <div class="shadow-info">
+          <div class="shadow-name">Aucune</div>
+          <div class="shadow-val">border uniquement</div>
+          <div class="shadow-use">Éléments au niveau de base. Tables, inputs, sections.</div>
+        </div>
+      </div>
+      <div class="shadow-card">
+        <div class="shadow-subject sh-sm"></div>
+        <div class="shadow-info">
+          <div class="shadow-name">sm</div>
+          <div class="shadow-val">0 1px 3px rgba(0,0,0,.20)<br>0 1px 2px rgba(0,0,0,.12)</div>
+          <div class="shadow-use">Cards légèrement surélevées. Dropdowns simples.</div>
+        </div>
+      </div>
+      <div class="shadow-card">
+        <div class="shadow-subject sh-md"></div>
+        <div class="shadow-info">
+          <div class="shadow-name">md</div>
+          <div class="shadow-val">0 4px 12px rgba(0,0,0,.25)<br>0 2px 4px rgba(0,0,0,.12)</div>
+          <div class="shadow-use">Dropdowns principaux. Tooltips. Popovers.</div>
+        </div>
+      </div>
+      <div class="shadow-card">
+        <div class="shadow-subject sh-lg"></div>
+        <div class="shadow-info">
+          <div class="shadow-name">lg</div>
+          <div class="shadow-val">0 8px 24px rgba(0,0,0,.30)<br>0 4px 8px rgba(0,0,0,.14)</div>
+          <div class="shadow-use">Modals. Drawers. Composants de premier plan.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Focus ring -->
+    <div class="focus-ring-demo">
+      <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gray-600);width:100%;margin-bottom:4px;position:relative;z-index:2">Focus ring — accessibilité WCAG 2.4.7</div>
+
+      <div class="focus-item">
+        <div class="focus-el focus-el-btn fr-default" style="position:relative;overflow:hidden">
+          <span style="position:relative;z-index:2">Bouton</span>
+          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:55px;opacity:0.35;mix-blend-mode:overlay;"></div>
+        </div>
+        <div class="focus-label">Default</div>
+      </div>
+
+      <div class="focus-item">
+        <div class="focus-el focus-el-btn fr-focus" style="position:relative;overflow:hidden">
+          <span style="position:relative;z-index:2">Bouton</span>
+          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:55px;opacity:0.35;mix-blend-mode:overlay;"></div>
+        </div>
+        <div class="focus-label">:focus-visible</div>
+      </div>
+
+      <div class="focus-item">
+        <div class="focus-el focus-el-input fr-default" style="width:120px">Input default</div>
+        <div class="focus-label">Input default</div>
+      </div>
+
+      <div class="focus-item">
+        <div class="focus-el focus-el-input fr-focus" style="width:120px">Input focus</div>
+        <div class="focus-label">Input :focus</div>
+      </div>
+
+      <div class="focus-item">
+        <div class="focus-el focus-el-input fr-focus-err" style="width:120px">Input erreur</div>
+        <div class="focus-label">Input error</div>
+      </div>
+
+      <div style="margin-left:auto;position:relative;z-index:2">
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--gray-600);line-height:1.8">
+          Focus ring = 2px gap (bg) + 4px accent<br>
+          box-shadow: 0 0 0 2px var(--bg-base),<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0 0 0 4px var(--accent-500)
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 04 — BORDURES & RADIUS ══ -->
+  <section class="section">
+    <div class="section-label">04 — Bordures & Border-radius</div>
+    <h2 class="section-title">3 radius codifiés. 6 types de bordures.</h2>
+    <p class="section-desc">Le border-radius est délibérément discret. On ne voit pas les arrondis — on les ressent. Minimum 4px sur tout élément interactif. La règle est ferme : aucun radius supérieur à 8px dans l'interface applicative.</p>
+
+    <div class="border-radius-grid">
+      <div class="br-card">
+        <div class="br-subject" style="border-radius:2px"></div>
+        <div class="br-token">--radius-xs</div>
+        <div class="br-val">2px</div>
+        <div class="br-usage">Badges · Chips · Puces de statut</div>
+      </div>
+      <div class="br-card">
+        <div class="br-subject" style="border-radius:4px"></div>
+        <div class="br-token">--radius-sm</div>
+        <div class="br-val">4px ★</div>
+        <div class="br-usage">Boutons · Inputs · Tags · Items de nav</div>
+      </div>
+      <div class="br-card">
+        <div class="br-subject" style="border-radius:6px"></div>
+        <div class="br-token">--radius-md</div>
+        <div class="br-val">6px ★</div>
+        <div class="br-usage">Cards · Panels · Dropdowns · Tables</div>
+      </div>
+      <div class="br-card">
+        <div class="br-subject" style="border-radius:8px"></div>
+        <div class="br-token">--radius-lg</div>
+        <div class="br-val">8px</div>
+        <div class="br-usage">Modals · Drawers · Toasts</div>
+      </div>
+      <div class="br-card" style="border-color:rgba(155,50,44,0.3)">
+        <div class="br-subject" style="border-radius:16px;border-color:rgba(155,50,44,0.3)"></div>
+        <div class="br-token" style="color:#CF6860">Interdit</div>
+        <div class="br-val" style="color:#CF6860">≥ 12px</div>
+        <div class="br-usage">Jamais dans l'interface applicative. Trop arrondi pour un système institutionnel.</div>
+      </div>
+    </div>
+
+    <!-- 6 types de bordures -->
+    <div class="border-types">
+      <div class="border-type-card">
+        <div class="bt-name">Subtle</div>
+        <div class="bt-val">--border-subtle · #1A1D2B</div>
+        <div class="bt-desc">Séparateurs internes. Lignes de table. Dividers. Maximal discrétion.</div>
+        <div class="bt-demo bt-demo-subtle"></div>
+      </div>
+      <div class="border-type-card">
+        <div class="bt-name">Default</div>
+        <div class="bt-val">--border-default · #252838</div>
+        <div class="bt-desc">Contour de cards, inputs, panels. La bordure standard de référence.</div>
+        <div class="bt-demo bt-demo-default"></div>
+      </div>
+      <div class="border-type-card">
+        <div class="bt-name">Strong</div>
+        <div class="bt-val">--border-strong · #353848</div>
+        <div class="bt-desc">Séparation marquée entre sections majeures. Utilisé avec parcimonie.</div>
+        <div class="bt-demo bt-demo-strong"></div>
+      </div>
+      <div class="border-type-card">
+        <div class="bt-name">Focus</div>
+        <div class="bt-val">--border-focus · accent-500</div>
+        <div class="bt-desc">Contour actif sur input en focus ou composant sélectionné.</div>
+        <div class="bt-demo bt-demo-focus"></div>
+      </div>
+      <div class="border-type-card">
+        <div class="bt-name">Accent</div>
+        <div class="bt-val">accent-subtle-border</div>
+        <div class="bt-desc">Badges, chips, tags, éléments de couleur accent — contour tonal.</div>
+        <div class="bt-demo bt-demo-accent"></div>
+      </div>
+      <div class="border-type-card">
+        <div class="bt-name">Error</div>
+        <div class="bt-val">rgba(155,50,44,0.28)</div>
+        <div class="bt-desc">Champs en erreur de validation. Alertes. Messages d'échec.</div>
+        <div class="bt-demo bt-demo-error"></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 05 — REFLET ══ -->
+  <section class="section">
+    <div class="section-label">05 — Reflet highlight</div>
+    <h2 class="section-title">Le trait de lumière en bordure supérieure</h2>
+    <p class="section-desc">Un liseré de lumière ultra-fin (1px) sur le bord supérieur des composants vitrés simule la réfraction de la lumière sur le verre. C'est un détail invisible à distance et saisissant de près. Il distingue un vrai composant glass d'une simple transparence basique.</p>
+
+    <div class="highlight-demo">
+      <!-- Sans reflet -->
+      <div class="hl-card">
+        <div class="hl-swatch hl-grain" style="background:rgba(255,255,255,0.04);backdrop-filter:blur(14px);">
+          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:60px;opacity:0.15;mix-blend-mode:overlay;position:absolute;inset:0;"></div>
+          <span class="hl-label" style="position:relative;z-index:2">Sans reflet</span>
+        </div>
+        <div class="hl-info">
+          <div class="hl-info-title">Verre — Sans highlight</div>
+          <div class="hl-info-code">border-top: none</div>
+        </div>
+      </div>
+
+      <!-- Avec reflet Sage Slate -->
+      <div class="hl-card">
+        <div class="hl-swatch hl-grain" style="background:rgba(255,255,255,0.04);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.09);">
+          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:60px;opacity:0.15;mix-blend-mode:overlay;position:absolute;inset:0;z-index:1;"></div>
+          <span class="hl-label" style="position:relative;z-index:2">Avec reflet</span>
+        </div>
+        <div class="hl-info">
+          <div class="hl-info-title">Verre — Avec highlight top ★</div>
+          <div class="hl-info-code">linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent)</div>
+        </div>
+      </div>
+
+      <!-- Reflet accent -->
+      <div class="hl-card">
+        <div class="hl-swatch hl-grain" style="background:var(--accent-500);position:relative;overflow:hidden;">
+          <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.35),transparent);z-index:3;"></div>
+          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:60px;opacity:0.35;mix-blend-mode:overlay;z-index:1;"></div>
+          <span class="hl-label" style="position:relative;z-index:2;color:rgba(255,255,255,0.5)">Bouton primary</span>
+        </div>
+        <div class="hl-info">
+          <div class="hl-info-title">Bouton — Highlight + grain fort</div>
+          <div class="hl-info-code">rgba(255,255,255,0.35) + grain 0.35</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 06 — TOKENS CSS ══ -->
+  <section class="section">
+    <div class="section-label">06 — Export tokens</div>
+    <h2 class="section-title">CSS Effects — À ajouter dans globals.css</h2>
+
+    <div class="code-block">
+      <div class="code-lang">CSS — globals.css · Effets CG-05</div>
+      <pre>
+<span class="c-comment">/* ═══════════════════════════════════════════════════
+   EFFETS VISUELS — Design Tokens CG-05
+   Ajouter à la suite des blocs CG-02/03/04
+═══════════════════════════════════════════════════ */</span>
+
+<span class="c-var">:root</span> {
+
+  <span class="c-comment">/* ── GRAIN ───────────────────────────────────── */</span>
+  <span class="c-comment">/* Les SVG sont inline — copiez les URLs de ce fichier */</span>
+  <span class="c-prop">--grain-url-light</span>:  <span class="c-val">url("svg-feTurbulence baseFreq=0.72 opacity=0.10")</span>;
+  <span class="c-prop">--grain-url-medium</span>: <span class="c-val">url("svg-feTurbulence baseFreq=0.88 opacity=0.15")</span>;
+  <span class="c-prop">--grain-url-heavy</span>:  <span class="c-val">url("svg-feTurbulence baseFreq=0.95 opacity=0.32")</span>;
+  <span class="c-prop">--grain-size-lg</span>:   <span class="c-val">180px</span>;   <span class="c-comment">/* fond page global           */</span>
+  <span class="c-prop">--grain-size-md</span>:   <span class="c-val">110px</span>;   <span class="c-comment">/* cards, panels              */</span>
+  <span class="c-prop">--grain-size-sm</span>:    <span class="c-val">65px</span>;   <span class="c-comment">/* boutons, badges            */</span>
+
+  <span class="c-comment">/* ── GLASSMORPHISME ─────────────────────────── */</span>
+  <span class="c-prop">--glass-sidebar-bg</span>:   <span class="c-val">rgba(255, 255, 255, 0.030)</span>;
+  <span class="c-prop">--glass-card-bg</span>:      <span class="c-val">rgba(255, 255, 255, 0.040)</span>;
+  <span class="c-prop">--glass-toast-bg</span>:     <span class="c-val">rgba( 20,  22,  31, 0.820)</span>;
+  <span class="c-prop">--glass-border</span>:       <span class="c-val">rgba(255, 255, 255, 0.090)</span>;
+  <span class="c-prop">--glass-border-toast</span>: <span class="c-val">rgba(255, 255, 255, 0.100)</span>;
+  <span class="c-prop">--glass-blur-sm</span>:  <span class="c-val">blur(12px)</span>;
+  <span class="c-prop">--glass-blur-md</span>:  <span class="c-val">blur(14px)</span>;
+  <span class="c-prop">--glass-blur-lg</span>:  <span class="c-val">blur(16px)</span>;
+  <span class="c-prop">--glass-highlight</span>: <span class="c-val">linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent)</span>;
+
+  <span class="c-comment">/* ── OMBRES Z-DEPTH ─────────────────────────── */</span>
+  <span class="c-prop">--shadow-sm</span>: <span class="c-val">0 1px  3px rgba(0,0,0,.20), 0 1px  2px rgba(0,0,0,.12)</span>;
+  <span class="c-prop">--shadow-md</span>: <span class="c-val">0 4px 12px rgba(0,0,0,.25), 0 2px  4px rgba(0,0,0,.12)</span>;
+  <span class="c-prop">--shadow-lg</span>: <span class="c-val">0 8px 24px rgba(0,0,0,.30), 0 4px  8px rgba(0,0,0,.14)</span>;
+  <span class="c-prop">--shadow-focus</span>: <span class="c-val">0 0 0 2px var(--bg-base), 0 0 0 4px var(--accent-500)</span>;
+  <span class="c-prop">--shadow-focus-error</span>: <span class="c-val">0 0 0 2px var(--bg-base), 0 0 0 4px rgba(155,50,44,.70)</span>;
+}
+
+<span class="c-comment">/* ── MIXINS GRAIN (pseudo-elements) ──────────── */</span>
+<span class="c-var">.grain-global</span> { <span class="c-comment">/* body::before */</span>
+  <span class="c-prop">position</span>: <span class="c-val">fixed</span>; <span class="c-prop">inset</span>: <span class="c-val">0</span>; <span class="c-prop">z-index</span>: <span class="c-val">9999</span>; <span class="c-prop">pointer-events</span>: <span class="c-val">none</span>;
+  <span class="c-prop">background-size</span>: <span class="c-val">var(--grain-size-lg)</span>;
+  <span class="c-prop">opacity</span>: <span class="c-val">0.20</span>; <span class="c-prop">mix-blend-mode</span>: <span class="c-val">overlay</span>;
+}
+<span class="c-var">.grain-card::after</span>   { <span class="c-prop">background-size</span>: <span class="c-val">var(--grain-size-md)</span>; <span class="c-prop">opacity</span>: <span class="c-val">0.13</span>; }
+<span class="c-var">.grain-button::after</span> { <span class="c-prop">background-size</span>: <span class="c-val">var(--grain-size-sm)</span>; <span class="c-prop">opacity</span>: <span class="c-val">0.35</span>; }
+
+<span class="c-comment">/* ── MIXIN GLASS ──────────────────────────────── */</span>
+<span class="c-var">.glass-card</span> {
+  <span class="c-prop">background</span>:      <span class="c-val">var(--glass-card-bg)</span>;
+  <span class="c-prop">backdrop-filter</span>: <span class="c-val">var(--glass-blur-md)</span>;
+  <span class="c-prop">border</span>:          <span class="c-val">1px solid var(--glass-border)</span>;
+}
+<span class="c-var">.glass-card::after</span> { <span class="c-comment">/* highlight top */</span>
+  <span class="c-prop">content</span>: <span class="c-val">''</span>; <span class="c-prop">position</span>: <span class="c-val">absolute</span>;
+  <span class="c-prop">top</span>: <span class="c-val">0</span>; <span class="c-prop">left</span>: <span class="c-val">0</span>; <span class="c-prop">right</span>: <span class="c-val">0</span>; <span class="c-prop">height</span>: <span class="c-val">1px</span>;
+  <span class="c-prop">background</span>: <span class="c-val">var(--glass-highlight)</span>;
+}
+
+<span class="c-comment">/* ── FOCUS VISIBLE ───────────────────────────── */</span>
+<span class="c-var">*:focus-visible</span> {
+  <span class="c-prop">outline</span>: <span class="c-val">none</span>;
+  <span class="c-prop">box-shadow</span>: <span class="c-val">var(--shadow-focus)</span>;
+}</pre>
+    </div>
+  </section>
+
+
+  <!-- FOOTER -->
+  <footer class="doc-footer">
+    <div class="footer-left">
+      Charte Graphique — Archivage Numérique · CG-05 / 12<br>
+      <div class="kbd-hint">Raccourcis : <span class="kbd">←</span> Précédent <span class="kbd">→</span> Suivant <span class="kbd">i</span> Index</div>
+    </div>
+    <div class="footer-nav">
+      <a href="CG-04-Espacement-Grille-Layout.html" class="footer-link" aria-label="Module précédent : CG-04">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Précédent
+      </a>
+      <a href="CG-06-Composants-Boutons-Inputs-Badges-Cards.html" class="footer-link" aria-label="Module suivant : CG-06">
+        Suivant
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </a>
+    </div>
+    <div class="footer-next">
+      Prochain module :
+      <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path stroke="#179E8E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+      CG-06 — Composants : Boutons, Inputs, Badges, Cards
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
+  </footer>
+
+</div>
+
+<script>
+function toggleNav(btn) {
+  const dropdown = btn.parentElement;
+  const isActive = dropdown.classList.contains('active');
+  document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('active'));
+  if (!isActive) {
+    dropdown.classList.add('active');
+    btn.setAttribute('aria-expanded', 'true');
+  } else {
+    btn.setAttribute('aria-expanded', 'false');
+  }
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.nav-dropdown')) {
+    document.querySelectorAll('.nav-dropdown').forEach(d => {
+      d.classList.remove('active');
+      const btn = d.querySelector('.nav-dropdown-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  switch(e.key) {
+    case 'ArrowLeft':
+      const prevLink = document.querySelector('.footer-link[aria-label*="précédent"]');
+      if (prevLink && !prevLink.classList.contains('disabled')) {
+        window.location.href = prevLink.href;
+      }
+      break;
+    case 'ArrowRight':
+      const nextLink = document.querySelector('.footer-link[aria-label*="suivant"]');
+      if (nextLink && !nextLink.classList.contains('disabled')) {
+        window.location.href = nextLink.href;
+      }
+      break;
+    case 'i':
+    case 'I':
+      window.location.href = 'index.html';
+      break;
+  }
+});
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  if (current) {
+    html.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+  }
+}
+</script>
+
+</body>
+</html>

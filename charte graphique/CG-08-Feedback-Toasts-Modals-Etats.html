@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CG-08 — Feedback : Toasts, Modals, États vides, Loaders</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root {
+  --accent-300: #65D5C4; --accent-400: #2BBFAD; --accent-500: #179E8E;
+  --accent-600: #0E7E72; --accent-700: #0C6259;
+  --accent-subtle-bg: rgba(23,158,142,0.08);
+  --accent-subtle-border: rgba(23,158,142,0.20);
+
+  --gray-950: #0A0B0F; --gray-900: #10121A; --gray-800: #1A1D2B;
+  --gray-700: #252838; --gray-600: #323548; --gray-500: #4D5068;
+  --gray-400: #6B6F88; --gray-300: #9196B0; --gray-200: #C2C5D6;
+  --gray-100: #E1E3EE; --gray-50: #F0F1F8; --gray-25: #F8F9FC;
+
+  --success: #268245; --warning: #B07412; --error: #9B322C; --info: #2855A0;
+  --success-subtle: rgba(38,130,69,0.10);  --success-border: rgba(38,130,69,0.25);
+  --warning-subtle: rgba(176,116,18,0.10); --warning-border: rgba(176,116,18,0.25);
+  --error-subtle:   rgba(155,50,44,0.10);  --error-border:   rgba(155,50,44,0.25);
+  --info-subtle:    rgba(40,85,160,0.10);  --info-border:    rgba(40,85,160,0.25);
+
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --text-2xl:28px; --text-xl:22px; --text-lg:18px; --text-md:14px;
+  --text-base:13px; --text-sm:11px; --text-xs:10px;
+
+  --radius-xs:2px; --radius-sm:4px; --radius-md:6px; --radius-lg:8px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.20),0 1px 2px rgba(0,0,0,.12);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.25),0 2px 4px rgba(0,0,0,.12);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,.30),0 4px 8px rgba(0,0,0,.14);
+  --shadow-xl: 0 16px 48px rgba(0,0,0,.40),0 8px 16px rgba(0,0,0,.20);
+  --shadow-focus: 0 0 0 2px var(--bg-base),0 0 0 4px var(--accent-500);
+
+  --bg-base: var(--gray-950); --bg-panel: var(--gray-900); --bg-raised: var(--gray-800);
+  --border-subtle: var(--gray-800); --border-default: var(--gray-700); --border-strong: var(--gray-600);
+  --text-primary: var(--gray-50); --text-secondary: var(--gray-200);
+  --text-tertiary: var(--gray-400); --text-placeholder: var(--gray-500);
+}
+[data-theme="light"] {
+  --bg-base: var(--gray-25); --bg-panel: #FFFFFF; --bg-raised: var(--gray-100);
+  --border-subtle: var(--gray-100); --border-default: var(--gray-200); --border-strong: var(--gray-300);
+  --text-primary: var(--gray-900); --text-secondary: #3D4158;
+  --text-tertiary: var(--gray-500); --text-placeholder: var(--gray-400);
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body {
+  font-family:var(--font-sans); font-size:var(--text-base); line-height:1.65;
+  color:var(--text-primary); background:var(--bg-base);
+  -webkit-font-smoothing:antialiased; min-height:100vh; overflow-x:hidden; position:relative;
+}
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:1000;
+  opacity:0.20; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:180px 180px;
+}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--gray-700);border-radius:3px}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.doc-container{max-width:1080px;margin:0 auto;padding:48px 24px}
+
+.doc-header {
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding-bottom:32px;border-bottom:1px solid var(--border-subtle);
+  margin-bottom:40px;gap:24px;flex-wrap:wrap;
+}
+.doc-header-left{display:flex;flex-direction:column;gap:12px}
+.doc-badge {
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:var(--text-xs);font-weight:500;
+  letter-spacing:0.10em;text-transform:uppercase;color:var(--accent-300);
+  background:var(--accent-subtle-bg);border:1px solid var(--accent-subtle-border);
+  padding:5px 10px;border-radius:var(--radius-sm);position:relative;overflow:hidden;
+}
+.doc-badge::before {
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:65px 65px;opacity:0.35;mix-blend-mode:overlay;pointer-events:none;
+}
+.doc-title{font-size:var(--text-2xl);font-weight:700;letter-spacing:-0.035em;line-height:1.2}
+.doc-subtitle{font-size:var(--text-md);color:var(--text-tertiary)}
+.doc-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.doc-meta-item{font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:0.06em;color:var(--text-placeholder)}
+.doc-meta-item span{color:var(--text-tertiary)}
+.theme-btn {
+  display:inline-flex;align-items:center;gap:8px;padding:6px 12px;
+  background:var(--bg-raised);border:1px solid var(--border-default);
+  border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font-sans);
+  font-size:var(--text-sm);color:var(--text-secondary);
+  transition:all 150ms cubic-bezier(0.34,1.56,0.64,1);margin-top:8px;
+}
+.theme-btn:hover{border-color:var(--border-strong);color:var(--text-primary)}
+
+.section{margin-bottom:48px}
+.section-header{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.section-label{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:500;letter-spacing:0.10em;text-transform:uppercase;color:var(--accent-300);white-space:nowrap}
+.section-line{flex:1;height:1px;background:var(--border-subtle)}
+.section-title{font-size:var(--text-lg);font-weight:600;letter-spacing:-0.025em;margin-bottom:8px}
+.section-desc{font-size:var(--text-base);color:var(--text-tertiary);margin-bottom:24px;line-height:1.65}
+.subsection{margin-bottom:24px}
+.subsection-title{font-size:var(--text-md);font-weight:500;color:var(--text-secondary);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.subsection-title::before{content:'';width:3px;height:14px;background:var(--accent-500);border-radius:2px;flex-shrink:0}
+
+.preview-zone {
+  background:var(--bg-panel);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md);padding:24px;position:relative;overflow:hidden;
+}
+.preview-zone::before {
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:110px 110px;opacity:0.12;mix-blend-mode:overlay;pointer-events:none;z-index:0;
+}
+.preview-zone>*{position:relative;z-index:1}
+
+.spec-table{width:100%;border-collapse:collapse;font-size:var(--text-sm);margin-top:16px}
+.spec-table th{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-placeholder);text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-subtle)}
+.spec-table td{padding:8px 12px;color:var(--text-secondary);border-bottom:1px solid var(--border-subtle)}
+.spec-table tr:last-child td{border-bottom:none}
+.spec-table tr:hover td{background:rgba(255,255,255,0.02)}
+.mono{font-family:var(--font-mono);color:var(--accent-300);font-size:var(--text-xs)}
+
+/* Shared grain mixin via inline SVG */
+.grain-btn::after {
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:65px 65px;opacity:0.34;mix-blend-mode:overlay;pointer-events:none;border-radius:inherit;
+}
+
+/* ============================================================
+   BUTTONS (helpers)
+   ============================================================ */
+.btn {
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  font-family:var(--font-sans);font-weight:500;font-size:var(--text-md);
+  border-radius:var(--radius-sm);border:1px solid transparent;cursor:pointer;
+  transition:all 150ms cubic-bezier(0.34,1.56,0.64,1);white-space:nowrap;
+  position:relative;overflow:hidden;-webkit-font-smoothing:antialiased;
+  text-decoration:none;padding:7px 13px;
+}
+.btn::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");background-size:65px 65px;opacity:0.34;mix-blend-mode:overlay;pointer-events:none}
+.btn-primary{background:var(--accent-500);border-color:var(--accent-600);color:#fff;box-shadow:var(--shadow-sm)}
+.btn-primary:hover{background:var(--accent-600);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.btn-secondary{background:var(--bg-raised);border-color:var(--border-default);color:var(--text-secondary);box-shadow:var(--shadow-sm)}
+.btn-secondary:hover{background:var(--gray-700);border-color:var(--border-strong);color:var(--text-primary)}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--text-secondary)}
+.btn-ghost:hover{background:var(--bg-raised);color:var(--text-primary)}
+.btn-danger{background:var(--error-subtle);border-color:var(--error-border);color:#DC7070}
+.btn-danger:hover{background:rgba(155,50,44,0.18);border-color:rgba(155,50,44,0.40);transform:translateY(-1px)}
+.btn-sm{padding:5px 10px;font-size:var(--text-sm)}
+.btn-sm svg{width:13px;height:13px}
+.btn-icon{padding:7px}
+.btn-icon.btn-sm{padding:5px}
+
+/* ============================================================
+   ██████████  TOASTS  ██████████
+   ============================================================ */
+
+/* Toast container simulation */
+.toast-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Toast — glassmorphisme lourd */
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(20, 22, 31, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  min-width: 320px;
+  max-width: 420px;
+  box-shadow: var(--shadow-xl);
+  position: relative;
+  overflow: hidden;
+  /* Spring entry animation */
+  animation: toastIn 180ms cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes toastOut {
+  from { opacity: 1; transform: translateY(0) scale(1); max-height: 200px; margin-bottom: 0; }
+  to   { opacity: 0; transform: translateY(-8px) scale(0.96); max-height: 0; margin-bottom: -10px; padding-top: 0; padding-bottom: 0; }
+}
+.toast.dismissing {
+  animation: toastOut 160ms cubic-bezier(0.16,1,0.3,1) forwards;
+}
+
+/* Grain lourd toast */
+.toast::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 110px 110px; opacity: 0.18; mix-blend-mode: overlay; pointer-events: none;
+}
+/* Highlight top */
+.toast::after {
+  content: '';
+  position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  pointer-events: none;
+}
+.toast > * { position: relative; z-index: 1; }
+
+.toast-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 3px;
+}
+.toast-dot-success { background: #5DB882; box-shadow: 0 0 6px rgba(93,184,130,0.5); }
+.toast-dot-warning { background: #D4993A; box-shadow: 0 0 6px rgba(212,153,58,0.5); }
+.toast-dot-error   { background: #DC7070; box-shadow: 0 0 6px rgba(220,112,112,0.5); }
+.toast-dot-info    { background: #6D95D8; box-shadow: 0 0 6px rgba(109,149,216,0.5); }
+
+.toast-body { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.toast-title { font-size: var(--text-md); font-weight: 600; letter-spacing: -0.01em; color: var(--gray-50); }
+.toast-desc  { font-size: var(--text-sm); color: var(--gray-300); line-height: 1.5; }
+.toast-action {
+  font-size: var(--text-sm); font-weight: 500; color: var(--accent-300);
+  cursor: pointer; text-decoration: underline; text-decoration-color: var(--accent-subtle-border);
+  text-underline-offset: 2px; background: none; border: none; padding: 0; margin-top: 4px;
+  font-family: var(--font-sans);
+}
+.toast-action:hover { color: var(--accent-400); }
+
+.toast-close {
+  width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-xs); cursor: pointer; color: var(--gray-400);
+  background: none; border: none; flex-shrink: 0; transition: all 120ms ease;
+}
+.toast-close:hover { background: rgba(255,255,255,0.08); color: var(--gray-200); }
+
+/* Auto-dismiss progress bar */
+.toast-progress {
+  position: absolute; bottom: 0; left: 0; height: 2px;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  animation: progressDrain 4000ms linear forwards;
+}
+@keyframes progressDrain { from { width: 100%; } to { width: 0%; } }
+.toast-progress-success { background: #5DB882; }
+.toast-progress-warning { background: #D4993A; }
+.toast-progress-error   { background: #DC7070; }
+.toast-progress-info    { background: #6D95D8; }
+
+/* Light theme toast */
+[data-theme="light"] .toast {
+  background: rgba(248,249,252,0.90);
+  border-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .toast-title { color: var(--gray-900); }
+[data-theme="light"] .toast-desc  { color: var(--gray-500); }
+
+/* ============================================================
+   ██████████  MODALS  ██████████
+   ============================================================ */
+
+/* Backdrop */
+.modal-backdrop {
+  position: relative;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  border-radius: var(--radius-md);
+  min-height: 220px;
+}
+
+/* Modal box */
+.modal {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  width: 100%; max-width: 440px;
+  position: relative; overflow: hidden;
+  animation: modalIn 200ms cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Grain modal */
+.modal::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 110px 110px; opacity: 0.12; mix-blend-mode: overlay; pointer-events: none; z-index: 0;
+}
+.modal > * { position: relative; z-index: 1; }
+
+.modal-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 20px 20px 16px; gap: 12px;
+}
+.modal-header-left { display: flex; align-items: flex-start; gap: 12px; }
+.modal-icon {
+  width: 36px; height: 36px; border-radius: var(--radius-md); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-icon-default { background: var(--accent-subtle-bg); border: 1px solid var(--accent-subtle-border); color: var(--accent-300); }
+.modal-icon-danger  { background: var(--error-subtle); border: 1px solid var(--error-border); color: #DC7070; }
+.modal-icon-warning { background: var(--warning-subtle); border: 1px solid var(--warning-border); color: #D4993A; }
+
+.modal-title    { font-size: var(--text-lg); font-weight: 600; letter-spacing: -0.025em; color: var(--text-primary); margin-bottom: 2px; }
+.modal-subtitle { font-size: var(--text-sm); color: var(--text-tertiary); }
+.modal-close {
+  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); cursor: pointer; color: var(--text-tertiary);
+  background: transparent; border: none; flex-shrink: 0;
+  transition: all 150ms ease;
+}
+.modal-close:hover { background: var(--bg-raised); color: var(--text-secondary); }
+
+.modal-body { padding: 0 20px 20px; }
+.modal-desc { font-size: var(--text-base); color: var(--text-secondary); line-height: 1.65; }
+
+.modal-sep { height: 1px; background: var(--border-subtle); margin: 0; }
+
+.modal-footer {
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  padding: 14px 20px; background: rgba(255,255,255,0.015);
+}
+
+/* Form elements inside modal */
+.modal-form { display: flex; flex-direction: column; gap: 14px; }
+.modal-form-field { display: flex; flex-direction: column; gap: 4px; }
+.modal-form-label {
+  font-size: var(--text-sm); font-weight: 500; color: var(--text-secondary);
+}
+.modal-form-label-req::after { content: ' *'; color: #DC7070; }
+.modal-form-input, .modal-form-select {
+  font-family: var(--font-sans); font-size: var(--text-base); color: var(--text-primary);
+  background: var(--bg-raised); border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm); padding: 7px 11px; width: 100%; outline: none;
+  transition: all 150ms ease; box-shadow: var(--shadow-sm);
+}
+.modal-form-input::placeholder { color: var(--text-placeholder); }
+.modal-form-input:focus, .modal-form-select:focus {
+  border-color: var(--accent-500); box-shadow: 0 0 0 2px var(--bg-base), 0 0 0 4px var(--accent-500);
+}
+.modal-form-select { appearance: none; cursor: pointer; }
+.modal-form-help { font-size: var(--text-sm); color: var(--text-placeholder); }
+
+/* Confirm modal danger zone */
+.modal-danger-box {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--error-subtle); border: 1px solid var(--error-border);
+  border-radius: var(--radius-sm); padding: 12px; margin-bottom: 14px;
+  font-size: var(--text-sm); color: #DC7070; line-height: 1.55;
+}
+
+/* ============================================================
+   ██████████  ÉTATS VIDES  ██████████
+   ============================================================ */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 48px 24px; text-align: center; gap: 12px;
+}
+.empty-icon-wrap {
+  width: 52px; height: 52px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-placeholder);
+  position: relative; overflow: hidden;
+}
+.empty-icon-wrap::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 65px 65px; opacity: 0.18; mix-blend-mode: overlay; pointer-events: none;
+}
+.empty-icon-wrap svg { position: relative; z-index: 1; }
+.empty-title { font-size: var(--text-md); font-weight: 600; letter-spacing: -0.01em; color: var(--text-secondary); }
+.empty-desc  { font-size: var(--text-sm); color: var(--text-placeholder); max-width: 280px; line-height: 1.6; }
+
+/* ============================================================
+   ██████████  LOADERS  ██████████
+   ============================================================ */
+
+/* Spinner SVG */
+.spinner {
+  display: inline-block;
+  animation: spinnerRotate 700ms linear infinite;
+}
+@keyframes spinnerRotate { to { transform: rotate(360deg); } }
+.spinner circle {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 15;
+  stroke-linecap: round;
+}
+
+/* Skeleton */
+.skeleton {
+  background: var(--bg-raised);
+  border-radius: var(--radius-sm);
+  position: relative;
+  overflow: hidden;
+}
+.skeleton::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.04) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.6s ease-in-out infinite;
+}
+@keyframes skeletonPulse {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+[data-theme="light"] .skeleton::after {
+  background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.04) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.6s ease-in-out infinite;
+}
+
+/* Progress bar */
+.progress-bar-wrap {
+  width: 100%; height: 6px; background: var(--bg-raised);
+  border-radius: 3px; overflow: hidden; position: relative;
+}
+.progress-bar-fill {
+  height: 100%; background: var(--accent-500);
+  border-radius: 3px; transition: width 400ms cubic-bezier(0.34,1.56,0.64,1);
+  position: relative; overflow: hidden;
+}
+.progress-bar-fill::after {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 65px 65px; opacity: 0.32; mix-blend-mode: overlay; pointer-events: none;
+}
+.progress-bar-indeterminate .progress-bar-fill {
+  width: 40% !important;
+  animation: progressSlide 1.4s cubic-bezier(0.4,0,0.2,1) infinite;
+}
+@keyframes progressSlide {
+  0%   { transform: translateX(-150%); }
+  100% { transform: translateX(350%); }
+}
+
+/* Dot loader */
+.dot-loader { display: inline-flex; align-items: center; gap: 4px; }
+.dot-loader span {
+  width: 5px; height: 5px; border-radius: 50%; background: var(--accent-400);
+  animation: dotBounce 1.2s ease-in-out infinite;
+}
+.dot-loader span:nth-child(2) { animation-delay: 0.15s; }
+.dot-loader span:nth-child(3) { animation-delay: 0.30s; }
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; }
+  40%           { transform: scale(1.0); opacity: 1; }
+}
+
+/* ============================================================
+   ██████████  ALERTES INLINE  ██████████
+   ============================================================ */
+.alert {
+  display: flex; align-items: flex-start; gap: 10px;
+  border-radius: var(--radius-sm); padding: 12px 14px;
+  border: 1px solid transparent; position: relative; overflow: hidden;
+  font-size: var(--text-base); line-height: 1.6;
+}
+.alert::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 110px 110px; opacity: 0.12; mix-blend-mode: overlay; pointer-events: none;
+}
+.alert > * { position: relative; z-index: 1; }
+.alert-success { background: var(--success-subtle); border-color: var(--success-border); color: #5DB882; }
+.alert-warning { background: var(--warning-subtle); border-color: var(--warning-border); color: #D4993A; }
+.alert-error   { background: var(--error-subtle);   border-color: var(--error-border);   color: #DC7070; }
+.alert-info    { background: var(--info-subtle);    border-color: var(--info-border);    color: #6D95D8; }
+.alert svg     { flex-shrink: 0; margin-top: 1px; width: 15px; height: 15px; }
+.alert-content { flex: 1; }
+.alert-title   { font-weight: 600; margin-bottom: 2px; font-size: var(--text-md); }
+.alert-desc    { font-size: var(--text-sm); opacity: 0.85; line-height: 1.55; }
+.alert-desc a  { color: inherit; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.alert-close {
+  width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-xs); cursor: pointer; background: none; border: none;
+  color: inherit; opacity: 0.6; transition: opacity 150ms ease; flex-shrink: 0;
+}
+.alert-close:hover { opacity: 1; }
+
+/* Alert left border accent */
+.alert-bordered {
+  border-left-width: 3px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* ============================================================
+   NAVIGATION SYSTEM
+   ============================================================ */
+.nav-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-placeholder);
+}
+.nav-breadcrumb a {
+  color: var(--accent-400);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.nav-breadcrumb a:hover { color: var(--accent-300); }
+.nav-breadcrumb-sep { color: var(--border-default); }
+
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.nav-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.nav-dropdown-btn:hover {
+  background: var(--bg-panel);
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
+}
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  min-width: 280px;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1000;
+}
+.nav-dropdown.active .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  transition: all 120ms ease;
+}
+.nav-dropdown-item:hover {
+  background: var(--bg-raised);
+  color: var(--text-secondary);
+}
+.nav-dropdown-item.active {
+  background: var(--accent-subtle-bg);
+  color: var(--accent-300);
+  font-weight: 500;
+}
+.nav-dropdown-item-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-placeholder);
+  min-width: 32px;
+}
+
+/* ============================================================
+   DOC FOOTER
+   ============================================================ */
+.doc-footer {
+  margin-top:48px;padding-top:24px;border-top:1px solid var(--border-subtle);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+}
+.footer-left{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);letter-spacing:0.06em;line-height:1.8}
+.footer-nav {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: all 150ms ease;
+}
+.footer-link:hover {
+  color: var(--text-secondary);
+  background: var(--bg-raised);
+}
+.footer-link svg { width: 14px; height: 14px; }
+.footer-link.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+.kbd-hint {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-placeholder);
+  margin-top: 8px;
+}
+.kbd {
+  display: inline-block;
+  padding: 2px 5px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 3px;
+  font-size: 9px;
+  margin: 0 2px;
+}
+
+/* Layout helpers */
+.row{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}
+.col{display:flex;flex-direction:column;gap:12px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+</style>
+</head>
+<body>
+
+<div class="doc-container">
+
+  <!-- ══════════════════════ HEADER ══════════════════════ -->
+  <header class="doc-header">
+    <div class="doc-header-left">
+      <!-- Breadcrumb + Menu -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; width: 100%;">
+        <nav class="nav-breadcrumb" aria-label="Fil d'Ariane">
+          <a href="index.html">← Index</a>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>CG-08</span>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>Feedback & États</span>
+        </nav>
+        
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-btn" onclick="toggleNav(this)" aria-label="Menu des modules" aria-expanded="false">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+            Tous les modules
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="CG-01-Identite-Palette.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-01</span> Identité & Palette</a>
+            <a href="CG-02-Systeme-Couleurs-Tokens.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-02</span> Couleurs & Tokens</a>
+            <a href="CG-03-Typographie-Echelle.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-03</span> Typographie</a>
+            <a href="CG-04-Espacement-Grille-Layout.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-04</span> Espacement & Grille</a>
+            <a href="CG-05-Effets-Grain-Verre-Ombres-Bordures.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-05</span> Effets & Grain</a>
+            <a href="CG-06-Composants-Boutons-Inputs-Badges-Cards.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-06</span> Composants UI</a>
+            <a href="CG-07-Navigation-Sidebar-Topbar-Tabs.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-07</span> Navigation</a>
+            <a href="CG-08-Feedback-Toasts-Modals-Etats.html" class="nav-dropdown-item active"><span class="nav-dropdown-item-num">CG-08</span> Feedback & États</a>
+            <a href="CG-09-Graphiques-DataViz.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-09</span> Graphiques</a>
+            <a href="CG-10-Motion-Design-Animations.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-10</span> Motion Design</a>
+            <a href="CG-11-Accessibilite-RGAA.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-11</span> Accessibilité</a>
+            <a href="CG-12-Tokens-CSS-Complets-Guide.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-12</span> Tokens CSS</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Charte Graphique · Module CG-08
+      </div>
+      <h1 class="doc-title">Feedback &amp; États</h1>
+      <p class="doc-subtitle">Toasts · Modals · États vides · Loaders · Alertes inline</p>
+    </div>
+    <div class="doc-meta">
+      <div class="doc-meta-item">PROJET <span>Archivage Numérique</span></div>
+      <div class="doc-meta-item">MODULE <span>CG-08 / 12</span></div>
+      <div class="doc-meta-item">VERSION <span>1.0.0</span></div>
+      <button class="theme-btn" onclick="toggleTheme()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        Thème
+      </button>
+    </div>
+  </header>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 01 — TOASTS
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">01 — Toasts</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Système de notifications toast</h2>
+    <p class="section-desc">Position : centré horizontalement, ancré en haut (top: 16px). Glassmorphisme lourd : <code>rgba(20,22,31,0.82) + blur(16px)</code>. Animation spring 180ms en entrée. Barre de progression auto-dismiss 4s. Point coloré avec glow selon le type.</p>
+
+    <!-- Démo live des toasts -->
+    <div class="subsection">
+      <div class="subsection-title">Démo interactive — Déclencher des toasts</div>
+      <div class="preview-zone" style="min-height:320px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:20px">
+        <!-- Toast container live -->
+        <div id="toast-live-container" class="toast-stack" style="width:100%;max-width:420px;margin-bottom:20px"></div>
+
+        <!-- Trigger buttons -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:auto">
+          <button class="btn btn-sm" onclick="fireToast('success')" style="background:var(--success-subtle);border-color:var(--success-border);color:#5DB882">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Succès
+          </button>
+          <button class="btn btn-sm" onclick="fireToast('warning')" style="background:var(--warning-subtle);border-color:var(--warning-border);color:#D4993A">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Attention
+          </button>
+          <button class="btn btn-sm" onclick="fireToast('error')" style="background:var(--error-subtle);border-color:var(--error-border);color:#DC7070">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            Erreur
+          </button>
+          <button class="btn btn-sm" onclick="fireToast('info')" style="background:var(--info-subtle);border-color:var(--info-border);color:#6D95D8">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Info
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Les 4 toasts statiques -->
+    <div class="subsection">
+      <div class="subsection-title">4 variantes sémantiques — Rendu statique</div>
+      <div class="preview-zone" style="background:rgba(0,0,0,0.25)">
+        <div class="toast-stack">
+
+          <!-- Success -->
+          <div class="toast" role="status" aria-live="polite">
+            <div class="toast-dot toast-dot-success" aria-hidden="true"></div>
+            <div class="toast-body">
+              <div class="toast-title">Versement enregistré avec succès</div>
+              <div class="toast-desc">ARC-2025-00102 a été archivé et indexé. SHA-256 vérifié.</div>
+              <button class="toast-action">Voir le document</button>
+            </div>
+            <button class="toast-close" aria-label="Fermer">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div class="toast-progress toast-progress-success" style="animation-duration:6s"></div>
+          </div>
+
+          <!-- Warning -->
+          <div class="toast" role="status" aria-live="polite">
+            <div class="toast-dot toast-dot-warning" aria-hidden="true"></div>
+            <div class="toast-body">
+              <div class="toast-title">Signature électronique expirée</div>
+              <div class="toast-desc">Le certificat de MARTIN, Sophie expire dans 7 jours. Renouvelez avant le 01/03/2025.</div>
+              <button class="toast-action">Renouveler maintenant</button>
+            </div>
+            <button class="toast-close" aria-label="Fermer">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div class="toast-progress toast-progress-warning" style="animation-duration:7s;animation-delay:0.5s"></div>
+          </div>
+
+          <!-- Error -->
+          <div class="toast" role="alert" aria-live="assertive">
+            <div class="toast-dot toast-dot-error" aria-hidden="true"></div>
+            <div class="toast-body">
+              <div class="toast-title">Échec du transfert OCR</div>
+              <div class="toast-desc">3 fichiers n'ont pas pu être traités. Format non supporté ou document corrompu.</div>
+              <button class="toast-action">Voir les erreurs</button>
+            </div>
+            <button class="toast-close" aria-label="Fermer">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div class="toast-progress toast-progress-error" style="animation-duration:8s;animation-delay:1s"></div>
+          </div>
+
+          <!-- Info -->
+          <div class="toast" role="status" aria-live="polite">
+            <div class="toast-dot toast-dot-info" aria-hidden="true"></div>
+            <div class="toast-body">
+              <div class="toast-title">Maintenance planifiée</div>
+              <div class="toast-desc">Le système sera indisponible le 25/02/2025 de 02h00 à 04h00.</div>
+            </div>
+            <button class="toast-close" aria-label="Fermer">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div class="toast-progress toast-progress-info" style="animation-duration:9s;animation-delay:1.5s"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <table class="spec-table">
+      <thead><tr><th>Propriété</th><th>Valeur</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Position</td><td class="mono">top: 16px · left: 50% · translateX(-50%)</td><td>Centré horizontal, ancré haut</td></tr>
+        <tr><td>Fond</td><td class="mono">rgba(20,22,31,0.82) + blur(16px)</td><td>Glassmorphisme lourd — grain 0.18</td></tr>
+        <tr><td>Animation entrée</td><td class="mono">translateY(-12px) + scale(0.97) → 0 · 180ms spring</td><td>cubic-bezier(0.34,1.56,0.64,1)</td></tr>
+        <tr><td>Animation sortie</td><td class="mono">opacity + scale(0.96) · 160ms ease-out</td><td>cubic-bezier(0.16,1,0.3,1)</td></tr>
+        <tr><td>Auto-dismiss</td><td class="mono">4000ms · barre de progression 2px</td><td>Interrompue au hover</td></tr>
+        <tr><td>Point coloré</td><td class="mono">8px · border-radius 50% · box-shadow glow</td><td>Couleur selon type (success/warning/error/info)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 02 — MODALS
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">02 — Modals</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Fenêtres modales</h2>
+    <p class="section-desc">Backdrop : <code>rgba(0,0,0,0.6) + blur(4px)</code>. Animation : <code>scale(0.96) + translateY(8px) → 1 · 200ms spring</code>. 3 variantes : information, confirmation danger, formulaire. Grain sur la surface de la modal.</p>
+
+    <!-- Modal info -->
+    <div class="subsection">
+      <div class="subsection-title">Modal simple — Information</div>
+      <div class="preview-zone">
+        <div class="modal-backdrop">
+          <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-info-title">
+            <div class="modal-header">
+              <div class="modal-header-left">
+                <div class="modal-icon modal-icon-default">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <div>
+                  <div class="modal-title" id="modal-info-title">Détails du versement</div>
+                  <div class="modal-subtitle">ARC-2025-00102 · Lecture seule</div>
+                </div>
+              </div>
+              <button class="modal-close" aria-label="Fermer la fenêtre">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div class="modal-sep"></div>
+            <div class="modal-body" style="padding-top:16px">
+              <div class="modal-desc" style="margin-bottom:16px">Ce document a été archivé le <strong>14/02/2025</strong> par <strong>MARTIN, Sophie</strong>. Il est soumis à une durée d'utilité administrative de 30 ans.</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:10px">
+                  <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);letter-spacing:0.06em;margin-bottom:3px">Référence</div>
+                  <div style="font-size:var(--text-sm);color:var(--text-primary);font-family:var(--font-mono)">ARC-2025-00102</div>
+                </div>
+                <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:10px">
+                  <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);letter-spacing:0.06em;margin-bottom:3px">Type</div>
+                  <div style="font-size:var(--text-sm);color:var(--text-primary)">Délibération</div>
+                </div>
+                <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:10px">
+                  <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);letter-spacing:0.06em;margin-bottom:3px">DUA</div>
+                  <div style="font-size:var(--text-sm);color:var(--text-primary)">30 ans (permanent)</div>
+                </div>
+                <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:10px">
+                  <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);letter-spacing:0.06em;margin-bottom:3px">Format</div>
+                  <div style="font-size:var(--text-sm);color:var(--text-primary)">PDF/A-3b · 2.4 Mo</div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-sep"></div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary btn-sm">Fermer</button>
+              <button class="btn btn-primary btn-sm">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Télécharger PDF/A
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal danger -->
+    <div class="subsection">
+      <div class="subsection-title">Modal de confirmation — Action irréversible</div>
+      <div class="preview-zone">
+        <div class="modal-backdrop">
+          <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="modal-danger-title" aria-describedby="modal-danger-desc">
+            <div class="modal-header">
+              <div class="modal-header-left">
+                <div class="modal-icon modal-icon-danger">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </div>
+                <div>
+                  <div class="modal-title" id="modal-danger-title" style="color:#DC7070">Supprimer définitivement</div>
+                  <div class="modal-subtitle">Cette action est irréversible</div>
+                </div>
+              </div>
+              <button class="modal-close" aria-label="Annuler et fermer">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div class="modal-sep"></div>
+            <div class="modal-body" style="padding-top:16px">
+              <div id="modal-danger-desc">
+                <div class="modal-danger-box">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0;margin-top:1px" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  <div>La suppression du document <strong>ARC-2024-18847</strong> et de ses 4 versions associées ne peut pas être annulée. Toutes les données, métadonnées et hachages cryptographiques seront effacés.</div>
+                </div>
+                <div class="modal-desc">Pour confirmer, saisissez la référence du document :</div>
+                <div style="margin-top:10px">
+                  <input class="modal-form-input" type="text" placeholder="ARC-2024-18847" aria-label="Confirmer la référence du document à supprimer">
+                </div>
+              </div>
+            </div>
+            <div class="modal-sep"></div>
+            <div class="modal-footer">
+              <button class="btn btn-ghost btn-sm">Annuler</button>
+              <button class="btn btn-danger btn-sm">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                Supprimer définitivement
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal formulaire -->
+    <div class="subsection">
+      <div class="subsection-title">Modal avec formulaire — Nouveau versement</div>
+      <div class="preview-zone">
+        <div class="modal-backdrop">
+          <div class="modal" style="max-width:480px" role="dialog" aria-modal="true" aria-labelledby="modal-form-title">
+            <div class="modal-header">
+              <div class="modal-header-left">
+                <div class="modal-icon modal-icon-default">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                </div>
+                <div>
+                  <div class="modal-title" id="modal-form-title">Nouveau versement</div>
+                  <div class="modal-subtitle">Déposer un document dans le système</div>
+                </div>
+              </div>
+              <button class="modal-close" aria-label="Fermer">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div class="modal-sep"></div>
+            <div class="modal-body" style="padding-top:16px">
+              <div class="modal-form">
+                <div class="grid-2">
+                  <div class="modal-form-field">
+                    <label class="modal-form-label modal-form-label-req">Titre du document</label>
+                    <input class="modal-form-input" type="text" placeholder="Ex. : Délibération n°2025-…" value="Délibération n°2025-42 — PLU">
+                  </div>
+                  <div class="modal-form-field">
+                    <label class="modal-form-label modal-form-label-req">Type</label>
+                    <select class="modal-form-select">
+                      <option selected>Délibération</option>
+                      <option>Arrêté municipal</option>
+                      <option>Contrat</option>
+                      <option>Rapport</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="modal-form-field">
+                  <label class="modal-form-label modal-form-label-req">Service producteur</label>
+                  <input class="modal-form-input" type="text" placeholder="Direction, service ou bureau…" value="Direction de l'Urbanisme">
+                </div>
+                <div class="grid-2">
+                  <div class="modal-form-field">
+                    <label class="modal-form-label">Date de création</label>
+                    <input class="modal-form-input" type="text" placeholder="JJ/MM/AAAA" value="14/02/2025">
+                  </div>
+                  <div class="modal-form-field">
+                    <label class="modal-form-label">DUA</label>
+                    <select class="modal-form-select">
+                      <option>Permanente</option>
+                      <option>5 ans</option>
+                      <option>10 ans</option>
+                      <option>30 ans</option>
+                    </select>
+                  </div>
+                </div>
+                <!-- Drop zone -->
+                <div style="border:1px dashed var(--border-default);border-radius:var(--radius-sm);padding:20px;text-align:center;cursor:pointer;transition:all 150ms ease" onmouseover="this.style.borderColor='var(--accent-500)'" onmouseout="this.style.borderColor='var(--border-default)'">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-placeholder)" stroke-width="1.5" style="margin-bottom:6px" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <div style="font-size:var(--text-sm);color:var(--text-secondary);margin-bottom:2px">Déposer le fichier ici ou <span style="color:var(--accent-300);cursor:pointer">parcourir</span></div>
+                  <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder)">PDF, PDF/A · Max 50 Mo</div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-sep"></div>
+            <div class="modal-footer">
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);margin-right:auto">* Champs obligatoires</span>
+              <button class="btn btn-ghost btn-sm">Annuler</button>
+              <button class="btn btn-primary btn-sm">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                Créer le versement
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table class="spec-table">
+      <thead><tr><th>Élément</th><th>Valeur</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Backdrop</td><td class="mono">rgba(0,0,0,0.6) + blur(4px)</td><td>Clic extérieur ferme la modal</td></tr>
+        <tr><td>Animation</td><td class="mono">scale(0.96)+translateY(8px) → 1 · 200ms spring</td><td>cubic-bezier(0.34,1.56,0.64,1)</td></tr>
+        <tr><td>Largeur</td><td class="mono">max-width: 440px (info) · 480px (form)</td><td>Responsive avec padding 16px</td></tr>
+        <tr><td>Footer</td><td>Annuler (ghost) → Action principale (primary/danger)</td><td>Ordre : secondaire à gauche, primaire à droite</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 03 — ÉTATS VIDES
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">03 — États vides</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Empty states</h2>
+    <p class="section-desc">Icône Lucide SVG dans un conteneur 52px avec grain. Titre, description concise, CTA optionnel. 4 variantes contextuelles pour les cas les plus fréquents du système d'archivage.</p>
+
+    <div class="preview-zone">
+      <div class="grid-2" style="gap:1px;background:var(--border-subtle)">
+
+        <!-- Liste vide -->
+        <div style="background:var(--bg-panel)">
+          <div class="empty-state">
+            <div class="empty-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="empty-title">Aucun document archivé</div>
+            <p class="empty-desc">Ce fonds ne contient aucun document pour l'instant. Commencez par créer un premier versement.</p>
+            <button class="btn btn-primary btn-sm" style="margin-top:4px">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+              Nouveau versement
+            </button>
+          </div>
+        </div>
+
+        <!-- Recherche sans résultat -->
+        <div style="background:var(--bg-panel)">
+          <div class="empty-state">
+            <div class="empty-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </div>
+            <div class="empty-title">Aucun résultat trouvé</div>
+            <p class="empty-desc">Votre recherche « délibération urbanisme 2019 » n'a retourné aucun document. Essayez d'autres termes ou filtres.</p>
+            <button class="btn btn-secondary btn-sm" style="margin-top:4px">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              Effacer les filtres
+            </button>
+          </div>
+        </div>
+
+        <!-- Notifications vides -->
+        <div style="background:var(--bg-panel)">
+          <div class="empty-state">
+            <div class="empty-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </div>
+            <div class="empty-title">Tout est à jour</div>
+            <p class="empty-desc">Vous n'avez aucune notification en attente. Le système fonctionne normalement.</p>
+          </div>
+        </div>
+
+        <!-- Corbeille vide -->
+        <div style="background:var(--bg-panel)">
+          <div class="empty-state">
+            <div class="empty-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </div>
+            <div class="empty-title">Corbeille vide</div>
+            <p class="empty-desc">Les documents supprimés apparaissent ici avant élimination définitive après 30 jours.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <table class="spec-table">
+      <thead><tr><th>Élément</th><th>Propriété</th><th>Valeur</th></tr></thead>
+      <tbody>
+        <tr><td>Icône container</td><td>Taille</td><td class="mono">52×52px · radius-md · bg-raised + grain 0.18</td></tr>
+        <tr><td>Icône SVG</td><td>Taille</td><td class="mono">22×22px · Lucide · stroke 1.5px</td></tr>
+        <tr><td>Titre</td><td>Typo</td><td class="mono">text-md · font-weight 600 · text-secondary</td></tr>
+        <tr><td>Description</td><td>Typo</td><td class="mono">text-sm · text-placeholder · max-width 280px</td></tr>
+        <tr><td>CTA</td><td>Bouton</td><td>Optionnel · btn-primary ou btn-secondary · btn-sm</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 04 — LOADERS
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">04 — Loaders</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Indicateurs de chargement</h2>
+    <p class="section-desc">4 types de loaders selon le contexte : spinner SVG (actions ponctuelles), skeleton (contenu en cours de chargement), progress bar (opérations mesurables), dot loader (attente courte).</p>
+
+    <div class="preview-zone">
+
+      <!-- Spinners -->
+      <div class="subsection">
+        <div class="subsection-title">Spinner SVG — 3 tailles</div>
+        <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+            <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder)">sm — 16px</span>
+            <svg class="spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-label="Chargement" role="status">
+              <circle cx="12" cy="12" r="9" stroke="var(--border-default)" stroke-width="2"/>
+              <circle cx="12" cy="12" r="9" stroke="var(--accent-400)" stroke-width="2" class="spinner" style="animation:none" stroke-dasharray="28 28" stroke-dashoffset="7" stroke-linecap="round" transform="rotate(-90 12 12)"/>
+            </svg>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+            <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder)">md — 24px</span>
+            <svg class="spinner" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-label="Chargement" role="status">
+              <circle cx="12" cy="12" r="9" stroke="var(--border-default)" stroke-width="2"/>
+              <circle cx="12" cy="12" r="9" stroke="var(--accent-400)" stroke-width="2" stroke-dasharray="28 28" stroke-dashoffset="7" stroke-linecap="round" transform="rotate(-90 12 12)"/>
+            </svg>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+            <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder)">lg — 36px</span>
+            <svg class="spinner" width="36" height="36" viewBox="0 0 24 24" fill="none" aria-label="Chargement" role="status">
+              <circle cx="12" cy="12" r="9" stroke="var(--border-default)" stroke-width="1.5"/>
+              <circle cx="12" cy="12" r="9" stroke="var(--accent-500)" stroke-width="1.5" stroke-dasharray="28 28" stroke-dashoffset="7" stroke-linecap="round" transform="rotate(-90 12 12)"/>
+            </svg>
+          </div>
+          <!-- Spinner dans contexte bouton -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+            <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder)">In button</span>
+            <button class="btn btn-primary btn-sm" style="pointer-events:none;gap:8px" aria-live="polite" aria-busy="true">
+              <svg class="spinner" width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+                <circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-dasharray="28 28" stroke-dashoffset="7" stroke-linecap="round" transform="rotate(-90 12 12)"/>
+              </svg>
+              Archivage en cours…
+            </button>
+          </div>
+          <!-- Dot loader -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+            <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder)">Dot loader</span>
+            <div class="dot-loader" aria-label="Traitement en cours" role="status">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skeleton -->
+      <div class="subsection" style="margin-top:28px">
+        <div class="subsection-title">Skeleton loading — Carte document</div>
+        <div style="max-width:520px">
+          <!-- Skeleton simulant une carte document -->
+          <div style="background:var(--bg-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:16px;display:flex;flex-direction:column;gap:14px">
+            <!-- Header skeleton -->
+            <div style="display:flex;align-items:center;gap:12px">
+              <div class="skeleton" style="width:36px;height:36px;border-radius:var(--radius-sm);flex-shrink:0"></div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                <div class="skeleton" style="height:12px;width:65%"></div>
+                <div class="skeleton" style="height:9px;width:40%"></div>
+              </div>
+              <div class="skeleton" style="height:20px;width:56px;border-radius:var(--radius-xs)"></div>
+            </div>
+            <!-- Body skeleton -->
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div class="skeleton" style="height:9px;width:100%"></div>
+              <div class="skeleton" style="height:9px;width:85%"></div>
+              <div class="skeleton" style="height:9px;width:72%"></div>
+            </div>
+            <!-- Footer skeleton -->
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div class="skeleton" style="height:9px;width:120px"></div>
+              <div style="display:flex;gap:6px">
+                <div class="skeleton" style="height:28px;width:28px;border-radius:var(--radius-sm)"></div>
+                <div class="skeleton" style="height:28px;width:28px;border-radius:var(--radius-sm)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skeleton table -->
+      <div class="subsection" style="margin-top:20px">
+        <div class="subsection-title">Skeleton loading — Table</div>
+        <div style="max-width:640px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);overflow:hidden">
+          <div style="background:rgba(255,255,255,0.015);padding:10px 16px;border-bottom:1px solid var(--border-subtle);display:flex;gap:24px">
+            <div class="skeleton" style="height:10px;width:80px"></div>
+            <div class="skeleton" style="height:10px;width:140px"></div>
+            <div class="skeleton" style="height:10px;width:60px"></div>
+            <div class="skeleton" style="height:10px;width:80px"></div>
+          </div>
+          <div style="display:flex;flex-direction:column">
+            <div style="display:flex;align-items:center;gap:24px;padding:12px 16px;border-bottom:1px solid var(--border-subtle)">
+              <div class="skeleton" style="height:9px;width:90px"></div>
+              <div class="skeleton" style="height:9px;width:200px"></div>
+              <div class="skeleton" style="height:18px;width:56px;border-radius:var(--radius-xs)"></div>
+              <div class="skeleton" style="height:9px;width:70px"></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:24px;padding:12px 16px;border-bottom:1px solid var(--border-subtle)">
+              <div class="skeleton" style="height:9px;width:90px"></div>
+              <div class="skeleton" style="height:9px;width:160px"></div>
+              <div class="skeleton" style="height:18px;width:56px;border-radius:var(--radius-xs)"></div>
+              <div class="skeleton" style="height:9px;width:70px"></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:24px;padding:12px 16px">
+              <div class="skeleton" style="height:9px;width:90px"></div>
+              <div class="skeleton" style="height:9px;width:220px"></div>
+              <div class="skeleton" style="height:18px;width:56px;border-radius:var(--radius-xs)"></div>
+              <div class="skeleton" style="height:9px;width:70px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress bars -->
+      <div class="subsection" style="margin-top:20px">
+        <div class="subsection-title">Barres de progression</div>
+        <div style="max-width:520px;display:flex;flex-direction:column;gap:16px">
+
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-size:var(--text-sm);color:var(--text-secondary)">Importation de documents — lot #7</span>
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--accent-300)">68 %</span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" style="width:68%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-size:var(--text-sm);color:var(--text-secondary)">Analyse OCR en cours</span>
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-tertiary)">Indéterminé</span>
+            </div>
+            <div class="progress-bar-wrap progress-bar-indeterminate">
+              <div class="progress-bar-fill" style="width:40%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-size:var(--text-sm);color:var(--text-secondary)">Espace de stockage utilisé</span>
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:#D4993A)">84 %</span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" style="width:84%;background:#B07412"></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-size:var(--text-sm);color:var(--text-secondary)">Vérification des hachages SHA-256</span>
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:#5DB882">100 %</span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" style="width:100%;background:var(--success)"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <table class="spec-table">
+      <thead><tr><th>Type</th><th>Usage</th><th>Animation</th></tr></thead>
+      <tbody>
+        <tr><td>Spinner SVG</td><td>Bouton loading · Page loading · Action asynchrone</td><td class="mono">rotate 360° · 700ms linear infinite</td></tr>
+        <tr><td>Skeleton</td><td>Chargement initial de contenu structuré (cards, tables)</td><td class="mono">gradient sweep · 1.6s ease-in-out infinite</td></tr>
+        <tr><td>Progress bar</td><td>Upload, traitement batch, indexation OCR</td><td class="mono">width transition 400ms spring · grain 0.32</td></tr>
+        <tr><td>Progress indéterminée</td><td>Durée inconnue (analyse, traitement serveur)</td><td class="mono">translateX slide · 1.4s cubic-bezier(0.4,0,0.2,1)</td></tr>
+        <tr><td>Dot loader</td><td>Attente courte inline (< 2s)</td><td class="mono">scale+opacity bounce · 1.2s staggered 150ms</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 05 — ALERTES INLINE
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">05 — Alertes inline</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Bannières d'alerte contextuelle</h2>
+    <p class="section-desc">Affichage dans le corps de la page (contrairement aux toasts). 4 variantes sémantiques · 2 styles (fond coloré / bordure gauche accentuée). Icône Lucide SVG obligatoire · Grain sur la surface.</p>
+
+    <!-- Variante standard -->
+    <div class="subsection">
+      <div class="subsection-title">Variante standard — fond coloré</div>
+      <div class="preview-zone">
+        <div class="col" style="gap:10px">
+
+          <div class="alert alert-success" role="status">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            <div class="alert-content">
+              <div class="alert-title">Versement archivé avec succès</div>
+              <div class="alert-desc">Le document ARC-2025-00102 a été enregistré, indexé et son intégrité SHA-256 vérifiée. <a>Voir le rapport complet</a></div>
+            </div>
+            <button class="alert-close" aria-label="Fermer">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <div class="alert alert-warning" role="status">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div class="alert-content">
+              <div class="alert-title">Certificat de signature en cours d'expiration</div>
+              <div class="alert-desc">Votre certificat électronique expire le 01/03/2025. Renouvelez-le pour continuer à signer des documents. <a>Gérer les certificats</a></div>
+            </div>
+            <button class="alert-close" aria-label="Fermer">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <div class="alert alert-error" role="alert">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div class="alert-content">
+              <div class="alert-title">Anomalie d'intégrité détectée</div>
+              <div class="alert-desc">3 documents présentent des hachages SHA-256 invalides depuis le dernier audit. Une intervention manuelle est requise. <a>Voir les anomalies</a></div>
+            </div>
+            <button class="alert-close" aria-label="Fermer">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <div class="alert alert-info" role="status">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div class="alert-content">
+              <div class="alert-title">Mise à jour système planifiée</div>
+              <div class="alert-desc">Une maintenance est prévue le 25/02/2025 de 02h00 à 04h00. Le système sera indisponible durant cette période.</div>
+            </div>
+            <button class="alert-close" aria-label="Fermer">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Variante bordure gauche -->
+    <div class="subsection">
+      <div class="subsection-title">Variante bordure gauche — style compact</div>
+      <div class="preview-zone">
+        <div class="col" style="gap:10px">
+
+          <div class="alert alert-success alert-bordered" role="status">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            <div class="alert-content">
+              <div class="alert-title">Indexation OCR terminée</div>
+              <div class="alert-desc">18 472 documents ont été indexés avec succès. Recherche plein texte disponible.</div>
+            </div>
+          </div>
+
+          <div class="alert alert-warning alert-bordered" role="status">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div class="alert-content">
+              <div class="alert-title">47 documents en attente de validation</div>
+              <div class="alert-desc">Ces versements requièrent une validation de votre part avant d'être définitivement archivés.</div>
+            </div>
+          </div>
+
+          <div class="alert alert-error alert-bordered" role="alert">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            <div class="alert-content">
+              <div class="alert-title">Connexion à la base documentaire échouée</div>
+              <div class="alert-desc">Le service de stockage ne répond pas. Contactez l'administrateur système.</div>
+            </div>
+          </div>
+
+          <div class="alert alert-info alert-bordered" role="status">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div class="alert-content">
+              <div class="alert-title">Mode lecture seule activé</div>
+              <div class="alert-desc">Vous consultez ce dossier en mode lecture. Demandez les droits d'écriture à l'administrateur.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <table class="spec-table">
+      <thead><tr><th>Variante</th><th>Bg</th><th>Border</th><th>Couleur icône/texte</th></tr></thead>
+      <tbody>
+        <tr><td>Success</td><td class="mono">--success-subtle</td><td class="mono">--success-border</td><td>#5DB882 (vert sauge clair)</td></tr>
+        <tr><td>Warning</td><td class="mono">--warning-subtle</td><td class="mono">--warning-border</td><td>#D4993A (ambre clair)</td></tr>
+        <tr><td>Error</td><td class="mono">--error-subtle</td><td class="mono">--error-border</td><td>#DC7070 (rouge ardoise clair)</td></tr>
+        <tr><td>Info</td><td class="mono">--info-subtle</td><td class="mono">--info-border</td><td>#6D95D8 (ardoise bleue claire)</td></tr>
+        <tr><td>Bordered (gauche)</td><td>Identique</td><td>border-left: 3px · radius: 0 radius-sm radius-sm 0</td><td>Identique — variante compacte</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══════════════════════ FOOTER ══════════════════════ -->
+  <footer class="doc-footer">
+    <div class="footer-left">
+      Charte Graphique — Archivage Numérique · CG-08 / 12<br>
+      <div class="kbd-hint">Raccourcis : <span class="kbd">←</span> Précédent <span class="kbd">→</span> Suivant <span class="kbd">i</span> Index</div>
+    </div>
+    <div class="footer-nav">
+      <a href="CG-07-Navigation-Sidebar-Topbar-Tabs.html" class="footer-link" aria-label="Module précédent : CG-07">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Précédent
+      </a>
+      <a href="CG-09-Graphiques-DataViz.html" class="footer-link" aria-label="Module suivant : CG-09">
+        Suivant
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </a>
+    </div>
+      CG-09 — Graphiques &amp; DataViz
+    </a>
+  </footer>
+
+</div>
+
+<script>
+/* ── Theme toggle ── */
+function toggleTheme() {
+  const html = document.documentElement;
+  html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+
+/* ── Toast dismiss ── */
+document.querySelectorAll('.toast-close').forEach(btn => {
+  btn.addEventListener('click', function () {
+    const toast = this.closest('.toast');
+    toast.classList.add('dismissing');
+    setTimeout(() => toast.remove(), 180);
+  });
+});
+
+/* ── Toast fire system ── */
+const TOAST_MESSAGES = {
+  success: {
+    title: 'Versement enregistré avec succès',
+    desc: 'ARC-2025-00103 a été archivé. Intégrité SHA-256 vérifiée.',
+    action: 'Voir le document',
+  },
+  warning: {
+    title: 'Quota de stockage proche',
+    desc: 'L\'espace disponible atteint 84 %. Planifiez un nettoyage.',
+    action: 'Gérer le stockage',
+  },
+  error: {
+    title: 'Échec de la signature électronique',
+    desc: 'Le certificat est invalide ou expiré. Authentification requise.',
+    action: 'Réessayer',
+  },
+  info: {
+    title: 'Rapport d\'audit disponible',
+    desc: 'Le rapport mensuel de février 2025 est prêt à être consulté.',
+    action: null,
+  },
+};
+
+function fireToast(type) {
+  const container = document.getElementById('toast-live-container');
+  const msg = TOAST_MESSAGES[type];
+
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
+  toast.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+
+  const dotColors = { success:'toast-dot-success', warning:'toast-dot-warning', error:'toast-dot-error', info:'toast-dot-info' };
+  const progressColors = { success:'toast-progress-success', warning:'toast-progress-warning', error:'toast-progress-error', info:'toast-progress-info' };
+
+  toast.innerHTML = `
+    <div class="toast-dot ${dotColors[type]}" aria-hidden="true"></div>
+    <div class="toast-body">
+      <div class="toast-title">${msg.title}</div>
+      <div class="toast-desc">${msg.desc}</div>
+      ${msg.action ? `<button class="toast-action">${msg.action}</button>` : ''}
+    </div>
+    <button class="toast-close" aria-label="Fermer">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="toast-progress ${progressColors[type]}"></div>
+  `;
+
+  container.prepend(toast);
+
+  // Close button
+  toast.querySelector('.toast-close').addEventListener('click', () => {
+    toast.classList.add('dismissing');
+    setTimeout(() => toast.remove(), 180);
+  });
+
+  // Auto dismiss 4s
+  const timer = setTimeout(() => {
+    if (toast.parentNode) {
+      toast.classList.add('dismissing');
+      setTimeout(() => toast.remove(), 180);
+    }
+  }, 4200);
+
+  // Pause on hover
+  toast.addEventListener('mouseenter', () => clearTimeout(timer));
+}
+
+/* ── Alert dismiss ── */
+document.querySelectorAll('.alert-close').forEach(btn => {
+  btn.addEventListener('click', function () {
+    const alert = this.closest('.alert');
+    alert.style.transition = 'opacity 160ms ease, transform 160ms ease';
+    alert.style.opacity = '0';
+    alert.style.transform = 'translateX(8px)';
+    setTimeout(() => alert.remove(), 180);
+  });
+});
+</script>
+</body>
+</html>
+  </footer>
+
+</div>
+
+<script>
+function toggleNav(btn) {
+  const dropdown = btn.parentElement;
+  const isActive = dropdown.classList.contains('active');
+  document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('active'));
+  if (!isActive) {
+    dropdown.classList.add('active');
+    btn.setAttribute('aria-expanded', 'true');
+  } else {
+    btn.setAttribute('aria-expanded', 'false');
+  }
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.nav-dropdown')) {
+    document.querySelectorAll('.nav-dropdown').forEach(d => {
+      d.classList.remove('active');
+      const btn = d.querySelector('.nav-dropdown-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  switch(e.key) {
+    case 'ArrowLeft':
+      const prevLink = document.querySelector('.footer-link[aria-label*="précédent"]');
+      if (prevLink && !prevLink.classList.contains('disabled')) {
+        window.location.href = prevLink.href;
+      }
+      break;
+    case 'ArrowRight':
+      const nextLink = document.querySelector('.footer-link[aria-label*="suivant"]');
+      if (nextLink && !nextLink.classList.contains('disabled')) {
+        window.location.href = nextLink.href;
+      }
+      break;
+    case 'i':
+    case 'I':
+      window.location.href = 'index.html';
+      break;
+  }
+});
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+}
+</script>
+
+</body>
+</html>

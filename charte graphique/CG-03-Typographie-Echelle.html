@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CG-03 — Typographie & Échelle · Archivage Numérique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --accent-300:  #65D5C4;
+  --accent-400:  #36BCAB;
+  --accent-500:  #179E8E;
+  --accent-600:  #0E7E72;
+  --accent-subtle-bg:    rgba(23,158,142,0.08);
+  --accent-subtle-border:rgba(23,158,142,0.20);
+
+  --gray-950: #0A0B0F;
+  --gray-900: #10121A;
+  --gray-850: #14161F;
+  --gray-800: #1A1D2B;
+  --gray-700: #252838;
+  --gray-600: #353848;
+  --gray-500: #4D5068;
+  --gray-400: #6B6F88;
+  --gray-300: #9498B0;
+  --gray-200: #C2C5D6;
+  --gray-100: #E3E5F0;
+  --gray-50:  #F0F1F8;
+
+  --bg-base:     var(--gray-950);
+  --bg-elevated: var(--gray-900);
+  --bg-subtle:   var(--gray-800);
+  --border-subtle:  var(--gray-800);
+  --border-default: var(--gray-700);
+  --text-primary:   var(--gray-50);
+  --text-secondary: var(--gray-200);
+  --text-tertiary:  var(--gray-400);
+
+  --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  --font-mono: 'DM Mono', 'Fira Code', monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-base: 180ms;
+}
+
+/* Light mode */
+[data-theme="light"] {
+  --bg-base: #F8F9FC;
+  --bg-elevated: #FFFFFF;
+  --bg-subtle: var(--gray-100);
+  --border-subtle: var(--gray-100);
+  --border-default: var(--gray-200);
+  --text-primary: var(--gray-900);
+  --text-secondary: #3D4158;
+  --text-tertiary: var(--gray-500);
+}
+
+html { scroll-behavior: smooth; }
+
+/* Smooth theme transitions */
+body, body * {
+  transition-property: background-color, border-color, color;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-base);
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* GRAIN GLOBAL */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  opacity: 0.20;
+  mix-blend-mode: overlay;
+}
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 64px 40px 120px;
+}
+
+/* ── GRAIN HELPER ── */
+.grained { position: relative; overflow: hidden; }
+.grained::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 110px;
+  opacity: 0.12;
+  mix-blend-mode: overlay;
+}
+
+/* ── DOC HEADER ── */
+.doc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 80px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.doc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  border: 1px solid var(--border-default);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 18px;
+}
+.doc-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-500); flex-shrink: 0; }
+.doc-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+  margin-bottom: 8px;
+}
+.doc-subtitle { font-size: 13px; color: var(--text-tertiary); }
+.doc-meta { text-align: right; font-family: var(--font-mono); font-size: 10px; color: var(--gray-500); line-height: 1.9; }
+
+.theme-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  transition: all 150ms ease;
+}
+.theme-btn:hover {
+  border-color: var(--border-default);
+  color: var(--text-primary);
+}
+
+/* ── SECTIONS ── */
+.section { margin-bottom: 72px; }
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border-subtle); }
+.section-title { font-size: 18px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.025em; margin-bottom: 6px; }
+.section-desc { font-size: 13px; color: var(--text-tertiary); max-width: 620px; line-height: 1.65; }
+
+/* ══════════════════════════════════
+   FONT ANATOMY CARD
+══════════════════════════════════ */
+.font-anatomy {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-top: 28px;
+}
+.font-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.font-card-top {
+  padding: 32px 28px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+}
+.font-card-top::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 120px;
+  opacity: 0.09;
+  mix-blend-mode: overlay;
+}
+.font-specimen {
+  font-size: 48px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.045em;
+  line-height: 1;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 2;
+}
+.font-specimen-mono {
+  font-family: var(--font-mono);
+  font-size: 32px;
+  font-weight: 400;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: 1;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 2;
+}
+.font-alphabet {
+  font-size: 13px;
+  color: var(--gray-400);
+  letter-spacing: 0.04em;
+  line-height: 1.8;
+  position: relative;
+  z-index: 2;
+}
+.font-alphabet-mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gray-400);
+  letter-spacing: 0.04em;
+  line-height: 1.8;
+  position: relative;
+  z-index: 2;
+}
+.font-card-meta {
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 20px;
+}
+.font-meta-row { display: flex; flex-direction: column; gap: 2px; }
+.font-meta-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-600); }
+.font-meta-value { font-size: 11px; color: var(--gray-300); font-weight: 500; }
+.font-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 2px;
+  margin-top: 8px;
+  background: var(--accent-subtle-bg);
+  color: var(--accent-300);
+  border: 1px solid var(--accent-subtle-border);
+}
+
+/* ══════════════════════════════════
+   SCALE COMPLÈTE
+══════════════════════════════════ */
+.scale-table {
+  margin-top: 28px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.scale-table-head {
+  display: grid;
+  grid-template-columns: 90px 60px 70px 80px 80px 1fr;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-subtle);
+}
+.sth { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-500); }
+.scale-row {
+  display: grid;
+  grid-template-columns: 90px 60px 70px 80px 80px 1fr;
+  align-items: center;
+  padding: 0 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.025);
+  transition: background var(--duration-base) var(--ease-spring);
+  min-height: 52px;
+}
+.scale-row:last-child { border-bottom: none; }
+.scale-row:hover { background: rgba(255,255,255,0.02); }
+.sc-token { font-family: var(--font-mono); font-size: 9px; color: var(--accent-300); letter-spacing: 0.06em; }
+.sc-size  { font-family: var(--font-mono); font-size: 10px; color: var(--gray-300); }
+.sc-lh    { font-family: var(--font-mono); font-size: 10px; color: var(--gray-500); }
+.sc-weight { font-family: var(--font-mono); font-size: 10px; color: var(--gray-500); }
+.sc-tracking { font-family: var(--font-mono); font-size: 10px; color: var(--gray-500); }
+.sc-sample { color: var(--text-secondary); padding: 10px 0; }
+
+/* ══════════════════════════════════
+   POIDS TYPOGRAPHIQUES
+══════════════════════════════════ */
+.weights-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2px;
+  margin-top: 28px;
+}
+.weight-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 20px 16px;
+  position: relative;
+  overflow: hidden;
+}
+.weight-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 80px;
+  opacity: 0.09;
+  mix-blend-mode: overlay;
+}
+.weight-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--gray-600);
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 2;
+}
+.weight-sample {
+  font-size: 22px;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 6px;
+  position: relative;
+  z-index: 2;
+}
+.weight-name {
+  font-size: 10px;
+  color: var(--gray-500);
+  position: relative;
+  z-index: 2;
+}
+.weight-usage {
+  font-size: 10px;
+  color: var(--gray-600);
+  margin-top: 6px;
+  line-height: 1.4;
+  position: relative;
+  z-index: 2;
+}
+.w-active { border-color: var(--accent-subtle-border); }
+.w-active .weight-num { color: var(--accent-400); }
+
+/* ══════════════════════════════════
+   CAS D'USAGE CONTEXTUELS
+══════════════════════════════════ */
+.context-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 28px;
+}
+.context-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.context-card-header {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.015);
+}
+.context-header-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent-500);
+}
+.context-header-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+}
+.context-card-body { padding: 20px 16px; position: relative; }
+.context-card-body::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 80px;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+}
+
+/* Mockup composants */
+.mock-page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 2;
+}
+.mock-page-sub {
+  font-size: 12px;
+  color: var(--gray-400);
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 2;
+}
+.mock-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 12px 0;
+  position: relative;
+  z-index: 2;
+}
+.mock-section-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray-600);
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 2;
+}
+.mock-body {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  position: relative;
+  z-index: 2;
+}
+.mock-caption {
+  font-size: 11px;
+  color: var(--gray-500);
+  margin-top: 6px;
+  position: relative;
+  z-index: 2;
+}
+.mock-mono {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--gray-500);
+  letter-spacing: 0.04em;
+  position: relative;
+  z-index: 2;
+}
+.mock-table-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+  z-index: 2;
+}
+.mock-table-row:last-child { border-bottom: none; }
+.mock-table-cell { font-size: 12px; color: var(--text-secondary); }
+.mock-table-cell-mono { font-family: var(--font-mono); font-size: 10px; color: var(--gray-400); }
+.mock-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 500;
+  background: var(--accent-subtle-bg);
+  color: var(--accent-300);
+  border: 1px solid var(--accent-subtle-border);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+.mock-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--gray-400);
+  margin-bottom: 2px;
+  position: relative;
+  z-index: 2;
+}
+.mock-nav-item.active {
+  background: var(--accent-subtle-bg);
+  color: var(--accent-300);
+}
+.mock-nav-dot {
+  width: 14px; height: 14px;
+  border-radius: 3px;
+  background: var(--border-default);
+  flex-shrink: 0;
+}
+.mock-nav-dot-accent {
+  background: var(--accent-subtle-bg);
+  border: 1px solid var(--accent-subtle-border);
+}
+.mock-input {
+  width: 100%;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 2;
+  display: block;
+}
+.mock-input-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--gray-400);
+  margin-bottom: 4px;
+  letter-spacing: 0.02em;
+  position: relative;
+  z-index: 2;
+}
+.mock-input-help {
+  font-size: 10px;
+  color: var(--gray-600);
+  margin-top: 2px;
+  position: relative;
+  z-index: 2;
+  display: block;
+}
+
+/* ══════════════════════════════════
+   RÈGLES TECHNIQUES
+══════════════════════════════════ */
+.rules-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2px;
+  margin-top: 28px;
+}
+.rule-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 18px 16px;
+  position: relative;
+  overflow: hidden;
+}
+.rule-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 80px;
+  opacity: 0.09;
+  mix-blend-mode: overlay;
+}
+.rule-card-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 2;
+}
+.rule-card-body {
+  font-size: 11px;
+  color: var(--gray-500);
+  line-height: 1.6;
+  position: relative;
+  z-index: 2;
+}
+.rule-card-code {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent-300);
+  background: var(--accent-subtle-bg);
+  border: 1px solid var(--accent-subtle-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  margin-top: 10px;
+  display: block;
+  position: relative;
+  z-index: 2;
+  line-height: 1.8;
+}
+
+/* ══════════════════════════════════
+   MONO USAGE
+══════════════════════════════════ */
+.mono-showcase {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 28px;
+}
+.mono-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.mono-card-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.mono-card-title { font-family: var(--font-mono); font-size: 9px; color: var(--gray-600); letter-spacing: 0.12em; text-transform: uppercase; }
+.mono-card-badge { font-family: var(--font-mono); font-size: 8px; color: var(--accent-400); }
+.mono-card-body {
+  padding: 14px;
+  position: relative;
+}
+.mono-card-body::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 80px;
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+}
+.mono-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  position: relative;
+  z-index: 2;
+}
+.mono-item:last-child { border-bottom: none; }
+.mono-item-label { font-size: 11px; color: var(--gray-400); }
+.mono-item-val { font-family: var(--font-mono); font-size: 10px; color: var(--gray-300); }
+
+/* ══════════════════════════════════
+   CSS TOKEN EXPORT
+══════════════════════════════════ */
+.code-block {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  margin-top: 28px;
+  overflow-x: auto;
+  position: relative;
+}
+.code-block::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 100px;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+}
+.code-lang {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-400);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.code-lang::after { content: ''; flex: 1; height: 1px; background: var(--border-subtle); }
+pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); line-height: 1.75; white-space: pre; position: relative; z-index: 2; }
+.c-comment { color: var(--gray-600); }
+.c-var     { color: var(--accent-300); }
+.c-val     { color: var(--gray-300); }
+.c-prop    { color: var(--gray-400); }
+
+/* NAVIGATION SYSTEM */
+.nav-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--gray-500);
+  margin-bottom: 16px;
+}
+.nav-breadcrumb a {
+  color: var(--accent-400);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.nav-breadcrumb a:hover { color: var(--accent-300); }
+.nav-breadcrumb-sep { color: var(--gray-700); }
+
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.nav-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--gray-900);
+  border: 1px solid var(--gray-800);
+  border-radius: var(--radius-sm);
+  color: var(--gray-300);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.nav-dropdown-btn:hover {
+  background: var(--gray-850);
+  border-color: var(--gray-700);
+  color: var(--gray-200);
+}
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--gray-900);
+  border: 1px solid var(--gray-800);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  min-width: 280px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1000;
+}
+.nav-dropdown.active .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  color: var(--gray-400);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  transition: all 120ms ease;
+}
+.nav-dropdown-item:hover {
+  background: var(--gray-850);
+  color: var(--gray-200);
+}
+.nav-dropdown-item.active {
+  background: rgba(23,158,142,0.12);
+  color: var(--accent-300);
+  font-weight: 500;
+}
+.nav-dropdown-item-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--gray-600);
+  min-width: 32px;
+}
+
+/* FOOTER */
+.doc-footer {
+  margin-top: 80px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-left { font-family: var(--font-mono); font-size: 10px; color: var(--gray-600); line-height: 1.8; }
+.footer-nav {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--gray-400);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: all 150ms ease;
+}
+.footer-link:hover {
+  color: var(--gray-200);
+  background: var(--gray-900);
+}
+.footer-link svg { width: 14px; height: 14px; }
+.footer-link.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+.kbd-hint {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--gray-700);
+  margin-top: 8px;
+}
+.kbd {
+  display: inline-block;
+  padding: 2px 5px;
+  background: var(--gray-900);
+  border: 1px solid var(--gray-800);
+  border-radius: 3px;
+  font-size: 9px;
+  margin: 0 2px;
+}
+.footer-next { font-size: 11px; color: var(--text-tertiary); display: flex; align-items: center; gap: 6px; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--gray-950); }
+::-webkit-scrollbar-thumb { background: var(--gray-700); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="doc-header">
+    <div>
+      <!-- Breadcrumb + Menu -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <nav class="nav-breadcrumb" aria-label="Fil d'Ariane">
+          <a href="index.html">← Index</a>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>CG-03</span>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>Typographie</span>
+        </nav>
+        
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-btn" onclick="toggleNav(this)" aria-label="Menu des modules" aria-expanded="false">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+            Tous les modules
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="CG-01-Identite-Palette.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-01</span> Identité & Palette</a>
+            <a href="CG-02-Systeme-Couleurs-Tokens.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-02</span> Couleurs & Tokens</a>
+            <a href="CG-03-Typographie-Echelle.html" class="nav-dropdown-item active"><span class="nav-dropdown-item-num">CG-03</span> Typographie</a>
+            <a href="CG-04-Espacement-Grille-Layout.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-04</span> Espacement & Grille</a>
+            <a href="CG-05-Effets-Grain-Verre-Ombres-Bordures.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-05</span> Effets & Grain</a>
+            <a href="CG-06-Composants-Boutons-Inputs-Badges-Cards.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-06</span> Composants UI</a>
+            <a href="CG-07-Navigation-Sidebar-Topbar-Tabs.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-07</span> Navigation</a>
+            <a href="CG-08-Feedback-Toasts-Modals-Etats.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-08</span> Feedback & États</a>
+            <a href="CG-09-Graphiques-DataViz.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-09</span> Graphiques</a>
+            <a href="CG-10-Motion-Design-Animations.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-10</span> Motion Design</a>
+            <a href="CG-11-Accessibilite-RGAA.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-11</span> Accessibilité</a>
+            <a href="CG-12-Tokens-CSS-Complets-Guide.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-12</span> Tokens CSS</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-badge"><span class="doc-badge-dot"></span>Charte Graphique · Module CG-03</div>
+      <h1 class="doc-title">Typographie & Échelle</h1>
+      <p class="doc-subtitle">Familles · Tailles · Poids · Line-height · Tracking · Cas d'usage</p>
+    </div>
+    <div class="doc-meta">
+      Archivage Numérique<br>
+      Administration Publique<br>
+      v1.0 — 2026<br><br>
+      Polices :<br>
+      Plus Jakarta Sans<br>
+      DM Mono
+      <button class="theme-btn" onclick="toggleTheme()" aria-label="Basculer le thème">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        </svg>
+        Thème
+      </button>
+    </div>
+  </header>
+
+
+  <!-- ══ 01 — ANATOMIE DES POLICES ══ -->
+  <section class="section">
+    <div class="section-label">01 — Familles typographiques</div>
+    <h2 class="section-title">Deux familles. Deux rôles. Zéro mélange.</h2>
+    <p class="section-desc">Plus Jakarta Sans pour tout le contenu de navigation, d'interface et de lecture. DM Mono exclusivement pour les données techniques : références, timestamps, hashes, codes. La frontière est stricte et non négociable.</p>
+
+    <div class="font-anatomy">
+
+      <!-- PLUS JAKARTA SANS -->
+      <div class="font-card">
+        <div class="font-card-top">
+          <div class="font-specimen">Archivage<br>Numérique</div>
+          <div class="font-alphabet">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>0123456789 — .,:;!?()[]{}</div>
+        </div>
+        <div class="font-card-meta">
+          <div class="font-meta-row">
+            <span class="font-meta-label">Famille</span>
+            <span class="font-meta-value">Plus Jakarta Sans</span>
+          </div>
+          <div class="font-meta-row">
+            <span class="font-meta-label">Variable</span>
+            <span class="font-meta-value">--font-sans</span>
+          </div>
+          <div class="font-meta-row">
+            <span class="font-meta-label">Poids</span>
+            <span class="font-meta-value">300 · 400 · 500 · 600 · 700</span>
+          </div>
+          <div class="font-meta-row">
+            <span class="font-meta-label">Classification</span>
+            <span class="font-meta-value">Humaniste géométrique</span>
+          </div>
+          <div class="font-meta-row">
+            <span class="font-meta-label">Source</span>
+            <span class="font-meta-value">Google Fonts · OFL</span>
+          </div>
+          <div class="font-meta-row">
+            <span class="font-meta-label">Fallback</span>
+            <span class="font-meta-value">-apple-system, sans-serif</span>
+          </div>
+          <div style="grid-column:span 2">
+            <span class="font-role-badge">Interface · Navigation · Corps · Labels</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DM MONO -->
+      <div class="font-card">
+        <div class="font-card-top">
+          <div class="font-specimen-mono">DOC-2026-00843<br>SHA256: a1b2c3</div>
+          <div class="font-alphabet-mono">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>0123456789 #@_-.:;/\()[]</div>
+        </div>
+        <div class="font-card-meta">
+          <div class="font-meta-row">
+            <span class="font-meta-label">Famille</span>
+            <span class="font-meta-value">DM Mono</span>
+          </div>
+          <div class="font-meta-row">
+            <span class="font-meta-label">Variable</span>
+            <span class="font-meta-value">--font-mono</span>
+          </div>
+          <div class="font-meta-row">
+            <span class="font-meta-label">Poids</span>
+            <span class="font-meta-value">400 · 500</span>
+          </div>
+          <div class="font-meta-row">
+            <span class="font-meta-label">Classification</span>
+            <span class="font-meta-value">Monospace humaniste</span>
+          </div>
+          <div class="font-meta-row">
+            <span class="font-meta-label">Source</span>
+            <span class="font-meta-value">Google Fonts · OFL</span>
+          </div>
+          <div class="font-meta-row">
+            <span class="font-meta-label">Fallback</span>
+            <span class="font-meta-value">Fira Code, monospace</span>
+          </div>
+          <div style="grid-column:span 2">
+            <span class="font-role-badge">Références · Timestamps · Hashes · Badges · Labels UPPER</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 02 — ÉCHELLE TYPOGRAPHIQUE ══ -->
+  <section class="section">
+    <div class="section-label">02 — Échelle de taille</div>
+    <h2 class="section-title">7 niveaux. Pas un de plus.</h2>
+    <p class="section-desc">L'échelle est délibérément compacte. Chaque niveau est justifié par un usage précis. Utiliser un niveau hors de son contexte prescrit est une violation de la charte. La cohérence de l'échelle est ce qui crée la densité maîtrisée.</p>
+
+    <div class="scale-table">
+      <div class="scale-table-head">
+        <span class="sth">Token</span>
+        <span class="sth">Taille</span>
+        <span class="sth">Line-h.</span>
+        <span class="sth">Poids std</span>
+        <span class="sth">Tracking</span>
+        <span class="sth">Usage — exemple rendu</span>
+      </div>
+
+      <div class="scale-row">
+        <span class="sc-token">text-2xl</span>
+        <span class="sc-size">28px</span>
+        <span class="sc-lh">1.15</span>
+        <span class="sc-weight">700</span>
+        <span class="sc-tracking">−0.035em</span>
+        <span class="sc-sample" style="font-size:28px;font-weight:700;letter-spacing:-0.035em;line-height:1.15;color:var(--text-primary)">Titre de page</span>
+      </div>
+      <div class="scale-row">
+        <span class="sc-token">text-xl</span>
+        <span class="sc-size">22px</span>
+        <span class="sc-lh">1.2</span>
+        <span class="sc-weight">600</span>
+        <span class="sc-tracking">−0.03em</span>
+        <span class="sc-sample" style="font-size:22px;font-weight:600;letter-spacing:-0.03em;line-height:1.2;color:var(--text-primary)">Valeur KPI principale</span>
+      </div>
+      <div class="scale-row">
+        <span class="sc-token">text-lg</span>
+        <span class="sc-size">18px</span>
+        <span class="sc-lh">1.3</span>
+        <span class="sc-weight">600</span>
+        <span class="sc-tracking">−0.025em</span>
+        <span class="sc-sample" style="font-size:18px;font-weight:600;letter-spacing:-0.025em;line-height:1.3;color:var(--text-primary)">Titre de section principale</span>
+      </div>
+      <div class="scale-row">
+        <span class="sc-token">text-md</span>
+        <span class="sc-size">14px</span>
+        <span class="sc-lh">1.5</span>
+        <span class="sc-weight">500</span>
+        <span class="sc-tracking">−0.01em</span>
+        <span class="sc-sample" style="font-size:14px;font-weight:500;letter-spacing:-0.01em;line-height:1.5;color:var(--text-secondary)">Sous-titre · Lien nav actif · Valeur de champ</span>
+      </div>
+      <div class="scale-row">
+        <span class="sc-token">text-base</span>
+        <span class="sc-size">13px</span>
+        <span class="sc-lh">1.65</span>
+        <span class="sc-weight">400</span>
+        <span class="sc-tracking">0</span>
+        <span class="sc-sample" style="font-size:13px;font-weight:400;line-height:1.65;color:var(--text-secondary)">Corps du texte. Lecture principale de l'interface au quotidien.</span>
+      </div>
+      <div class="scale-row">
+        <span class="sc-token">text-sm</span>
+        <span class="sc-size">11px</span>
+        <span class="sc-lh">1.55</span>
+        <span class="sc-weight">400</span>
+        <span class="sc-tracking">0</span>
+        <span class="sc-sample" style="font-size:11px;font-weight:400;line-height:1.55;color:var(--gray-500)">Légende · Description champ · Timestamp secondaire · Aide contextuelle</span>
+      </div>
+      <div class="scale-row">
+        <span class="sc-token">text-xs</span>
+        <span class="sc-size">10px</span>
+        <span class="sc-lh">1.4</span>
+        <span class="sc-weight">400–500</span>
+        <span class="sc-tracking">+0.10em</span>
+        <span class="sc-sample" style="font-size:10px;font-weight:500;letter-spacing:0.10em;line-height:1.4;color:var(--gray-600);text-transform:uppercase;font-family:var(--font-mono)">LABEL MONO · BADGE · CODE · UC-016-01</span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 03 — POIDS ══ -->
+  <section class="section">
+    <div class="section-label">03 — Poids typographiques</div>
+    <h2 class="section-title">5 poids. Chacun à sa place.</h2>
+    <p class="section-desc">La hiérarchie visuelle se construit principalement via les poids et les tailles — pas par la couleur. On n'utilise jamais un poids par défaut "parce que ça va bien" : chaque poids a sa liste de cas d'usage.</p>
+
+    <div class="weights-grid">
+      <div class="weight-card">
+        <div class="weight-num">300 · Light</div>
+        <div class="weight-sample" style="font-weight:300">Archivage</div>
+        <div class="weight-name">Light</div>
+        <div class="weight-usage">Jamais utilisé seul. Uniquement en contraste avec un 600 ou 700 dans un même composant.</div>
+      </div>
+      <div class="weight-card">
+        <div class="weight-num">400 · Regular</div>
+        <div class="weight-sample" style="font-weight:400">Archivage</div>
+        <div class="weight-name">Regular</div>
+        <div class="weight-usage">Corps de texte standard. Descriptions. Placeholder. Liens dans le corps.</div>
+      </div>
+      <div class="weight-card w-active">
+        <div class="weight-num">500 · Medium</div>
+        <div class="weight-sample" style="font-weight:500">Archivage</div>
+        <div class="weight-name">Medium ★ Principal</div>
+        <div class="weight-usage">Navigation active. Labels de formulaire. Sous-titres de card. Boutons secondaires.</div>
+      </div>
+      <div class="weight-card w-active">
+        <div class="weight-num">600 · SemiBold</div>
+        <div class="weight-sample" style="font-weight:600">Archivage</div>
+        <div class="weight-name">SemiBold ★ Principal</div>
+        <div class="weight-usage">Titres de section. Noms dans les tables. Valeurs importantes. Boutons primaires.</div>
+      </div>
+      <div class="weight-card">
+        <div class="weight-num">700 · Bold</div>
+        <div class="weight-sample" style="font-weight:700">Archivage</div>
+        <div class="weight-name">Bold</div>
+        <div class="weight-usage">Titres de page uniquement (28px). Valeurs de KPI (22px). Jamais en body text.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 04 — CAS D'USAGE CONTEXTUELS ══ -->
+  <section class="section">
+    <div class="section-label">04 — Typographie en contexte</div>
+    <h2 class="section-title">La hiérarchie en situation réelle</h2>
+    <p class="section-desc">Chaque composant de l'interface applique la même logique : titre → corps → caption → mono. Les exemples ci-dessous montrent la typographie in-situ, dans les composants réels du système.</p>
+
+    <div class="context-grid">
+
+      <!-- EN-TÊTE DE PAGE -->
+      <div class="context-card">
+        <div class="context-card-header">
+          <div class="context-header-dot"></div>
+          <span class="context-header-label">En-tête de page</span>
+        </div>
+        <div class="context-card-body">
+          <div class="mock-page-title">Documents archivés</div>
+          <div class="mock-page-sub">14 382 documents · Dernière sync il y a 3 minutes</div>
+          <div class="mock-divider"></div>
+          <div class="mock-section-label">Filtres actifs</div>
+          <div class="mock-body">Type : Délibération · Période : 2025–2026 · Statut : Validé</div>
+        </div>
+      </div>
+
+      <!-- TABLE DE DONNÉES -->
+      <div class="context-card">
+        <div class="context-card-header">
+          <div class="context-header-dot"></div>
+          <span class="context-header-label">Table de données</span>
+        </div>
+        <div class="context-card-body">
+          <div class="mock-table-row">
+            <div>
+              <div class="mock-table-cell" style="font-weight:500">Délibération 2026-001</div>
+              <div class="mock-table-cell-mono">DOC-2026-00841</div>
+            </div>
+            <span class="mock-badge">Validé</span>
+          </div>
+          <div class="mock-table-row">
+            <div>
+              <div class="mock-table-cell" style="font-weight:500">Courrier Préfecture du Nord</div>
+              <div class="mock-table-cell-mono">DOC-2026-00842</div>
+            </div>
+            <span class="mock-badge" style="background:rgba(176,116,18,0.10);color:#EDB03A;border-color:rgba(176,116,18,0.22)">En attente</span>
+          </div>
+          <div class="mock-table-row">
+            <div>
+              <div class="mock-table-cell" style="font-weight:500">Budget prévisionnel FY2026</div>
+              <div class="mock-table-cell-mono">DOC-2026-00843</div>
+            </div>
+            <span class="mock-badge">Archivé</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORMULAIRE -->
+      <div class="context-card">
+        <div class="context-card-header">
+          <div class="context-header-dot"></div>
+          <span class="context-header-label">Formulaire</span>
+        </div>
+        <div class="context-card-body">
+          <span class="mock-input-label">Titre du document</span>
+          <span class="mock-input" style="display:block;padding:7px 10px;border-radius:var(--radius-sm);background:var(--bg-subtle);border:1px solid var(--border-default);font-size:12px;color:var(--gray-400)">Délibération conseil municipal...</span>
+          <span class="mock-input-help">Ex : Délibération du 15 janvier 2026 — point 3</span>
+          <div style="margin-top:10px">
+            <span class="mock-input-label">Catégorie</span>
+            <span class="mock-input" style="display:block;padding:7px 10px;border-radius:var(--radius-sm);background:var(--bg-subtle);border:1px solid var(--accent-500);font-size:12px;color:var(--text-secondary)">Délibérations municipales</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- NAVIGATION SIDEBAR -->
+      <div class="context-card">
+        <div class="context-card-header">
+          <div class="context-header-dot"></div>
+          <span class="context-header-label">Navigation sidebar</span>
+        </div>
+        <div class="context-card-body">
+          <div style="margin-bottom:12px">
+            <div class="mock-section-label">Principal</div>
+            <div class="mock-nav-item active">
+              <div class="mock-nav-dot mock-nav-dot-accent"></div>
+              Documents
+            </div>
+            <div class="mock-nav-item">
+              <div class="mock-nav-dot"></div>
+              Workflows
+            </div>
+            <div class="mock-nav-item">
+              <div class="mock-nav-dot"></div>
+              Recherche
+            </div>
+          </div>
+          <div>
+            <div class="mock-section-label">Administration</div>
+            <div class="mock-nav-item">
+              <div class="mock-nav-dot"></div>
+              Utilisateurs
+            </div>
+            <div class="mock-nav-item">
+              <div class="mock-nav-dot"></div>
+              Sauvegardes
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 05 — DM MONO EN CONTEXTE ══ -->
+  <section class="section">
+    <div class="section-label">05 — DM Mono · Usages exclusifs</div>
+    <h2 class="section-title">Quand utiliser la police monospace</h2>
+    <p class="section-desc">DM Mono est réservée aux éléments de données techniques. Son usage hors de ces cas constitue une violation de la charte. Elle n'est jamais utilisée pour du contenu textuel courant — même pour "faire technique".</p>
+
+    <div class="mono-showcase">
+      <div class="mono-card">
+        <div class="mono-card-header">
+          <span class="mono-card-title">Autorisé — DM Mono</span>
+          <span class="mono-card-badge">✓ Correct</span>
+        </div>
+        <div class="mono-card-body">
+          <div class="mono-item">
+            <span class="mono-item-label">Référence document</span>
+            <span class="mono-item-val">DOC-2026-00843</span>
+          </div>
+          <div class="mono-item">
+            <span class="mono-item-label">Hash d'intégrité</span>
+            <span class="mono-item-val">SHA256: a1b2c3d4...</span>
+          </div>
+          <div class="mono-item">
+            <span class="mono-item-label">Timestamp</span>
+            <span class="mono-item-val">2026-02-18T10:30:00Z</span>
+          </div>
+          <div class="mono-item">
+            <span class="mono-item-label">Taille fichier</span>
+            <span class="mono-item-val">2.84 Mo · PDF</span>
+          </div>
+          <div class="mono-item">
+            <span class="mono-item-label">Labels section (UPPER)</span>
+            <span class="mono-item-val" style="letter-spacing:0.14em;text-transform:uppercase;font-size:9px">DOCUMENTS · CG-03</span>
+          </div>
+          <div class="mono-item">
+            <span class="mono-item-label">Badge / chip / tag</span>
+            <span class="mono-item-val" style="background:var(--accent-subtle-bg);color:var(--accent-300);border:1px solid var(--accent-subtle-border);padding:2px 7px;border-radius:2px;font-size:9px">VALIDÉ</span>
+          </div>
+          <div class="mono-item">
+            <span class="mono-item-label">Code (extrait)</span>
+            <span class="mono-item-val" style="color:var(--accent-300)">--accent-500: #179E8E</span>
+          </div>
+          <div class="mono-item">
+            <span class="mono-item-label">Numéro de version</span>
+            <span class="mono-item-val">v2.3.1 · Build 20260218</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mono-card">
+        <div class="mono-card-header">
+          <span class="mono-card-title">Interdit — DM Mono</span>
+          <span class="mono-card-badge" style="color:#CF6860">✗ Incorrect</span>
+        </div>
+        <div class="mono-card-body">
+          <div class="mono-item">
+            <span class="mono-item-label">Corps de texte</span>
+            <span class="mono-item-val" style="color:#CF6860;font-family:var(--font-mono)">Le document a été validé par...</span>
+          </div>
+          <div class="mono-item">
+            <span class="mono-item-label">Titre de page</span>
+            <span class="mono-item-val" style="color:#CF6860;font-family:var(--font-mono);font-size:14px">Documents archivés</span>
+          </div>
+          <div class="mono-item">
+            <span class="mono-item-label">Nom d'utilisateur</span>
+            <span class="mono-item-val" style="color:#CF6860;font-family:var(--font-mono)">Marie Archiviste</span>
+          </div>
+          <div class="mono-item">
+            <span class="mono-item-label">Label de champ</span>
+            <span class="mono-item-val" style="color:#CF6860;font-family:var(--font-mono)">Titre du document</span>
+          </div>
+          <div class="mono-item">
+            <span class="mono-item-label">Description</span>
+            <span class="mono-item-val" style="color:#CF6860;font-family:var(--font-mono)">Aucun document trouvé.</span>
+          </div>
+          <div class="mono-item">
+            <span class="mono-item-label">Bouton</span>
+            <span class="mono-item-val" style="color:#CF6860;background:rgba(155,50,44,0.10);border:1px solid rgba(155,50,44,0.22);padding:3px 8px;border-radius:2px;font-family:var(--font-mono)">Nouveau document</span>
+          </div>
+          <div class="mono-item">
+            <span class="mono-item-label">Message d'erreur</span>
+            <span class="mono-item-val" style="color:#CF6860;font-family:var(--font-mono)">Ce champ est obligatoire</span>
+          </div>
+          <div class="mono-item">
+            <span class="mono-item-label">Navigation</span>
+            <span class="mono-item-val" style="color:#CF6860;font-family:var(--font-mono)">Tableau de bord</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 06 — RÈGLES TECHNIQUES ══ -->
+  <section class="section">
+    <div class="section-label">06 — Règles techniques</div>
+    <h2 class="section-title">Ce qui s'applique partout, toujours</h2>
+    <p class="section-desc">Ces règles techniques complètent l'échelle. Elles garantissent la cohérence du rendu sur tous les navigateurs et résolutions.</p>
+
+    <div class="rules-block">
+      <div class="rule-card">
+        <div class="rule-card-title">Antialiasing obligatoire</div>
+        <div class="rule-card-body">Toute l'interface utilise le rendu antialiasé subpixel. Jamais de texte pixelisé. S'applique à body et se propage.</div>
+        <code class="rule-card-code">body {<br>  -webkit-font-smoothing: antialiased;<br>  -moz-osx-font-smoothing: grayscale;<br>}</code>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-title">Pas de text-transform uppercase sur le contenu</div>
+        <div class="rule-card-body">Le uppercase est réservé aux labels mono de section et aux badges techniques. Jamais sur les titres, boutons, ou corps de texte.</div>
+        <code class="rule-card-code"><span style="color:var(--accent-300)">/* ✓ Autorisé */</span><br>.section-label { text-transform: uppercase; }<br><span style="color:#CF6860">/* ✗ Interdit */</span><br>.page-title { text-transform: uppercase; }</code>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-title">Taille minimale absolue : 10px</div>
+        <div class="rule-card-body">Aucun texte en dessous de 10px dans l'interface. Pas même les labels les plus discrets. Accessibilité WCAG 1.4.4.</div>
+        <code class="rule-card-code">/* Font-size minimum absolu */<br>--text-xs: 10px;<br><br>/* Jamais : */<br>font-size: 8px; /* ✗ Interdit */</code>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-title">Letter-spacing négatif sur les grands titres</div>
+        <div class="rule-card-body">Au-delà de 18px, appliquer systématiquement un tracking négatif pour compenser l'espacement optique. Plus le titre est grand, plus le tracking est serré.</div>
+        <code class="rule-card-code">28px → letter-spacing: -0.035em<br>22px → letter-spacing: -0.030em<br>18px → letter-spacing: -0.025em<br>14px → letter-spacing: -0.010em<br>≤13px → letter-spacing: 0</code>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-title">Line-height adapté à la taille</div>
+        <div class="rule-card-body">Les grands textes ont un line-height serré. Les petits textes ont un line-height généreux pour la lisibilité. Jamais de line-height: 1 sur du corps de texte.</div>
+        <code class="rule-card-code">28px → line-height: 1.15<br>18px → line-height: 1.30<br>13px → line-height: 1.65<br>11px → line-height: 1.55<br>10px → line-height: 1.40</code>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-title">Truncation sur une ligne (ellipsis)</div>
+        <div class="rule-card-body">Les noms de documents dans les tables sont toujours tronqués. Ne jamais laisser un texte casser la mise en page avec overflow visible.</div>
+        <code class="rule-card-code">.truncate {<br>  overflow: hidden;<br>  text-overflow: ellipsis;<br>  white-space: nowrap;<br>  max-width: 100%;<br>}</code>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 07 — TOKENS CSS ══ -->
+  <section class="section">
+    <div class="section-label">07 — Export tokens</div>
+    <h2 class="section-title">Variables CSS typographiques — À ajouter dans globals.css</h2>
+
+    <div class="code-block">
+      <div class="code-lang">CSS — globals.css · Typographie CG-03</div>
+      <pre>
+<span class="c-comment">/* ═══════════════════════════════════════════════════
+   TYPOGRAPHIE — Design Tokens CG-03
+   Ajouter à la suite du bloc CG-02 dans globals.css
+═══════════════════════════════════════════════════ */</span>
+
+<span class="c-var">:root</span> {
+
+  <span class="c-comment">/* ── FAMILLES ────────────────────────────────── */</span>
+  <span class="c-prop">--font-sans</span>: <span class="c-val">'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif</span>;
+  <span class="c-prop">--font-mono</span>: <span class="c-val">'DM Mono', 'Fira Code', 'JetBrains Mono', monospace</span>;
+
+  <span class="c-comment">/* ── TAILLES ─────────────────────────────────── */</span>
+  <span class="c-prop">--text-xs</span>:   <span class="c-val">10px</span>;   <span class="c-comment">/* labels mono UPPER, badges                */</span>
+  <span class="c-prop">--text-sm</span>:   <span class="c-val">11px</span>;   <span class="c-comment">/* légende, caption, aide, timestamps       */</span>
+  <span class="c-prop">--text-base</span>: <span class="c-val">13px</span>;   <span class="c-comment">/* corps standard, lecture principale       */</span>
+  <span class="c-prop">--text-md</span>:   <span class="c-val">14px</span>;   <span class="c-comment">/* sous-titre, nav active, valeur de champ  */</span>
+  <span class="c-prop">--text-lg</span>:   <span class="c-val">18px</span>;   <span class="c-comment">/* titre de section                         */</span>
+  <span class="c-prop">--text-xl</span>:   <span class="c-val">22px</span>;   <span class="c-comment">/* valeur KPI, chiffre important            */</span>
+  <span class="c-prop">--text-2xl</span>:  <span class="c-val">28px</span>;   <span class="c-comment">/* titre de page uniquement                 */</span>
+
+  <span class="c-comment">/* ── POIDS ───────────────────────────────────── */</span>
+  <span class="c-prop">--font-light</span>:    <span class="c-val">300</span>;
+  <span class="c-prop">--font-regular</span>:  <span class="c-val">400</span>;
+  <span class="c-prop">--font-medium</span>:   <span class="c-val">500</span>;   <span class="c-comment">/* principal — nav, labels, boutons sec.   */</span>
+  <span class="c-prop">--font-semibold</span>: <span class="c-val">600</span>;   <span class="c-comment">/* principal — titres, noms, boutons prim. */</span>
+  <span class="c-prop">--font-bold</span>:     <span class="c-val">700</span>;   <span class="c-comment">/* titres de page et KPI uniquement        */</span>
+
+  <span class="c-comment">/* ── LINE-HEIGHT ─────────────────────────────── */</span>
+  <span class="c-prop">--lh-tight</span>:   <span class="c-val">1.15</span>;  <span class="c-comment">/* 28px titres                              */</span>
+  <span class="c-prop">--lh-snug</span>:    <span class="c-val">1.30</span>;  <span class="c-comment">/* 18–22px sections                        */</span>
+  <span class="c-prop">--lh-normal</span>:  <span class="c-val">1.50</span>;  <span class="c-comment">/* 14px éléments UI                        */</span>
+  <span class="c-prop">--lh-relaxed</span>: <span class="c-val">1.65</span>;  <span class="c-comment">/* 13px corps de texte                     */</span>
+  <span class="c-prop">--lh-loose</span>:   <span class="c-val">1.80</span>;  <span class="c-comment">/* mono labels, codes                      */</span>
+
+  <span class="c-comment">/* ── LETTER-SPACING ─────────────────────────── */</span>
+  <span class="c-prop">--tracking-tighter</span>: <span class="c-val">-0.035em</span>;  <span class="c-comment">/* 28px titres                      */</span>
+  <span class="c-prop">--tracking-tight</span>:   <span class="c-val">-0.025em</span>;  <span class="c-comment">/* 18–22px sections                 */</span>
+  <span class="c-prop">--tracking-snug</span>:    <span class="c-val">-0.010em</span>;  <span class="c-comment">/* 14px sous-titres                 */</span>
+  <span class="c-prop">--tracking-normal</span>:   <span class="c-val">0</span>;         <span class="c-comment">/* corps standard 13px              */</span>
+  <span class="c-prop">--tracking-wide</span>:    <span class="c-val">0.06em</span>;   <span class="c-comment">/* mono labels discrets             */</span>
+  <span class="c-prop">--tracking-wider</span>:   <span class="c-val">0.12em</span>;   <span class="c-comment">/* badges UPPERCASE, section-labels */</span>
+}
+
+<span class="c-comment">/* ── BASE BODY ───────────────────────────────── */</span>
+<span class="c-var">body</span> {
+  <span class="c-prop">font-family</span>: <span class="c-val">var(--font-sans)</span>;
+  <span class="c-prop">font-size</span>:   <span class="c-val">var(--text-base)</span>;
+  <span class="c-prop">line-height</span>: <span class="c-val">var(--lh-relaxed)</span>;
+  <span class="c-prop">font-weight</span>: <span class="c-val">var(--font-regular)</span>;
+  <span class="c-prop">-webkit-font-smoothing</span>:    <span class="c-val">antialiased</span>;
+  <span class="c-prop">-moz-osx-font-smoothing</span>:  <span class="c-val">grayscale</span>;
+  <span class="c-prop">text-rendering</span>: <span class="c-val">optimizeLegibility</span>;
+}
+
+<span class="c-comment">/* ── UTILITAIRES ─────────────────────────────── */</span>
+<span class="c-var">.text-2xl</span>  { font-size: var(--text-2xl);  font-weight: 700; letter-spacing: var(--tracking-tighter); line-height: var(--lh-tight); }
+<span class="c-var">.text-xl</span>   { font-size: var(--text-xl);   font-weight: 600; letter-spacing: var(--tracking-tight); }
+<span class="c-var">.text-lg</span>   { font-size: var(--text-lg);   font-weight: 600; letter-spacing: var(--tracking-tight); }
+<span class="c-var">.text-md</span>   { font-size: var(--text-md);   font-weight: 500; letter-spacing: var(--tracking-snug); }
+<span class="c-var">.text-base</span> { font-size: var(--text-base); font-weight: 400; line-height: var(--lh-relaxed); }
+<span class="c-var">.text-sm</span>   { font-size: var(--text-sm);   font-weight: 400; line-height: var(--lh-normal); }
+<span class="c-var">.text-xs</span>   { font-size: var(--text-xs);   font-weight: 500; letter-spacing: var(--tracking-wider);
+              font-family: var(--font-mono); text-transform: uppercase; }
+<span class="c-var">.truncate</span>  { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }</pre>
+    </div>
+  </section>
+
+
+  <!-- FOOTER -->
+  <footer class="doc-footer">
+    <div class="footer-left">
+      Charte Graphique — Archivage Numérique · CG-03 / 12<br>
+      <div class="kbd-hint">Raccourcis : <span class="kbd">←</span> Précédent <span class="kbd">→</span> Suivant <span class="kbd">i</span> Index</div>
+    </div>
+    <div class="footer-nav">
+      <a href="CG-02-Systeme-Couleurs-Tokens.html" class="footer-link" aria-label="Module précédent : CG-02">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Précédent
+      </a>
+      <a href="CG-04-Espacement-Grille-Layout.html" class="footer-link" aria-label="Module suivant : CG-04">
+        Suivant
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+// Theme toggle
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+}
+
+function toggleNav(btn) {
+  const dropdown = btn.parentElement;
+  const isActive = dropdown.classList.contains('active');
+  document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('active'));
+  if (!isActive) {
+    dropdown.classList.add('active');
+    btn.setAttribute('aria-expanded', 'true');
+  } else {
+    btn.setAttribute('aria-expanded', 'false');
+  }
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.nav-dropdown')) {
+    document.querySelectorAll('.nav-dropdown').forEach(d => {
+      d.classList.remove('active');
+      const btn = d.querySelector('.nav-dropdown-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  switch(e.key) {
+    case 'ArrowLeft':
+      window.location.href = 'CG-02-Systeme-Couleurs-Tokens.html';
+      break;
+    case 'ArrowRight':
+      window.location.href = 'CG-04-Espacement-Grille-Layout.html';
+      break;
+    case 'i':
+    case 'I':
+      window.location.href = 'index.html';
+      break;
+  }
+});
+</script>
+
+</body>
+</html>

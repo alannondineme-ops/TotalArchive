@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CG-07 — Navigation : Sidebar, Topbar, Breadcrumbs, Tabs, Dropdowns</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ============================================================
+   TOKENS — Charte Graphique Archivage Numérique
+   ============================================================ */
+:root {
+  --accent-50:  #E8F8F6; --accent-100: #C5EDE9; --accent-200: #8DD9D1;
+  --accent-300: #65D5C4; --accent-400: #2BBFAD; --accent-500: #179E8E;
+  --accent-600: #0E7E72; --accent-700: #0C6259;
+  --accent-subtle-bg:     rgba(23,158,142,0.08);
+  --accent-subtle-border: rgba(23,158,142,0.20);
+
+  --gray-950: #0A0B0F; --gray-900: #10121A; --gray-800: #1A1D2B;
+  --gray-700: #252838; --gray-600: #323548; --gray-500: #4D5068;
+  --gray-400: #6B6F88; --gray-300: #9196B0; --gray-200: #C2C5D6;
+  --gray-100: #E1E3EE; --gray-50:  #F0F1F8; --gray-25:  #F8F9FC;
+
+  --success: #268245; --warning: #B07412; --error: #9B322C; --info: #2855A0;
+  --success-subtle: rgba(38,130,69,0.10);
+  --warning-subtle: rgba(176,116,18,0.10);
+  --error-subtle:   rgba(155,50,44,0.10);
+  --success-border: rgba(38,130,69,0.25);
+  --warning-border: rgba(176,116,18,0.25);
+  --error-border:   rgba(155,50,44,0.25);
+
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --text-2xl: 28px; --text-xl: 22px; --text-lg: 18px;
+  --text-md: 14px; --text-base: 13px; --text-sm: 11px; --text-xs: 10px;
+
+  --radius-xs: 2px; --radius-sm: 4px; --radius-md: 6px; --radius-lg: 8px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.20), 0 1px 2px rgba(0,0,0,.12);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.25), 0 2px 4px rgba(0,0,0,.12);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,.30), 0 4px 8px rgba(0,0,0,.14);
+  --shadow-focus: 0 0 0 2px var(--bg-base), 0 0 0 4px var(--accent-500);
+
+  /* Semantic dark */
+  --bg-base:    var(--gray-950);
+  --bg-panel:   var(--gray-900);
+  --bg-raised:  var(--gray-800);
+  --border-subtle:  var(--gray-800);
+  --border-default: var(--gray-700);
+  --border-strong:  var(--gray-600);
+  --text-primary:   var(--gray-50);
+  --text-secondary: var(--gray-200);
+  --text-tertiary:  var(--gray-400);
+  --text-placeholder: var(--gray-500);
+}
+
+[data-theme="light"] {
+  --bg-base:    var(--gray-25);
+  --bg-panel:   #FFFFFF;
+  --bg-raised:  var(--gray-100);
+  --border-subtle:  var(--gray-100);
+  --border-default: var(--gray-200);
+  --border-strong:  var(--gray-300);
+  --text-primary:   var(--gray-900);
+  --text-secondary: var(--gray-700);
+  --text-tertiary:  var(--gray-500);
+  --text-placeholder: var(--gray-400);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.65;
+  color: var(--text-primary);
+  background: var(--bg-base);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 1000;
+  opacity: 0.20; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gray-700); border-radius: 3px; }
+
+/* ============================================================
+   DOCUMENT LAYOUT
+   ============================================================ */
+.doc-container { max-width: 1080px; margin: 0 auto; padding: 48px 24px; }
+
+/* Header */
+.doc-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding-bottom: 32px; border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 40px; gap: 24px; flex-wrap: wrap;
+}
+.doc-header-left { display: flex; flex-direction: column; gap: 12px; }
+.doc-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  font-weight: 500; letter-spacing: 0.10em; text-transform: uppercase;
+  color: var(--accent-300); background: var(--accent-subtle-bg);
+  border: 1px solid var(--accent-subtle-border); padding: 5px 10px;
+  border-radius: var(--radius-sm); position: relative; overflow: hidden;
+}
+.doc-badge::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 65px 65px; opacity: 0.35; mix-blend-mode: overlay; pointer-events: none;
+}
+.doc-title { font-size: var(--text-2xl); font-weight: 700; letter-spacing: -0.035em; line-height: 1.2; }
+.doc-subtitle { font-size: var(--text-md); color: var(--text-tertiary); }
+.doc-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.doc-meta-item { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 0.06em; color: var(--text-placeholder); }
+.doc-meta-item span { color: var(--text-tertiary); }
+.theme-btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px;
+  background: var(--bg-raised); border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm); cursor: pointer; font-family: var(--font-sans);
+  font-size: var(--text-sm); color: var(--text-secondary);
+  transition: all 150ms cubic-bezier(0.34,1.56,0.64,1); margin-top: 8px;
+}
+.theme-btn:hover { border-color: var(--border-strong); color: var(--text-primary); }
+
+/* Sections */
+.section { margin-bottom: 48px; }
+.section-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+.section-label { font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 500; letter-spacing: 0.10em; text-transform: uppercase; color: var(--accent-300); white-space: nowrap; }
+.section-line { flex: 1; height: 1px; background: var(--border-subtle); }
+.section-title { font-size: var(--text-lg); font-weight: 600; letter-spacing: -0.025em; margin-bottom: 8px; }
+.section-desc { font-size: var(--text-base); color: var(--text-tertiary); margin-bottom: 24px; line-height: 1.65; }
+.subsection { margin-bottom: 24px; }
+.subsection-title {
+  font-size: var(--text-md); font-weight: 500; color: var(--text-secondary);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+}
+.subsection-title::before { content: ''; width: 3px; height: 14px; background: var(--accent-500); border-radius: 2px; flex-shrink: 0; }
+
+/* Preview zones */
+.preview-zone {
+  background: var(--bg-panel); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md); padding: 24px; position: relative; overflow: hidden;
+}
+.preview-zone::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 110px 110px; opacity: 0.12; mix-blend-mode: overlay; pointer-events: none; z-index: 0;
+}
+.preview-zone > * { position: relative; z-index: 1; }
+.preview-zone.p0 { padding: 0; }
+
+/* Spec table */
+.spec-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); margin-top: 16px; }
+.spec-table th { font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-placeholder); text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border-subtle); }
+.spec-table td { padding: 8px 12px; color: var(--text-secondary); border-bottom: 1px solid var(--border-subtle); }
+.spec-table tr:last-child td { border-bottom: none; }
+.spec-table tr:hover td { background: rgba(255,255,255,0.02); }
+.mono { font-family: var(--font-mono); color: var(--accent-300); font-size: var(--text-xs); }
+
+/* Btn helpers */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  font-family: var(--font-sans); font-weight: 500; font-size: var(--text-md);
+  border-radius: var(--radius-sm); border: 1px solid transparent;
+  cursor: pointer; transition: all 150ms cubic-bezier(0.34,1.56,0.64,1);
+  white-space: nowrap; position: relative; overflow: hidden;
+  -webkit-font-smoothing: antialiased; text-decoration: none; background: none;
+  padding: 7px 13px;
+}
+.btn::after {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 65px 65px; opacity: 0.34; mix-blend-mode: overlay; pointer-events: none;
+}
+.btn-primary { background: var(--accent-500); border-color: var(--accent-600); color: #fff; box-shadow: var(--shadow-sm); }
+.btn-primary:hover { background: var(--accent-600); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-secondary { background: var(--bg-raised); border-color: var(--border-default); color: var(--text-secondary); box-shadow: var(--shadow-sm); }
+.btn-secondary:hover { background: var(--gray-700); border-color: var(--border-strong); color: var(--text-primary); }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--text-secondary); }
+.btn-ghost:hover { background: var(--bg-raised); color: var(--text-primary); }
+.btn-sm { padding: 5px 10px; font-size: var(--text-sm); }
+.btn-sm svg { width: 13px; height: 13px; }
+.btn-icon { padding: 7px; }
+.btn-icon.btn-sm { padding: 5px; }
+
+/* Badge */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 500;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: var(--radius-xs);
+  border: 1px solid transparent; position: relative; overflow: hidden;
+}
+.badge::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 65px 65px; opacity: 0.35; mix-blend-mode: overlay; pointer-events: none;
+}
+.badge > * { position: relative; z-index: 1; }
+.badge-accent   { background: var(--accent-subtle-bg);  border-color: var(--accent-subtle-border); color: var(--accent-300); }
+.badge-warning  { background: var(--warning-subtle); border-color: var(--warning-border); color: #D4993A; }
+.badge-error    { background: var(--error-subtle);   border-color: var(--error-border);   color: #DC7070; }
+.badge-neutral  { background: rgba(255,255,255,0.04); border-color: var(--border-default); color: var(--text-tertiary); }
+.badge-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px; background: var(--accent-500); color: #fff;
+  font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 500;
+  border-radius: 9px; padding: 0 5px; flex-shrink: 0;
+}
+.badge-count.danger { background: var(--error); }
+
+/* ============================================================
+   ██████████  SIDEBAR  ██████████
+   ============================================================ */
+.sidebar-demo {
+  width: 240px;
+  height: 520px;
+  background: rgba(255,255,255,0.030);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+/* grain sidebar */
+.sidebar-demo::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 110px 110px; opacity: 0.16; mix-blend-mode: overlay; pointer-events: none; z-index: 0;
+}
+/* reflet top */
+.sidebar-demo::after {
+  content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  pointer-events: none; z-index: 2;
+}
+.sidebar-demo > * { position: relative; z-index: 1; }
+
+/* Sidebar logo zone */
+.sidebar-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 14px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.sidebar-logo-mark {
+  width: 28px; height: 28px;
+  background: var(--accent-500); border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; position: relative; overflow: hidden;
+}
+.sidebar-logo-mark::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 65px 65px; opacity: 0.36; mix-blend-mode: overlay; pointer-events: none;
+}
+.sidebar-logo-text { display: flex; flex-direction: column; gap: 0; overflow: hidden; }
+.sidebar-logo-name { font-size: 13px; font-weight: 600; letter-spacing: -0.02em; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-logo-sub  { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-placeholder); letter-spacing: 0.04em; }
+
+/* Sidebar nav body */
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 8px; display: flex; flex-direction: column; gap: 2px; }
+.sidebar-nav::-webkit-scrollbar { width: 3px; }
+.sidebar-nav::-webkit-scrollbar-thumb { background: var(--gray-700); }
+
+/* Section label in sidebar */
+.sidebar-section-label {
+  font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 500;
+  letter-spacing: 0.10em; text-transform: uppercase; color: var(--text-placeholder);
+  padding: 10px 8px 4px; display: block;
+}
+/* Separator */
+.sidebar-sep { height: 1px; background: rgba(255,255,255,0.05); margin: 6px 0; }
+
+/* Nav item */
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 8px; border-radius: var(--radius-sm);
+  cursor: pointer; transition: all 150ms cubic-bezier(0.34,1.56,0.64,1);
+  text-decoration: none; color: var(--text-tertiary);
+  font-size: var(--text-md); font-weight: 400;
+  position: relative; user-select: none;
+}
+.nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text-secondary); }
+.nav-item.is-active {
+  background: var(--accent-subtle-bg); color: var(--accent-300);
+  font-weight: 500;
+}
+.nav-item.is-active svg { color: var(--accent-400); }
+.nav-item svg { width: 15px; height: 15px; flex-shrink: 0; transition: color 150ms ease; }
+.nav-item-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav-item-badge { flex-shrink: 0; }
+
+/* Active indicator line */
+.nav-item.is-active::before {
+  content: ''; position: absolute; left: 0; top: 4px; bottom: 4px;
+  width: 2px; background: var(--accent-500); border-radius: 2px;
+}
+
+/* Sidebar bottom */
+.sidebar-bottom {
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding: 10px 8px;
+  display: flex; align-items: center; gap: 9px;
+}
+.avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--accent-subtle-bg); border: 1px solid var(--accent-subtle-border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 500;
+  color: var(--accent-300); flex-shrink: 0; text-transform: uppercase;
+}
+.avatar-lg {
+  width: 32px; height: 32px; font-size: var(--text-sm);
+}
+.sidebar-user-name { font-size: var(--text-sm); font-weight: 500; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-user-role { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-placeholder); letter-spacing: 0.04em; }
+
+/* Sidebar collapsed */
+.sidebar-demo.collapsed { width: 52px; }
+.sidebar-demo.collapsed .sidebar-logo-text,
+.sidebar-demo.collapsed .nav-item-label,
+.sidebar-demo.collapsed .nav-item-badge,
+.sidebar-demo.collapsed .sidebar-section-label,
+.sidebar-demo.collapsed .sidebar-user-name,
+.sidebar-demo.collapsed .sidebar-user-role { display: none; }
+.sidebar-demo.collapsed .sidebar-logo { padding: 16px 12px 14px; justify-content: center; }
+.sidebar-demo.collapsed .sidebar-bottom { justify-content: center; }
+.sidebar-demo.collapsed .nav-item { justify-content: center; padding: 8px; }
+.sidebar-demo.collapsed .nav-item.is-active::before { display: none; }
+
+/* ============================================================
+   ██████████  TOPBAR  ██████████
+   ============================================================ */
+.topbar-demo {
+  height: 48px;
+  background: rgba(255,255,255,0.025);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; gap: 0;
+  overflow: hidden; position: relative;
+  box-shadow: var(--shadow-sm);
+}
+.topbar-demo::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 110px 110px; opacity: 0.10; mix-blend-mode: overlay; pointer-events: none; z-index: 0;
+}
+.topbar-demo::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: rgba(255,255,255,0.05); pointer-events: none; z-index: 2;
+}
+.topbar-demo > * { position: relative; z-index: 1; }
+
+.topbar-left {
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 16px; flex-shrink: 0;
+  border-right: 1px solid rgba(255,255,255,0.05);
+  height: 100%;
+}
+.topbar-logo-mark {
+  width: 24px; height: 24px;
+  background: var(--accent-500); border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  position: relative; overflow: hidden;
+}
+.topbar-logo-mark::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 65px 65px; opacity: 0.36; mix-blend-mode: overlay; pointer-events: none;
+}
+.topbar-org-name { font-size: var(--text-md); font-weight: 600; letter-spacing: -0.02em; color: var(--text-primary); white-space: nowrap; }
+
+.topbar-search {
+  flex: 1; padding: 0 16px; display: flex; align-items: center; gap: 8px;
+}
+.topbar-search-input {
+  width: 100%; max-width: 380px;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg-raised); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm); padding: 6px 12px;
+  cursor: text; transition: border-color 150ms ease;
+}
+.topbar-search-input:hover { border-color: var(--border-default); }
+.topbar-search-input span { font-size: var(--text-sm); color: var(--text-placeholder); flex: 1; }
+.topbar-search-kbd {
+  display: flex; gap: 2px;
+}
+.topbar-search-kbd kbd {
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  background: var(--bg-panel); border: 1px solid var(--border-default);
+  border-radius: var(--radius-xs); padding: 1px 5px;
+  color: var(--text-placeholder); line-height: 1.6;
+}
+
+.topbar-right {
+  display: flex; align-items: center; gap: 4px;
+  padding: 0 12px; height: 100%;
+  border-left: 1px solid rgba(255,255,255,0.05);
+  flex-shrink: 0;
+}
+.topbar-action {
+  position: relative; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; border: 1px solid transparent; border-radius: var(--radius-sm);
+  cursor: pointer; color: var(--text-tertiary);
+  transition: all 150ms ease;
+}
+.topbar-action:hover { background: var(--bg-raised); border-color: var(--border-subtle); color: var(--text-secondary); }
+.topbar-notif-dot {
+  position: absolute; top: 4px; right: 4px;
+  width: 7px; height: 7px; background: var(--error);
+  border-radius: 50%; border: 1.5px solid var(--bg-base);
+}
+.topbar-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.07); margin: 0 4px; }
+.topbar-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--accent-subtle-bg); border: 1px solid var(--accent-subtle-border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 500;
+  color: var(--accent-300); cursor: pointer; flex-shrink: 0;
+}
+
+/* ============================================================
+   ██████████  BREADCRUMBS  ██████████
+   ============================================================ */
+.breadcrumb {
+  display: flex; align-items: center; gap: 0;
+  flex-wrap: nowrap; overflow: hidden;
+}
+.breadcrumb-item {
+  display: flex; align-items: center; gap: 0;
+  font-size: var(--text-md); white-space: nowrap;
+}
+.breadcrumb-link {
+  color: var(--text-tertiary); text-decoration: none;
+  padding: 3px 6px; border-radius: var(--radius-sm);
+  transition: all 150ms ease; cursor: pointer;
+}
+.breadcrumb-link:hover { background: var(--bg-raised); color: var(--text-secondary); }
+.breadcrumb-sep {
+  color: var(--text-placeholder);
+  font-size: var(--text-sm); padding: 0 2px;
+  user-select: none; flex-shrink: 0;
+}
+.breadcrumb-current {
+  color: var(--text-primary); font-weight: 500;
+  padding: 3px 6px; cursor: default;
+  max-width: 220px; overflow: hidden; text-overflow: ellipsis;
+}
+.breadcrumb-ellipsis {
+  color: var(--text-placeholder); padding: 3px 4px;
+  border-radius: var(--radius-sm); cursor: pointer;
+  transition: background 150ms ease;
+}
+.breadcrumb-ellipsis:hover { background: var(--bg-raised); }
+
+/* ============================================================
+   ██████████  TABS  ██████████
+   ============================================================ */
+.tabs {
+  display: flex; align-items: stretch; gap: 0;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0;
+}
+.tab-item {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 14px; font-size: var(--text-md); font-weight: 400;
+  color: var(--text-tertiary); cursor: pointer; border: none; background: none;
+  font-family: var(--font-sans); -webkit-font-smoothing: antialiased;
+  position: relative; transition: color 150ms ease;
+  white-space: nowrap; text-decoration: none;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.tab-item:hover { color: var(--text-secondary); }
+.tab-item.is-active {
+  color: var(--text-primary); font-weight: 500;
+  border-bottom-color: var(--accent-500);
+}
+.tab-item svg { width: 14px; height: 14px; }
+
+/* Tabs variante pills */
+.tabs-pills {
+  display: flex; align-items: center; gap: 4px;
+  background: var(--bg-raised); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md); padding: 3px;
+  width: fit-content;
+}
+.tab-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; font-size: var(--text-md); font-weight: 400;
+  color: var(--text-tertiary); cursor: pointer; border-radius: var(--radius-sm);
+  transition: all 150ms cubic-bezier(0.34,1.56,0.64,1);
+  background: none; border: none; font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased; white-space: nowrap;
+}
+.tab-pill:hover { color: var(--text-secondary); background: rgba(255,255,255,0.03); }
+.tab-pill.is-active {
+  background: var(--bg-panel); color: var(--text-primary); font-weight: 500;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border-subtle);
+}
+
+/* ============================================================
+   ██████████  DROPDOWNS  ██████████
+   ============================================================ */
+.dropdown-menu {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 4px;
+  min-width: 200px;
+  position: relative; overflow: hidden;
+}
+.dropdown-menu::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 110px 110px; opacity: 0.12; mix-blend-mode: overlay; pointer-events: none; z-index: 0;
+}
+.dropdown-menu > * { position: relative; z-index: 1; }
+
+.dropdown-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 10px; border-radius: var(--radius-sm);
+  font-size: var(--text-md); color: var(--text-secondary);
+  cursor: pointer; transition: all 120ms ease;
+  user-select: none;
+}
+.dropdown-item:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
+.dropdown-item svg { width: 14px; height: 14px; color: var(--text-placeholder); flex-shrink: 0; transition: color 120ms ease; }
+.dropdown-item:hover svg { color: var(--text-tertiary); }
+.dropdown-item.is-active { background: var(--accent-subtle-bg); color: var(--accent-300); }
+.dropdown-item.is-active svg { color: var(--accent-400); }
+.dropdown-item.is-danger { color: #DC7070; }
+.dropdown-item.is-danger svg { color: #DC7070; }
+.dropdown-item.is-danger:hover { background: var(--error-subtle); color: #DC7070; }
+.dropdown-item.is-disabled { opacity: 0.38; pointer-events: none; cursor: not-allowed; }
+.dropdown-item-shortcut {
+  margin-left: auto; font-family: var(--font-mono); font-size: var(--text-xs);
+  color: var(--text-placeholder); letter-spacing: 0.04em;
+}
+.dropdown-sep { height: 1px; background: var(--border-subtle); margin: 4px 0; }
+.dropdown-header {
+  padding: 4px 10px 6px;
+  font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-placeholder);
+}
+
+/* ============================================================
+   APP SHELL DEMO — Topbar + Sidebar + Content
+   ============================================================ */
+.app-shell-demo {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  height: 460px;
+  display: flex;
+  flex-direction: column;
+}
+.app-shell-topbar {
+  height: 48px; flex-shrink: 0;
+  background: rgba(10,11,15,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; gap: 0;
+  position: relative; z-index: 10;
+}
+.app-shell-topbar::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 110px 110px; opacity: 0.08; mix-blend-mode: overlay; pointer-events: none; z-index: 0;
+}
+.app-shell-body { display: flex; flex: 1; overflow: hidden; }
+.app-shell-sidebar {
+  width: 220px; flex-shrink: 0;
+  background: rgba(16,18,26,0.95);
+  border-right: 1px solid rgba(255,255,255,0.05);
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+}
+.app-shell-sidebar::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 110px 110px; opacity: 0.14; mix-blend-mode: overlay; pointer-events: none; z-index: 0;
+}
+.app-shell-sidebar > * { position: relative; z-index: 1; }
+.app-shell-content {
+  flex: 1; overflow-y: auto; padding: 20px;
+  background: var(--bg-base);
+}
+.shell-content-placeholder {
+  display: flex; flex-direction: column; gap: 12px;
+}
+.shell-placeholder-bar {
+  height: 8px; border-radius: 4px; background: var(--bg-raised);
+}
+.shell-placeholder-card {
+  height: 72px; border-radius: var(--radius-md); background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+}
+
+/* ============================================================
+   LAYOUT & UTILITIES
+   ============================================================ */
+.row { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+.col { display: flex; flex-direction: column; gap: 16px; }
+
+/* Navigation system */
+.nav-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-placeholder);
+}
+.nav-breadcrumb a {
+  color: var(--accent-400);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.nav-breadcrumb a:hover { color: var(--accent-300); }
+.nav-breadcrumb-sep { color: var(--border-default); }
+
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.nav-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.nav-dropdown-btn:hover {
+  background: var(--bg-panel);
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
+}
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  min-width: 280px;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1000;
+}
+.nav-dropdown.active .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  transition: all 120ms ease;
+}
+.nav-dropdown-item:hover {
+  background: var(--bg-raised);
+  color: var(--text-secondary);
+}
+.nav-dropdown-item.active {
+  background: var(--accent-subtle-bg);
+  color: var(--accent-300);
+  font-weight: 500;
+}
+.nav-dropdown-item-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-placeholder);
+  min-width: 32px;
+}
+
+/* Doc footer */
+.doc-footer {
+  margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border-subtle);
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+}
+.footer-left { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-placeholder); letter-spacing: 0.06em; line-height: 1.8; }
+.footer-nav {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: all 150ms ease;
+}
+.footer-link:hover {
+  color: var(--text-secondary);
+  background: var(--bg-raised);
+}
+.footer-link svg { width: 14px; height: 14px; }
+.footer-link.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+.kbd-hint {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-placeholder);
+  margin-top: 8px;
+}
+.kbd {
+  display: inline-block;
+  padding: 2px 5px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 3px;
+  font-size: 9px;
+  margin: 0 2px;
+}
+</style>
+</head>
+<body>
+
+<div class="doc-container">
+
+  <!-- ══════════════════════════════════════════════ HEADER ══ -->
+  <header class="doc-header">
+    <div class="doc-header-left">
+      <!-- Breadcrumb + Menu -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; width: 100%;">
+        <nav class="nav-breadcrumb" aria-label="Fil d'Ariane">
+          <a href="index.html">← Index</a>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>CG-07</span>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>Navigation</span>
+        </nav>
+        
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-btn" onclick="toggleNav(this)" aria-label="Menu des modules" aria-expanded="false">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+            Tous les modules
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="CG-01-Identite-Palette.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-01</span> Identité & Palette</a>
+            <a href="CG-02-Systeme-Couleurs-Tokens.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-02</span> Couleurs & Tokens</a>
+            <a href="CG-03-Typographie-Echelle.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-03</span> Typographie</a>
+            <a href="CG-04-Espacement-Grille-Layout.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-04</span> Espacement & Grille</a>
+            <a href="CG-05-Effets-Grain-Verre-Ombres-Bordures.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-05</span> Effets & Grain</a>
+            <a href="CG-06-Composants-Boutons-Inputs-Badges-Cards.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-06</span> Composants UI</a>
+            <a href="CG-07-Navigation-Sidebar-Topbar-Tabs.html" class="nav-dropdown-item active"><span class="nav-dropdown-item-num">CG-07</span> Navigation</a>
+            <a href="CG-08-Feedback-Toasts-Modals-Etats.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-08</span> Feedback & États</a>
+            <a href="CG-09-Graphiques-DataViz.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-09</span> Graphiques</a>
+            <a href="CG-10-Motion-Design-Animations.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-10</span> Motion Design</a>
+            <a href="CG-11-Accessibilite-RGAA.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-11</span> Accessibilité</a>
+            <a href="CG-12-Tokens-CSS-Complets-Guide.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-12</span> Tokens CSS</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Charte Graphique · Module CG-07
+      </div>
+      <h1 class="doc-title">Navigation</h1>
+      <p class="doc-subtitle">Sidebar · Topbar · Breadcrumbs · Tabs · Dropdown menus</p>
+    </div>
+    <div class="doc-meta">
+      <div class="doc-meta-item">PROJET <span>Archivage Numérique</span></div>
+      <div class="doc-meta-item">MODULE <span>CG-07 / 12</span></div>
+      <div class="doc-meta-item">VERSION <span>1.0.0</span></div>
+      <button class="theme-btn" onclick="toggleTheme()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        Thème
+      </button>
+    </div>
+  </header>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 01 — APP SHELL — VUE D'ENSEMBLE
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">01 — App Shell</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Layout shell complet — Vue d'ensemble</h2>
+    <p class="section-desc">Topbar 48px sticky · Sidebar 240px fixe glassmorphisme · Content area scrollable. L'intégralité de la navigation s'inscrit dans ce shell. Rendu à 220px pour respecter les proportions dans ce module.</p>
+
+    <div class="preview-zone p0">
+      <div class="app-shell-demo">
+        <!-- Topbar shell -->
+        <div class="app-shell-topbar">
+          <!-- Logo zone -->
+          <div style="display:flex;align-items:center;gap:10px;padding:0 14px;border-right:1px solid rgba(255,255,255,0.05);height:100%;flex-shrink:0">
+            <div class="topbar-logo-mark" style="width:22px;height:22px">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="position:relative;z-index:1" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M4 10h16M10 4v16"/></svg>
+            </div>
+            <span style="font-size:13px;font-weight:600;letter-spacing:-0.02em;color:var(--text-primary);white-space:nowrap;position:relative;z-index:1">ArchivNET</span>
+          </div>
+          <!-- Search -->
+          <div style="flex:1;padding:0 16px;position:relative;z-index:1">
+            <div style="display:flex;align-items:center;gap:8px;background:var(--bg-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:5px 10px;max-width:340px">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gray-500)" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <span style="font-size:var(--text-sm);color:var(--text-placeholder);flex:1">Rechercher un document, une référence…</span>
+              <div style="display:flex;gap:2px">
+                <kbd style="font-family:var(--font-mono);font-size:9px;background:var(--bg-panel);border:1px solid var(--border-default);border-radius:2px;padding:1px 4px;color:var(--text-placeholder)">⌘</kbd>
+                <kbd style="font-family:var(--font-mono);font-size:9px;background:var(--bg-panel);border:1px solid var(--border-default);border-radius:2px;padding:1px 4px;color:var(--text-placeholder)">K</kbd>
+              </div>
+            </div>
+          </div>
+          <!-- Right actions -->
+          <div style="display:flex;align-items:center;gap:4px;padding:0 12px;border-left:1px solid rgba(255,255,255,0.05);height:100%;position:relative;z-index:1">
+            <div class="topbar-action" style="position:relative">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <span class="topbar-notif-dot"></span>
+            </div>
+            <div class="topbar-divider"></div>
+            <div class="topbar-avatar">SM</div>
+          </div>
+        </div>
+        <!-- Body -->
+        <div class="app-shell-body">
+          <!-- Sidebar -->
+          <div class="app-shell-sidebar">
+            <div style="padding:8px 6px;flex:1;display:flex;flex-direction:column;gap:1px">
+              <span class="sidebar-section-label" style="font-size:9px;padding:8px 6px 3px">Principal</span>
+              <div class="nav-item is-active" style="font-size:12px;padding:6px 7px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                <span class="nav-item-label" style="font-size:12px">Tableau de bord</span>
+              </div>
+              <div class="nav-item" style="font-size:12px;padding:6px 7px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span class="nav-item-label" style="font-size:12px">Documents</span>
+                <span class="badge-count" style="font-size:9px;min-width:16px;height:16px">47</span>
+              </div>
+              <div class="nav-item" style="font-size:12px;padding:6px 7px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                <span class="nav-item-label" style="font-size:12px">Fonds &amp; Dossiers</span>
+              </div>
+              <div class="nav-item" style="font-size:12px;padding:6px 7px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <span class="nav-item-label" style="font-size:12px">Recherche avancée</span>
+              </div>
+              <div class="sidebar-sep"></div>
+              <span class="sidebar-section-label" style="font-size:9px;padding:4px 6px 2px">Gestion</span>
+              <div class="nav-item" style="font-size:12px;padding:6px 7px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span class="nav-item-label" style="font-size:12px">Utilisateurs</span>
+              </div>
+              <div class="nav-item" style="font-size:12px;padding:6px 7px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <span class="nav-item-label" style="font-size:12px">Audit &amp; Traçabilité</span>
+                <span class="badge-count danger" style="font-size:9px;min-width:16px;height:16px">3</span>
+              </div>
+            </div>
+            <!-- Bottom -->
+            <div style="border-top:1px solid rgba(255,255,255,0.05);padding:8px 6px;display:flex;align-items:center;gap:8px">
+              <div class="avatar" style="width:24px;height:24px;font-size:9px">SM</div>
+              <div style="overflow:hidden">
+                <div style="font-size:11px;font-weight:500;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">MARTIN, Sophie</div>
+                <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-placeholder)">Archiviste</div>
+              </div>
+            </div>
+          </div>
+          <!-- Content area -->
+          <div class="app-shell-content">
+            <div class="shell-content-placeholder">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                <div class="shell-placeholder-bar" style="width:180px;height:10px;background:var(--bg-raised)"></div>
+                <div class="shell-placeholder-bar" style="width:80px;height:10px;background:var(--bg-raised)"></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+                <div class="shell-placeholder-card"></div>
+                <div class="shell-placeholder-card"></div>
+                <div class="shell-placeholder-card"></div>
+              </div>
+              <div class="shell-placeholder-card" style="height:120px"></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div class="shell-placeholder-card"></div>
+                <div class="shell-placeholder-card"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table class="spec-table">
+      <thead><tr><th>Élément</th><th>Propriété</th><th>Valeur</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Topbar</td><td>Hauteur</td><td class="mono">48px</td><td>sticky top:0 · z-index 200</td></tr>
+        <tr><td>Sidebar</td><td>Largeur</td><td class="mono">240px</td><td>fixed · glassmorphisme · grain 0.16</td></tr>
+        <tr><td>Sidebar</td><td>Fond</td><td class="mono">rgba(255,255,255,0.030) + blur(12px)</td><td>Reflet highlight top 1px</td></tr>
+        <tr><td>Content</td><td>Décalage</td><td class="mono">margin-left: 240px</td><td>padding 24px · overflow-y auto</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 02 — SIDEBAR — TOUS ÉTATS
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">02 — Sidebar</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Sidebar — États &amp; variantes</h2>
+    <p class="section-desc">Glassmorphisme exclusif à la sidebar. Item actif : fond accent subtle + indicateur vertical 2px gauche. Section labels en DM Mono UPPER. État collapsed à 52px (icônes seulement).</p>
+
+    <div class="row">
+
+      <!-- Sidebar normale -->
+      <div>
+        <div class="subsection-title">Normal — 240px</div>
+        <div class="sidebar-demo">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-mark">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="position:relative;z-index:1" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M4 10h16M10 4v16"/></svg>
+            </div>
+            <div class="sidebar-logo-text">
+              <span class="sidebar-logo-name">ArchivNET Pro</span>
+              <span class="sidebar-logo-sub">v3.2.1</span>
+            </div>
+          </div>
+          <nav class="sidebar-nav" aria-label="Navigation principale">
+            <span class="sidebar-section-label">Principal</span>
+            <a class="nav-item is-active" href="#" aria-current="page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              <span class="nav-item-label">Tableau de bord</span>
+            </a>
+            <a class="nav-item" href="#">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span class="nav-item-label">Documents</span>
+              <span class="badge-count nav-item-badge">47</span>
+            </a>
+            <a class="nav-item" href="#">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              <span class="nav-item-label">Fonds &amp; Dossiers</span>
+            </a>
+            <a class="nav-item" href="#">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <span class="nav-item-label">Recherche avancée</span>
+            </a>
+            <a class="nav-item" href="#">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span class="nav-item-label">Versements</span>
+              <span class="badge badge-warning" style="font-size:9px;padding:1px 5px;letter-spacing:0.04em"><span>12</span></span>
+            </a>
+            <div class="sidebar-sep"></div>
+            <span class="sidebar-section-label">Administration</span>
+            <a class="nav-item" href="#">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span class="nav-item-label">Utilisateurs</span>
+            </a>
+            <a class="nav-item" href="#">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              <span class="nav-item-label">Audit &amp; Traçabilité</span>
+              <span class="badge-count danger nav-item-badge">3</span>
+            </a>
+            <a class="nav-item" href="#">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span class="nav-item-label">Paramètres</span>
+            </a>
+          </nav>
+          <div class="sidebar-bottom">
+            <div class="avatar avatar-lg">SM</div>
+            <div style="overflow:hidden;flex:1">
+              <div class="sidebar-user-name">MARTIN, Sophie</div>
+              <div class="sidebar-user-role">Archiviste principale</div>
+            </div>
+            <button class="btn btn-ghost btn-sm btn-icon" aria-label="Options utilisateur" style="flex-shrink:0">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar collapsed -->
+      <div>
+        <div class="subsection-title">Collapsed — 52px</div>
+        <div class="sidebar-demo collapsed">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-mark">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="position:relative;z-index:1" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M4 10h16M10 4v16"/></svg>
+            </div>
+            <div class="sidebar-logo-text"></div>
+          </div>
+          <nav class="sidebar-nav" aria-label="Navigation compacte">
+            <a class="nav-item is-active" href="#" title="Tableau de bord" aria-current="page" aria-label="Tableau de bord">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            </a>
+            <a class="nav-item" href="#" title="Documents" aria-label="Documents">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </a>
+            <a class="nav-item" href="#" title="Fonds & Dossiers" aria-label="Fonds et Dossiers">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            </a>
+            <a class="nav-item" href="#" title="Recherche" aria-label="Recherche avancée">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </a>
+            <a class="nav-item" href="#" title="Versements" aria-label="Versements">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </a>
+            <a class="nav-item" href="#" title="Utilisateurs" aria-label="Utilisateurs">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            </a>
+            <a class="nav-item" href="#" title="Audit" aria-label="Audit et Traçabilité">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </a>
+            <a class="nav-item" href="#" title="Paramètres" aria-label="Paramètres">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </a>
+          </nav>
+          <div class="sidebar-bottom">
+            <div class="avatar" style="width:24px;height:24px;font-size:9px">SM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table class="spec-table" style="margin-top:24px">
+      <thead><tr><th>État nav item</th><th>Background</th><th>Couleur texte</th><th>Indicateur</th></tr></thead>
+      <tbody>
+        <tr><td>Normal</td><td>transparent</td><td class="mono">--text-tertiary</td><td>Aucun</td></tr>
+        <tr><td>Hover</td><td class="mono">rgba(255,255,255,0.04)</td><td class="mono">--text-secondary</td><td>Aucun</td></tr>
+        <tr><td>Active</td><td class="mono">--accent-subtle-bg</td><td class="mono">--accent-300</td><td>2px gauche accent-500</td></tr>
+        <tr><td>Section label</td><td>transparent</td><td class="mono">--text-placeholder</td><td>DM Mono UPPER · 10px</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 03 — TOPBAR
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">03 — Topbar</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Topbar — Barre de navigation supérieure</h2>
+    <p class="section-desc">Hauteur fixe 48px · Glassmorphisme · 3 zones : logo-organisation, recherche globale, actions utilisateur. Barre de recherche avec raccourci clavier ⌘K affiché.</p>
+
+    <div class="subsection">
+      <div class="subsection-title">Topbar complète</div>
+      <div class="preview-zone">
+        <div class="topbar-demo">
+          <!-- Logo -->
+          <div class="topbar-left">
+            <div class="topbar-logo-mark">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="position:relative;z-index:1" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M4 10h16M10 4v16"/></svg>
+            </div>
+            <span class="topbar-org-name">Mairie de Bordeaux</span>
+          </div>
+          <!-- Search -->
+          <div class="topbar-search">
+            <div class="topbar-search-input">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gray-500)" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <span>Rechercher un document, une référence, un utilisateur…</span>
+              <div class="topbar-search-kbd">
+                <kbd>⌘</kbd><kbd>K</kbd>
+              </div>
+            </div>
+          </div>
+          <!-- Right actions -->
+          <div class="topbar-right">
+            <div class="topbar-action" title="Aide" aria-label="Aide">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <div class="topbar-action" title="Notifications" aria-label="Notifications (3 non lues)" style="position:relative">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <span class="topbar-notif-dot"></span>
+            </div>
+            <div class="topbar-action" onclick="toggleTheme()" title="Basculer le thème" aria-label="Basculer dark/light">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+            </div>
+            <div class="topbar-divider"></div>
+            <div class="topbar-avatar" title="Sophie MARTIN" role="button" aria-label="Menu utilisateur">SM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table class="spec-table">
+      <thead><tr><th>Zone</th><th>Contenu</th><th>Propriété</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Left</td><td>Logo + Nom organisation</td><td class="mono">flex-shrink: 0 · border-right</td><td>Logo mark 24px · accent-500</td></tr>
+        <tr><td>Center</td><td>Barre de recherche globale</td><td class="mono">flex: 1 · max-width 380px</td><td>Raccourci ⌘K affiché</td></tr>
+        <tr><td>Right</td><td>Aide · Notifs · Thème · Avatar</td><td class="mono">flex-shrink: 0 · border-left</td><td>Point rouge notif : 7px error</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 04 — BREADCRUMBS
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">04 — Breadcrumbs</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Fil d'Ariane</h2>
+    <p class="section-desc">Séparateur <code>/</code> ou <code>›</code> selon la densité. Dernier item non cliquable et en texte primaire. Truncation avec ellipsis si trop long. 3 variantes documentées.</p>
+
+    <div class="preview-zone">
+      <div class="col" style="gap:20px">
+
+        <!-- Breadcrumb court -->
+        <div>
+          <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);letter-spacing:0.06em;margin-bottom:8px">Court (3 niveaux)</div>
+          <nav aria-label="Fil d'Ariane court">
+            <ol class="breadcrumb" role="list">
+              <li class="breadcrumb-item">
+                <a class="breadcrumb-link" href="#" aria-label="Accueil">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                </a>
+                <span class="breadcrumb-sep" aria-hidden="true">/</span>
+              </li>
+              <li class="breadcrumb-item">
+                <a class="breadcrumb-link" href="#">Documents</a>
+                <span class="breadcrumb-sep" aria-hidden="true">/</span>
+              </li>
+              <li class="breadcrumb-item">
+                <span class="breadcrumb-current" aria-current="page">Délibération n°2025-42</span>
+              </li>
+            </ol>
+          </nav>
+        </div>
+
+        <!-- Breadcrumb long avec truncation -->
+        <div>
+          <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);letter-spacing:0.06em;margin-bottom:8px">Long avec ellipsis (5+ niveaux)</div>
+          <nav aria-label="Fil d'Ariane long">
+            <ol class="breadcrumb" role="list">
+              <li class="breadcrumb-item">
+                <a class="breadcrumb-link" href="#">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                </a>
+                <span class="breadcrumb-sep" aria-hidden="true">/</span>
+              </li>
+              <li class="breadcrumb-item">
+                <a class="breadcrumb-link" href="#">Fonds</a>
+                <span class="breadcrumb-sep" aria-hidden="true">/</span>
+              </li>
+              <li class="breadcrumb-item">
+                <span class="breadcrumb-ellipsis" title="Marchés Publics / Travaux / Secteur Nord" aria-label="Niveaux intermédiaires masqués">…</span>
+                <span class="breadcrumb-sep" aria-hidden="true">/</span>
+              </li>
+              <li class="breadcrumb-item">
+                <a class="breadcrumb-link" href="#">Contrats 2024</a>
+                <span class="breadcrumb-sep" aria-hidden="true">/</span>
+              </li>
+              <li class="breadcrumb-item">
+                <span class="breadcrumb-current" aria-current="page">ARC-2024-18847 — Travaux de voirie secteur nord</span>
+              </li>
+            </ol>
+          </nav>
+        </div>
+
+        <!-- Breadcrumb avec chevron -->
+        <div>
+          <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);letter-spacing:0.06em;margin-bottom:8px">Séparateur chevron ›</div>
+          <nav aria-label="Fil d'Ariane chevron">
+            <ol class="breadcrumb" role="list">
+              <li class="breadcrumb-item">
+                <a class="breadcrumb-link" href="#">Tableau de bord</a>
+                <span class="breadcrumb-sep" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                </span>
+              </li>
+              <li class="breadcrumb-item">
+                <a class="breadcrumb-link" href="#">Administration</a>
+                <span class="breadcrumb-sep" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                </span>
+              </li>
+              <li class="breadcrumb-item">
+                <a class="breadcrumb-link" href="#">Utilisateurs</a>
+                <span class="breadcrumb-sep" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                </span>
+              </li>
+              <li class="breadcrumb-item">
+                <span class="breadcrumb-current" aria-current="page">MARTIN, Sophie</span>
+              </li>
+            </ol>
+          </nav>
+        </div>
+
+      </div>
+    </div>
+
+    <table class="spec-table">
+      <thead><tr><th>Élément</th><th>Style</th><th>Interaction</th></tr></thead>
+      <tbody>
+        <tr><td>Lien parent</td><td class="mono">color: --text-tertiary · hover: bg-raised</td><td>Cliquable · cursor pointer</td></tr>
+        <tr><td>Séparateur</td><td class="mono">color: --text-placeholder · user-select: none</td><td>Non interactif · aria-hidden</td></tr>
+        <tr><td>Item courant</td><td class="mono">color: --text-primary · font-weight 500</td><td>Non cliquable · aria-current="page"</td></tr>
+        <tr><td>Ellipsis</td><td class="mono">color: --text-placeholder · hover: bg-raised</td><td>Cliquable pour déplier</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 05 — TABS
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">05 — Tabs</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Onglets de navigation</h2>
+    <p class="section-desc">Deux variantes : tabs underline (navigation de page) et tabs pills (switcher de vue). Indicateur accent 2px sur la variante underline. Badge count intégré.</p>
+
+    <!-- Tabs underline -->
+    <div class="subsection">
+      <div class="subsection-title">Variante Underline — navigation de section</div>
+      <div class="preview-zone">
+        <div class="tabs" role="tablist" aria-label="Onglets document">
+          <button class="tab-item is-active" role="tab" aria-selected="true" aria-controls="panel-apercu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Aperçu
+          </button>
+          <button class="tab-item" role="tab" aria-selected="false" aria-controls="panel-metadonnees">
+            Métadonnées
+          </button>
+          <button class="tab-item" role="tab" aria-selected="false" aria-controls="panel-versions">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Versions
+            <span class="badge-count" style="font-size:9px;min-width:16px;height:16px;background:var(--gray-600)">4</span>
+          </button>
+          <button class="tab-item" role="tab" aria-selected="false" aria-controls="panel-historique">
+            Historique
+          </button>
+          <button class="tab-item" role="tab" aria-selected="false" aria-controls="panel-liaisons">
+            Liaisons
+            <span class="badge-count" style="font-size:9px;min-width:16px;height:16px">12</span>
+          </button>
+          <button class="tab-item" role="tab" aria-selected="false" aria-controls="panel-acces">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Accès &amp; droits
+          </button>
+        </div>
+        <!-- Tab content area -->
+        <div role="tabpanel" id="panel-apercu" style="padding:16px 4px 4px">
+          <div style="height:48px;background:var(--bg-raised);border-radius:var(--radius-sm);display:flex;align-items:center;padding:12px;gap:8px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-placeholder)" stroke-width="1.5" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+            <span style="font-size:var(--text-sm);color:var(--text-placeholder)">Contenu de l'onglet Aperçu — Prévisualisation du document PDF</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs pills -->
+    <div class="subsection">
+      <div class="subsection-title">Variante Pills — switcher de vue</div>
+      <div class="preview-zone">
+        <div style="display:flex;flex-direction:column;gap:16px">
+
+          <!-- Switcher liste/grille -->
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+            <div class="tabs-pills" role="tablist" aria-label="Mode d'affichage">
+              <button class="tab-pill is-active" role="tab" aria-selected="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                Liste
+              </button>
+              <button class="tab-pill" role="tab" aria-selected="false">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                Grille
+              </button>
+            </div>
+
+            <!-- Switcher période stats -->
+            <div class="tabs-pills" role="tablist" aria-label="Période statistiques">
+              <button class="tab-pill" role="tab">7j</button>
+              <button class="tab-pill" role="tab">30j</button>
+              <button class="tab-pill is-active" role="tab" aria-selected="true">3 mois</button>
+              <button class="tab-pill" role="tab">1 an</button>
+            </div>
+          </div>
+
+          <!-- Switcher type documents -->
+          <div class="tabs-pills" role="tablist" aria-label="Type de document">
+            <button class="tab-pill is-active" role="tab" aria-selected="true">Tous les types</button>
+            <button class="tab-pill" role="tab">Délibérations</button>
+            <button class="tab-pill" role="tab">Arrêtés</button>
+            <button class="tab-pill" role="tab">Contrats</button>
+            <button class="tab-pill" role="tab">Rapports</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 06 — DROPDOWNS
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">06 — Dropdowns</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">Menus déroulants</h2>
+    <p class="section-desc">Fond panel + grain + shadow-lg. Radius <code>--radius-md (6px)</code>. 4 types d'items : simple, avec icône, avec raccourci, séparateur, item danger. Item actif avec fond accent subtle.</p>
+
+    <div class="preview-zone">
+      <div class="row" style="gap:20px;align-items:flex-start">
+
+        <!-- Dropdown simple — Actions document -->
+        <div>
+          <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);letter-spacing:0.06em;margin-bottom:10px">Actions document</div>
+          <div class="dropdown-menu">
+            <div class="dropdown-header">Actions</div>
+            <div class="dropdown-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              Voir le document
+              <span class="dropdown-item-shortcut">⏎</span>
+            </div>
+            <div class="dropdown-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Télécharger PDF/A
+              <span class="dropdown-item-shortcut">⌘D</span>
+            </div>
+            <div class="dropdown-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Modifier les métadonnées
+              <span class="dropdown-item-shortcut">⌘E</span>
+            </div>
+            <div class="dropdown-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+              Partager — Lien direct
+            </div>
+            <div class="dropdown-sep"></div>
+            <div class="dropdown-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Dupliquer
+            </div>
+            <div class="dropdown-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              Marquer comme traité
+            </div>
+            <div class="dropdown-sep"></div>
+            <div class="dropdown-item is-danger">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              Supprimer définitivement
+            </div>
+          </div>
+        </div>
+
+        <!-- Dropdown — Menu utilisateur -->
+        <div>
+          <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);letter-spacing:0.06em;margin-bottom:10px">Menu utilisateur</div>
+          <div class="dropdown-menu" style="min-width:220px">
+            <!-- User info header -->
+            <div style="padding:10px 10px 8px;display:flex;align-items:center;gap:9px">
+              <div class="avatar">SM</div>
+              <div>
+                <div style="font-size:var(--text-md);font-weight:500;color:var(--text-primary)">MARTIN, Sophie</div>
+                <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder)">s.martin@bordeaux.fr</div>
+              </div>
+            </div>
+            <div class="dropdown-sep"></div>
+            <div class="dropdown-item is-active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Mon profil
+            </div>
+            <div class="dropdown-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              Notifications
+              <span class="dropdown-item-shortcut"><span class="badge-count" style="font-size:9px;min-width:16px;height:16px">3</span></span>
+            </div>
+            <div class="dropdown-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Préférences
+            </div>
+            <div class="dropdown-item is-disabled">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Administration
+              <span style="margin-left:auto;font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder)">Accès refusé</span>
+            </div>
+            <div class="dropdown-sep"></div>
+            <div class="dropdown-item is-danger">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Se déconnecter
+            </div>
+          </div>
+        </div>
+
+        <!-- Dropdown — Trier par -->
+        <div>
+          <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);letter-spacing:0.06em;margin-bottom:10px">Trier par</div>
+          <div class="dropdown-menu" style="min-width:180px">
+            <div class="dropdown-header">Trier les résultats</div>
+            <div class="dropdown-item is-active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+              Date — Plus récent
+            </div>
+            <div class="dropdown-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              Date — Plus ancien
+            </div>
+            <div class="dropdown-sep"></div>
+            <div class="dropdown-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="14" y2="15"/><line x1="4" y1="21" x2="9" y2="21"/></svg>
+              Référence A → Z
+            </div>
+            <div class="dropdown-item">
+              Référence Z → A
+            </div>
+            <div class="dropdown-sep"></div>
+            <div class="dropdown-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              Pertinence
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <table class="spec-table" style="margin-top:24px">
+      <thead><tr><th>Type d'item</th><th>Style</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Simple</td><td class="mono">color: --text-secondary · hover: rgba(255,255,255,0.04)</td><td>Texte seul</td></tr>
+        <tr><td>Avec icône</td><td class="mono">gap: 9px · icône 14px · stroke 1.5px</td><td>Icône Lucide SVG obligatoire</td></tr>
+        <tr><td>Avec raccourci</td><td class="mono">margin-left: auto · DM Mono xs</td><td>DM Mono pour les kbd shortcuts</td></tr>
+        <tr><td>Actif</td><td class="mono">bg: --accent-subtle-bg · color: --accent-300</td><td>État courant ou sélectionné</td></tr>
+        <tr><td>Danger</td><td class="mono">color: #DC7070 · hover: --error-subtle</td><td>Suppression, déconnexion</td></tr>
+        <tr><td>Désactivé</td><td class="mono">opacity: 0.38 · pointer-events: none</td><td>aria-disabled="true"</td></tr>
+        <tr><td>Séparateur</td><td class="mono">height: 1px · --border-subtle · margin: 4px 0</td><td>Non interactif</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════ FOOTER ══ -->
+  <footer class="doc-footer">
+    <div class="footer-left">
+      Charte Graphique — Archivage Numérique · CG-07 / 12<br>
+      <div class="kbd-hint">Raccourcis : <span class="kbd">←</span> Précédent <span class="kbd">→</span> Suivant <span class="kbd">i</span> Index</div>
+    </div>
+    <div class="footer-nav">
+      <a href="CG-06-Composants-Boutons-Inputs-Badges-Cards.html" class="footer-link" aria-label="Module précédent : CG-06">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Précédent
+      </a>
+      <a href="CG-08-Feedback-Toasts-Modals-Etats.html" class="footer-link" aria-label="Module suivant : CG-08">
+        Suivant
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </a>
+    </div>
+      CG-08 — Feedback &amp; États
+    </a>
+  </footer>
+
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+
+// Tab interactions — underline
+document.querySelectorAll('.tabs .tab-item').forEach(tab => {
+  tab.addEventListener('click', function () {
+    this.closest('.tabs').querySelectorAll('.tab-item').forEach(t => {
+      t.classList.remove('is-active');
+      t.setAttribute('aria-selected', 'false');
+    });
+    this.classList.add('is-active');
+    this.setAttribute('aria-selected', 'true');
+  });
+});
+
+// Tab interactions — pills
+document.querySelectorAll('.tabs-pills .tab-pill').forEach(tab => {
+  tab.addEventListener('click', function () {
+    this.closest('.tabs-pills').querySelectorAll('.tab-pill').forEach(t => {
+      t.classList.remove('is-active');
+      t.setAttribute('aria-selected', 'false');
+    });
+    this.classList.add('is-active');
+    this.setAttribute('aria-selected', 'true');
+  });
+});
+
+// Nav items interactions
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', function (e) {
+    e.preventDefault();
+    const nav = this.closest('nav');
+    if (!nav) return;
+    nav.querySelectorAll('.nav-item').forEach(i => {
+      i.classList.remove('is-active');
+      i.removeAttribute('aria-current');
+    });
+    this.classList.add('is-active');
+    this.setAttribute('aria-current', 'page');
+  });
+});
+</script>
+</body>
+</html>
+  </footer>
+
+</div>
+
+<script>
+function toggleNav(btn) {
+  const dropdown = btn.parentElement;
+  const isActive = dropdown.classList.contains('active');
+  document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('active'));
+  if (!isActive) {
+    dropdown.classList.add('active');
+    btn.setAttribute('aria-expanded', 'true');
+  } else {
+    btn.setAttribute('aria-expanded', 'false');
+  }
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.nav-dropdown')) {
+    document.querySelectorAll('.nav-dropdown').forEach(d => {
+      d.classList.remove('active');
+      const btn = d.querySelector('.nav-dropdown-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  switch(e.key) {
+    case 'ArrowLeft':
+      const prevLink = document.querySelector('.footer-link[aria-label*="précédent"]');
+      if (prevLink && !prevLink.classList.contains('disabled')) {
+        window.location.href = prevLink.href;
+      }
+      break;
+    case 'ArrowRight':
+      const nextLink = document.querySelector('.footer-link[aria-label*="suivant"]');
+      if (nextLink && !nextLink.classList.contains('disabled')) {
+        window.location.href = nextLink.href;
+      }
+      break;
+    case 'i':
+    case 'I':
+      window.location.href = 'index.html';
+      break;
+  }
+});
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CG-04 — Espacement, Grille & Layout · Archivage Numérique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --accent-300:  #65D5C4;
+  --accent-400:  #36BCAB;
+  --accent-500:  #179E8E;
+  --accent-600:  #0E7E72;
+  --accent-subtle-bg:     rgba(23,158,142,0.08);
+  --accent-subtle-border: rgba(23,158,142,0.20);
+
+  --gray-950: #0A0B0F;
+  --gray-900: #10121A;
+  --gray-850: #14161F;
+  --gray-800: #1A1D2B;
+  --gray-700: #252838;
+  --gray-600: #353848;
+  --gray-500: #4D5068;
+  --gray-400: #6B6F88;
+  --gray-300: #9498B0;
+  --gray-200: #C2C5D6;
+  --gray-100: #E3E5F0;
+  --gray-50:  #F0F1F8;
+
+  --bg-base:     var(--gray-950);
+  --bg-elevated: var(--gray-900);
+  --bg-subtle:   var(--gray-800);
+  --border-subtle:  var(--gray-800);
+  --border-default: var(--gray-700);
+  --text-primary:   var(--gray-50);
+  --text-secondary: var(--gray-200);
+  --text-tertiary:  var(--gray-400);
+
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Light mode */
+[data-theme="light"] {
+  --bg-base: #F8F9FC;
+  --bg-elevated: #FFFFFF;
+  --bg-subtle: var(--gray-100);
+  --border-subtle: var(--gray-100);
+  --border-default: var(--gray-200);
+  --text-primary: var(--gray-900);
+  --text-secondary: #3D4158;
+  --text-tertiary: var(--gray-500);
+}
+
+html { scroll-behavior: smooth; }
+
+/* Smooth theme transitions */
+body, body * {
+  transition-property: background-color, border-color, color;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-base);
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* GRAIN GLOBAL */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  z-index: 9999; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 180px; opacity: 0.20; mix-blend-mode: overlay;
+}
+
+.page { max-width: 1100px; margin: 0 auto; padding: 64px 40px 120px; }
+
+/* grain helper */
+.gr { position: relative; overflow: hidden; }
+.gr::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 110px; opacity: 0.12; mix-blend-mode: overlay;
+}
+
+/* ── DOC HEADER ── */
+.doc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 80px; padding-bottom: 32px; border-bottom: 1px solid var(--border-subtle); }
+.doc-badge { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-tertiary); border: 1px solid var(--border-default); padding: 4px 10px; border-radius: var(--radius-sm); margin-bottom: 18px; }
+.doc-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-500); flex-shrink: 0; }
+.doc-title { font-size: 28px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.035em; line-height: 1.15; margin-bottom: 8px; }
+.doc-subtitle { font-size: 13px; color: var(--text-tertiary); }
+.doc-meta { text-align: right; font-family: var(--font-mono); font-size: 10px; color: var(--gray-500); line-height: 1.9; }
+
+.theme-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  transition: all 150ms ease;
+}
+.theme-btn:hover {
+  border-color: var(--border-default);
+  color: var(--text-primary);
+}
+
+/* ── SECTION CHROME ── */
+.section { margin-bottom: 72px; }
+.section-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gray-500); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border-subtle); }
+.section-title { font-size: 18px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.025em; margin-bottom: 6px; }
+.section-desc { font-size: 13px; color: var(--text-tertiary); max-width: 620px; line-height: 1.65; }
+
+/* ══════════════════════════════
+   SPACING SCALE
+══════════════════════════════ */
+.spacing-scale {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.space-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  position: relative;
+  overflow: hidden;
+  transition: border-color 180ms var(--ease-spring);
+}
+.space-row:hover { border-color: var(--border-default); }
+.space-row::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 80px; opacity: 0.07; mix-blend-mode: overlay;
+}
+.space-token { font-family: var(--font-mono); font-size: 10px; color: var(--accent-300); width: 72px; flex-shrink: 0; position: relative; z-index: 2; }
+.space-px    { font-family: var(--font-mono); font-size: 10px; color: var(--gray-400); width: 40px; flex-shrink: 0; position: relative; z-index: 2; }
+.space-rem   { font-family: var(--font-mono); font-size: 10px; color: var(--gray-600); width: 52px; flex-shrink: 0; position: relative; z-index: 2; }
+.space-bar-wrap { flex: 1; position: relative; z-index: 2; }
+.space-bar { height: 8px; border-radius: 2px; background: var(--accent-500); position: relative; overflow: hidden; }
+.space-bar::after {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 40px; opacity: 0.30; mix-blend-mode: overlay;
+}
+.space-usage { font-size: 11px; color: var(--gray-500); width: 260px; flex-shrink: 0; position: relative; z-index: 2; text-align: right; }
+.space-row.highlight { border-color: var(--accent-subtle-border); }
+.space-row.highlight .space-bar { background: var(--accent-400); }
+
+/* ══════════════════════════════
+   GRILLE 12 COLONNES
+══════════════════════════════ */
+.grid-demo {
+  margin-top: 28px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.grid-demo-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.grid-demo-title { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-500); }
+.grid-demo-spec  { font-family: var(--font-mono); font-size: 9px; color: var(--accent-400); }
+.grid-body { padding: 20px; }
+
+.col-row { display: grid; gap: 8px; margin-bottom: 8px; }
+.col-row-12 { grid-template-columns: repeat(12, 1fr); }
+.col-row-6  { grid-template-columns: repeat(6, 1fr); }
+.col-row-4  { grid-template-columns: repeat(4, 1fr); }
+.col-row-3  { grid-template-columns: repeat(3, 1fr); }
+.col-row-2  { grid-template-columns: 1fr 1fr; }
+.col-row-sidebar { grid-template-columns: 240px 1fr; }
+.col-row-sidebar-content { grid-template-columns: 240px 1fr 280px; }
+
+.col {
+  height: 28px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.col::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 40px; opacity: 0.22; mix-blend-mode: overlay;
+}
+.col-label { font-family: var(--font-mono); font-size: 8px; color: rgba(255,255,255,0.5); position: relative; z-index: 2; }
+
+.col-a  { background: rgba(23,158,142,0.25); border: 1px solid rgba(23,158,142,0.3); }
+.col-b  { background: rgba(23,158,142,0.15); border: 1px solid rgba(23,158,142,0.2); }
+.col-c  { background: rgba(23,158,142,0.08); border: 1px solid rgba(23,158,142,0.14); }
+.col-sidebar { background: rgba(107,111,136,0.15); border: 1px solid rgba(107,111,136,0.25); height: 52px; }
+.col-main    { background: rgba(23,158,142,0.10); border: 1px solid rgba(23,158,142,0.18); height: 52px; }
+.col-panel   { background: rgba(107,111,136,0.10); border: 1px solid rgba(107,111,136,0.18); height: 52px; }
+
+.col-row-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--gray-600);
+  letter-spacing: 0.08em;
+  margin-bottom: 5px;
+  margin-top: 14px;
+}
+.col-row-label:first-child { margin-top: 0; }
+
+/* ══════════════════════════════
+   LAYOUT SHELL DIAGRAM
+══════════════════════════════ */
+.layout-diagram {
+  margin-top: 28px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.layout-diagram-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.layout-diagram-title { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-500); }
+.layout-shell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 48px 1fr;
+  min-height: 340px;
+  position: relative;
+}
+
+/* TOPBAR */
+.shell-topbar {
+  grid-column: span 2;
+  background: var(--gray-900);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.shell-topbar::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 120px; opacity: 0.08; mix-blend-mode: overlay;
+}
+.shell-logo { width: 22px; height: 22px; background: var(--accent-500); border-radius: var(--radius-sm); flex-shrink: 0; position: relative; z-index: 2; overflow: hidden; }
+.shell-logo::after {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 40px; opacity: 0.35; mix-blend-mode: overlay;
+}
+.shell-org { font-size: 11px; font-weight: 600; color: var(--text-primary); position: relative; z-index: 2; }
+.shell-spacer { flex: 1; }
+.shell-pill { height: 24px; width: 80px; background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); position: relative; z-index: 2; }
+.shell-avatar { width: 24px; height: 24px; border-radius: var(--radius-sm); background: var(--accent-subtle-bg); border: 1px solid var(--accent-subtle-border); position: relative; z-index: 2; }
+
+/* SIDEBAR */
+.shell-sidebar {
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-right: 1px solid var(--border-subtle);
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  overflow: hidden;
+}
+.shell-sidebar::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 100px; opacity: 0.16; mix-blend-mode: overlay;
+}
+.sidebar-section-label { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-600); padding: 0 8px; margin: 8px 0 4px; position: relative; z-index: 2; }
+.sidebar-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 12px; color: var(--gray-400);
+  position: relative; z-index: 2;
+}
+.sidebar-item.active { background: var(--accent-subtle-bg); color: var(--accent-300); }
+.sidebar-icon { width: 14px; height: 14px; border-radius: 3px; background: var(--border-default); flex-shrink: 0; }
+.sidebar-icon-accent { background: rgba(23,158,142,0.25); border: 1px solid var(--accent-subtle-border); }
+.sidebar-bottom { margin-top: auto; border-top: 1px solid var(--border-subtle); padding-top: 12px; position: relative; z-index: 2; }
+
+/* CONTENT */
+.shell-content { padding: 24px; display: flex; flex-direction: column; gap: 16px; overflow: hidden; }
+.shell-content-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.shell-page-title { font-size: 20px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.03em; line-height: 1.15; }
+.shell-page-sub { font-size: 11px; color: var(--gray-500); font-family: var(--font-mono); margin-top: 2px; }
+.shell-btn { height: 28px; padding: 0 12px; background: var(--accent-500); border-radius: var(--radius-sm); font-size: 11px; font-weight: 500; color: white; display: inline-flex; align-items: center; gap: 5px; position: relative; overflow: hidden; flex-shrink: 0; }
+.shell-btn::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 40px; opacity: 0.32; mix-blend-mode: overlay;
+}
+
+/* cards row */
+.shell-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.shell-card {
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  position: relative; overflow: hidden;
+}
+.shell-card::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 80px; opacity: 0.15; mix-blend-mode: overlay;
+}
+.shell-card-label { font-size: 10px; color: var(--gray-500); margin-bottom: 4px; position: relative; z-index: 2; }
+.shell-card-val { font-size: 18px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.03em; position: relative; z-index: 2; }
+.shell-card-sub { font-family: var(--font-mono); font-size: 9px; color: var(--gray-600); margin-top: 2px; position: relative; z-index: 2; }
+
+/* table mock */
+.shell-table { background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); overflow: hidden; flex: 1; }
+.shell-table-head { display: grid; grid-template-columns: 1fr 120px 100px 80px; padding: 8px 12px; border-bottom: 1px solid var(--border-subtle); background: rgba(255,255,255,0.02); }
+.shell-th { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-600); }
+.shell-tr { display: grid; grid-template-columns: 1fr 120px 100px 80px; padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,0.025); align-items: center; }
+.shell-td { font-size: 11px; color: var(--text-secondary); }
+.shell-td-mono { font-family: var(--font-mono); font-size: 9px; color: var(--gray-500); }
+.shell-td-badge { display: inline-flex; align-items: center; padding: 2px 6px; border-radius: 2px; font-size: 9px; font-weight: 500; font-family: var(--font-mono); }
+.badge-green { background: rgba(38,130,69,0.12); color: #5CB87C; border: 1px solid rgba(38,130,69,0.22); }
+.badge-amber { background: rgba(176,116,18,0.12); color: #EDB03A; border: 1px solid rgba(176,116,18,0.22); }
+.badge-teal  { background: var(--accent-subtle-bg); color: var(--accent-300); border: 1px solid var(--accent-subtle-border); }
+
+/* annotations */
+.layout-annotations {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  background: rgba(255,255,255,0.01);
+}
+.annot { display: flex; align-items: center; gap: 6px; }
+.annot-swatch { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+.annot-label { font-size: 10px; color: var(--gray-500); }
+.annot-val { font-family: var(--font-mono); font-size: 9px; color: var(--gray-400); }
+
+/* ══════════════════════════════
+   ZONES DE CONTENU
+══════════════════════════════ */
+.zones-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 28px;
+}
+.zone-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.zone-card-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.zone-card-name { font-size: 11px; font-weight: 600; color: var(--text-primary); }
+.zone-card-dim  { font-family: var(--font-mono); font-size: 9px; color: var(--accent-300); }
+.zone-card-body {
+  padding: 14px;
+  position: relative;
+}
+.zone-card-body::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 80px; opacity: 0.08; mix-blend-mode: overlay;
+}
+.zone-prop { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border-subtle); }
+.zone-prop:last-child { border-bottom: none; }
+.zone-prop-k { font-size: 11px; color: var(--gray-400); }
+.zone-prop-v { font-family: var(--font-mono); font-size: 10px; color: var(--gray-300); }
+
+/* ══════════════════════════════
+   BREAKPOINTS
+══════════════════════════════ */
+.bp-timeline {
+  margin-top: 28px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 24px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.bp-timeline::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 100px; opacity: 0.08; mix-blend-mode: overlay;
+}
+.bp-track {
+  position: relative;
+  height: 6px;
+  background: var(--bg-subtle);
+  border-radius: 3px;
+  margin: 24px 0 40px;
+  z-index: 2;
+}
+.bp-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  border-radius: 3px;
+  background: var(--accent-500);
+  overflow: hidden;
+}
+.bp-fill::after {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 40px; opacity: 0.35; mix-blend-mode: overlay;
+}
+.bp-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+.bp-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--bg-base);
+  border: 2px solid var(--accent-500);
+  margin: 0 auto;
+}
+.bp-dot-main { background: var(--accent-500); }
+.bp-tag {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--gray-400);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  text-align: center;
+}
+.bp-tag strong { display: block; color: var(--gray-200); font-size: 9px; }
+.bp-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  position: relative;
+  z-index: 2;
+}
+.bp-card {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  position: relative;
+  overflow: hidden;
+}
+.bp-card::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 40px; opacity: 0.08; mix-blend-mode: overlay;
+}
+.bp-name { font-family: var(--font-mono); font-size: 9px; color: var(--accent-300); letter-spacing: 0.08em; margin-bottom: 4px; position: relative; z-index: 2; }
+.bp-range { font-size: 11px; color: var(--text-primary); font-weight: 600; margin-bottom: 6px; position: relative; z-index: 2; }
+.bp-desc { font-size: 10px; color: var(--gray-500); line-height: 1.5; position: relative; z-index: 2; }
+.bp-card.bp-main { border-color: var(--accent-subtle-border); }
+
+/* ══════════════════════════════
+   CODE BLOCK
+══════════════════════════════ */
+.code-block {
+  background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md); padding: 20px 24px; margin-top: 28px;
+  overflow-x: auto; position: relative;
+}
+.code-block::after {
+  content: ''; position: absolute; inset: 0; border-radius: var(--radius-md); pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 100px; opacity: 0.07; mix-blend-mode: overlay;
+}
+.code-lang {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--accent-400); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.code-lang::after { content: ''; flex: 1; height: 1px; background: var(--border-subtle); }
+pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); line-height: 1.75; white-space: pre; position: relative; z-index: 2; }
+.c-comment { color: var(--gray-600); }
+.c-var     { color: var(--accent-300); }
+.c-val     { color: var(--gray-300); }
+.c-prop    { color: var(--gray-400); }
+
+/* NAVIGATION SYSTEM */
+.nav-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--gray-500);
+  margin-bottom: 16px;
+}
+.nav-breadcrumb a {
+  color: var(--accent-400);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.nav-breadcrumb a:hover { color: var(--accent-300); }
+.nav-breadcrumb-sep { color: var(--gray-700); }
+
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.nav-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--gray-900);
+  border: 1px solid var(--gray-800);
+  border-radius: var(--radius-sm);
+  color: var(--gray-300);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.nav-dropdown-btn:hover {
+  background: var(--gray-850);
+  border-color: var(--gray-700);
+  color: var(--gray-200);
+}
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--gray-900);
+  border: 1px solid var(--gray-800);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  min-width: 280px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1000;
+}
+.nav-dropdown.active .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  color: var(--gray-400);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  transition: all 120ms ease;
+}
+.nav-dropdown-item:hover {
+  background: var(--gray-850);
+  color: var(--gray-200);
+}
+.nav-dropdown-item.active {
+  background: rgba(23,158,142,0.12);
+  color: var(--accent-300);
+  font-weight: 500;
+}
+.nav-dropdown-item-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--gray-600);
+  min-width: 32px;
+}
+
+/* FOOTER */
+.doc-footer { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+.footer-left { font-family: var(--font-mono); font-size: 10px; color: var(--gray-600); line-height: 1.8; }
+.footer-nav {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--gray-400);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: all 150ms ease;
+}
+.footer-link:hover {
+  color: var(--gray-200);
+  background: var(--gray-900);
+}
+.footer-link svg { width: 14px; height: 14px; }
+.footer-link.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+.kbd-hint {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--gray-700);
+  margin-top: 8px;
+}
+.kbd {
+  display: inline-block;
+  padding: 2px 5px;
+  background: var(--gray-900);
+  border: 1px solid var(--gray-800);
+  border-radius: 3px;
+  font-size: 9px;
+  margin: 0 2px;
+}
+.footer-next { font-size: 11px; color: var(--text-tertiary); display: flex; align-items: center; gap: 6px; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--gray-950); }
+::-webkit-scrollbar-thumb { background: var(--gray-700); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="doc-header">
+    <div>
+      <!-- Breadcrumb + Menu -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <nav class="nav-breadcrumb" aria-label="Fil d'Ariane">
+          <a href="index.html">← Index</a>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>CG-04</span>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>Espacement & Grille</span>
+        </nav>
+        
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-btn" onclick="toggleNav(this)" aria-label="Menu des modules" aria-expanded="false">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+            Tous les modules
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="CG-01-Identite-Palette.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-01</span> Identité & Palette</a>
+            <a href="CG-02-Systeme-Couleurs-Tokens.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-02</span> Couleurs & Tokens</a>
+            <a href="CG-03-Typographie-Echelle.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-03</span> Typographie</a>
+            <a href="CG-04-Espacement-Grille-Layout.html" class="nav-dropdown-item active"><span class="nav-dropdown-item-num">CG-04</span> Espacement & Grille</a>
+            <a href="CG-05-Effets-Grain-Verre-Ombres-Bordures.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-05</span> Effets & Grain</a>
+            <a href="CG-06-Composants-Boutons-Inputs-Badges-Cards.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-06</span> Composants UI</a>
+            <a href="CG-07-Navigation-Sidebar-Topbar-Tabs.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-07</span> Navigation</a>
+            <a href="CG-08-Feedback-Toasts-Modals-Etats.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-08</span> Feedback & États</a>
+            <a href="CG-09-Graphiques-DataViz.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-09</span> Graphiques</a>
+            <a href="CG-10-Motion-Design-Animations.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-10</span> Motion Design</a>
+            <a href="CG-11-Accessibilite-RGAA.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-11</span> Accessibilité</a>
+            <a href="CG-12-Tokens-CSS-Complets-Guide.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-12</span> Tokens CSS</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-badge"><span class="doc-badge-dot"></span>Charte Graphique · Module CG-04</div>
+      <h1 class="doc-title">Espacement, Grille<br>& Layout</h1>
+      <p class="doc-subtitle">Système base-4 · Grille 12 colonnes · Shell applicatif · Zones · Breakpoints</p>
+    </div>
+    <div class="doc-meta">
+      Archivage Numérique<br>
+      Administration Publique<br>
+      v1.0 — 2026<br><br>
+      Base spacing : 4px<br>
+      Sidebar : 240px<br>
+      Topbar : 48px
+      <button class="theme-btn" onclick="toggleTheme()" aria-label="Basculer le thème">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        </svg>
+        Thème
+      </button>
+    </div>
+  </header>
+
+
+  <!-- ══ 01 — SYSTÈME D'ESPACEMENT BASE-4 ══ -->
+  <section class="section">
+    <div class="section-label">01 — Système d'espacement</div>
+    <h2 class="section-title">Base-4. Chaque valeur est un multiple de 4px.</h2>
+    <p class="section-desc">Inspiré du système de Linear et Tailwind. La base-4 crée une harmonie optique naturelle entre tous les composants. Toute valeur hors de cette échelle est une anomalie visuelle — elle se voit immédiatement.</p>
+
+    <div class="spacing-scale">
+      <div class="space-row">
+        <span class="space-token">--space-1</span>
+        <span class="space-px">4px</span>
+        <span class="space-rem">0.25rem</span>
+        <div class="space-bar-wrap"><div class="space-bar" style="width:1%"></div></div>
+        <span class="space-usage">Gap entre icône et texte · Padding badge vertical</span>
+      </div>
+      <div class="space-row">
+        <span class="space-token">--space-2</span>
+        <span class="space-px">8px</span>
+        <span class="space-rem">0.5rem</span>
+        <div class="space-bar-wrap"><div class="space-bar" style="width:3%"></div></div>
+        <span class="space-usage">Padding bouton vertical · Gap éléments inline</span>
+      </div>
+      <div class="space-row">
+        <span class="space-token">--space-3</span>
+        <span class="space-px">12px</span>
+        <span class="space-rem">0.75rem</span>
+        <div class="space-bar-wrap"><div class="space-bar" style="width:6%"></div></div>
+        <span class="space-usage">Padding bouton horizontal · Padding input · Gap nav items</span>
+      </div>
+      <div class="space-row highlight">
+        <span class="space-token">--space-4</span>
+        <span class="space-px">16px</span>
+        <span class="space-rem">1rem</span>
+        <div class="space-bar-wrap"><div class="space-bar" style="width:10%"></div></div>
+        <span class="space-usage">★ Padding card · Padding panel · Gap colonnes</span>
+      </div>
+      <div class="space-row">
+        <span class="space-token">--space-5</span>
+        <span class="space-px">20px</span>
+        <span class="space-rem">1.25rem</span>
+        <div class="space-bar-wrap"><div class="space-bar" style="width:14%"></div></div>
+        <span class="space-usage">Padding sidebar items · Espace entre sections de card</span>
+      </div>
+      <div class="space-row highlight">
+        <span class="space-token">--space-6</span>
+        <span class="space-px">24px</span>
+        <span class="space-rem">1.5rem</span>
+        <div class="space-bar-wrap"><div class="space-bar" style="width:18%"></div></div>
+        <span class="space-usage">★ Padding content area · Espace entre groupes</span>
+      </div>
+      <div class="space-row">
+        <span class="space-token">--space-8</span>
+        <span class="space-px">32px</span>
+        <span class="space-rem">2rem</span>
+        <div class="space-bar-wrap"><div class="space-bar" style="width:26%"></div></div>
+        <span class="space-usage">Gap entre sections majeures · Marge header page</span>
+      </div>
+      <div class="space-row">
+        <span class="space-token">--space-10</span>
+        <span class="space-px">40px</span>
+        <span class="space-rem">2.5rem</span>
+        <div class="space-bar-wrap"><div class="space-bar" style="width:36%"></div></div>
+        <span class="space-usage">Padding page horizontal · Espace entre blocs majeurs</span>
+      </div>
+      <div class="space-row highlight">
+        <span class="space-token">--space-12</span>
+        <span class="space-px">48px</span>
+        <span class="space-rem">3rem</span>
+        <div class="space-bar-wrap"><div class="space-bar" style="width:46%"></div></div>
+        <span class="space-usage">★ Hauteur topbar · Marge entre sections de page</span>
+      </div>
+      <div class="space-row">
+        <span class="space-token">--space-16</span>
+        <span class="space-px">64px</span>
+        <span class="space-rem">4rem</span>
+        <div class="space-bar-wrap"><div class="space-bar" style="width:64%"></div></div>
+        <span class="space-usage">Padding page top · Séparation entre grands blocs</span>
+      </div>
+      <div class="space-row">
+        <span class="space-token">--space-20</span>
+        <span class="space-px">80px</span>
+        <span class="space-rem">5rem</span>
+        <div class="space-bar-wrap"><div class="space-bar" style="width:82%"></div></div>
+        <span class="space-usage">Séparation de modules · Padding document (charte)</span>
+      </div>
+      <div class="space-row">
+        <span class="space-token">--space-24</span>
+        <span class="space-px">96px</span>
+        <span class="space-rem">6rem</span>
+        <div class="space-bar-wrap"><div class="space-bar" style="width:100%"></div></div>
+        <span class="space-usage">Padding bottom de page · Espaces extrêmes réservés</span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 02 — GRILLE ══ -->
+  <section class="section">
+    <div class="section-label">02 — Grille 12 colonnes</div>
+    <h2 class="section-title">Toute mise en page est une subdivision de 12.</h2>
+    <p class="section-desc">La grille 12 colonnes avec gap de 16px s'applique à la zone de contenu principale. Elle permet toutes les compositions : 1 col, 2 col, 3 col, 4 col, 6 col, et les asymétries 8+4, 9+3, 7+5.</p>
+
+    <div class="grid-demo">
+      <div class="grid-demo-header">
+        <span class="grid-demo-title">Grille 12 colonnes · zone content</span>
+        <span class="grid-demo-spec">gap: 16px · max-width: 100% · colonnes fluides</span>
+      </div>
+      <div class="grid-body">
+        <div class="col-row-label">12 colonnes — 1 par 1</div>
+        <div class="col-row col-row-12">
+          <div class="col col-a"><span class="col-label">1</span></div>
+          <div class="col col-a"><span class="col-label">1</span></div>
+          <div class="col col-a"><span class="col-label">1</span></div>
+          <div class="col col-a"><span class="col-label">1</span></div>
+          <div class="col col-a"><span class="col-label">1</span></div>
+          <div class="col col-a"><span class="col-label">1</span></div>
+          <div class="col col-a"><span class="col-label">1</span></div>
+          <div class="col col-a"><span class="col-label">1</span></div>
+          <div class="col col-a"><span class="col-label">1</span></div>
+          <div class="col col-a"><span class="col-label">1</span></div>
+          <div class="col col-a"><span class="col-label">1</span></div>
+          <div class="col col-a"><span class="col-label">1</span></div>
+        </div>
+
+        <div class="col-row-label">3 colonnes — 4+4+4 — KPI cards, stats</div>
+        <div class="col-row col-row-3">
+          <div class="col col-b" style="height:36px"><span class="col-label">4 cols</span></div>
+          <div class="col col-b" style="height:36px"><span class="col-label">4 cols</span></div>
+          <div class="col col-b" style="height:36px"><span class="col-label">4 cols</span></div>
+        </div>
+
+        <div class="col-row-label">2 colonnes — 6+6 — Form layout, panels côte à côte</div>
+        <div class="col-row col-row-2">
+          <div class="col col-b" style="height:36px"><span class="col-label">6 cols</span></div>
+          <div class="col col-b" style="height:36px"><span class="col-label">6 cols</span></div>
+        </div>
+
+        <div class="col-row-label">Asymétrique — 8+4 — Contenu + panel lateral</div>
+        <div class="col-row" style="grid-template-columns: 8fr 4fr">
+          <div class="col col-b" style="height:36px"><span class="col-label">8 cols — contenu principal</span></div>
+          <div class="col col-c" style="height:36px"><span class="col-label">4 cols — panel</span></div>
+        </div>
+
+        <div class="col-row-label">Asymétrique — 9+3 — Tableau + filtres</div>
+        <div class="col-row" style="grid-template-columns: 9fr 3fr">
+          <div class="col col-b" style="height:36px"><span class="col-label">9 cols — liste / tableau</span></div>
+          <div class="col col-c" style="height:36px"><span class="col-label">3 cols — filtres</span></div>
+        </div>
+
+        <div class="col-row-label">4 colonnes — 3+3+3+3 — Grilles de cards denses</div>
+        <div class="col-row col-row-4">
+          <div class="col col-a" style="height:36px"><span class="col-label">3 cols</span></div>
+          <div class="col col-a" style="height:36px"><span class="col-label">3 cols</span></div>
+          <div class="col col-a" style="height:36px"><span class="col-label">3 cols</span></div>
+          <div class="col col-a" style="height:36px"><span class="col-label">3 cols</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 03 — LAYOUT SHELL ══ -->
+  <section class="section">
+    <div class="section-label">03 — Shell applicatif</div>
+    <h2 class="section-title">L'enveloppe de toute l'interface</h2>
+    <p class="section-desc">Le shell est fixe et immuable. Topbar 48px, sidebar 240px ancrée à gauche, zone de contenu fluide à droite. C'est la grille structurelle du système — elle ne change pas selon les pages.</p>
+
+    <div class="layout-diagram">
+      <div class="layout-diagram-header">
+        <span class="layout-diagram-title">Shell applicatif — vue en situation</span>
+        <span style="font-family:var(--font-mono);font-size:9px;color:var(--accent-400)">1280px+ · Desktop cible</span>
+      </div>
+
+      <div class="layout-shell">
+        <!-- TOPBAR -->
+        <div class="shell-topbar">
+          <div class="shell-logo"></div>
+          <span class="shell-org">Archivage Numérique</span>
+          <div class="shell-spacer"></div>
+          <div class="shell-pill"></div>
+          <div class="shell-avatar"></div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="shell-sidebar">
+          <div class="sidebar-section-label">Principal</div>
+          <div class="sidebar-item active">
+            <div class="sidebar-icon sidebar-icon-accent"></div>
+            Documents
+          </div>
+          <div class="sidebar-item">
+            <div class="sidebar-icon"></div>
+            Workflows
+          </div>
+          <div class="sidebar-item">
+            <div class="sidebar-icon"></div>
+            Recherche
+          </div>
+          <div class="sidebar-item">
+            <div class="sidebar-icon"></div>
+            Rapports
+          </div>
+
+          <div class="sidebar-section-label" style="margin-top:16px">Administration</div>
+          <div class="sidebar-item">
+            <div class="sidebar-icon"></div>
+            Utilisateurs
+          </div>
+          <div class="sidebar-item">
+            <div class="sidebar-icon"></div>
+            Configuration
+          </div>
+          <div class="sidebar-item">
+            <div class="sidebar-icon"></div>
+            Sauvegardes
+          </div>
+          <div class="sidebar-item">
+            <div class="sidebar-icon"></div>
+            API & Intégrations
+          </div>
+
+          <div class="sidebar-bottom">
+            <div class="sidebar-item">
+              <div class="sidebar-icon"></div>
+              Marie Archiviste
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="shell-content">
+          <div class="shell-content-header">
+            <div>
+              <div class="shell-page-title">Documents archivés</div>
+              <div class="shell-page-sub">14 382 documents · Sync il y a 3 min</div>
+            </div>
+            <div class="shell-btn">
+              <svg width="10" height="10" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>
+              Nouveau
+            </div>
+          </div>
+
+          <div class="shell-cards">
+            <div class="shell-card">
+              <div class="shell-card-label">Documents actifs</div>
+              <div class="shell-card-val">14 382</div>
+              <div class="shell-card-sub">+47 aujourd'hui</div>
+            </div>
+            <div class="shell-card">
+              <div class="shell-card-label">En validation</div>
+              <div class="shell-card-val">83</div>
+              <div class="shell-card-sub">12 en retard</div>
+            </div>
+            <div class="shell-card">
+              <div class="shell-card-label">Espace utilisé</div>
+              <div class="shell-card-val">2.4 To</div>
+              <div class="shell-card-sub">72% de la limite</div>
+            </div>
+          </div>
+
+          <div class="shell-table">
+            <div class="shell-table-head">
+              <span class="shell-th">Titre</span>
+              <span class="shell-th">Référence</span>
+              <span class="shell-th">Date</span>
+              <span class="shell-th">Statut</span>
+            </div>
+            <div class="shell-tr">
+              <span class="shell-td">Délibération 2026-001</span>
+              <span class="shell-td-mono">DOC-2026-00841</span>
+              <span class="shell-td-mono">2026-02-18</span>
+              <span class="shell-td-badge badge-green">Validé</span>
+            </div>
+            <div class="shell-tr">
+              <span class="shell-td">Courrier Préfecture du Nord</span>
+              <span class="shell-td-mono">DOC-2026-00842</span>
+              <span class="shell-td-mono">2026-02-17</span>
+              <span class="shell-td-badge badge-amber">Attente</span>
+            </div>
+            <div class="shell-tr">
+              <span class="shell-td">Budget prévisionnel FY2026</span>
+              <span class="shell-td-mono">DOC-2026-00843</span>
+              <span class="shell-td-mono">2026-02-16</span>
+              <span class="shell-td-badge badge-teal">Archivé</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="layout-annotations">
+        <div class="annot">
+          <div class="annot-swatch" style="background:rgba(107,111,136,0.3);border:1px solid rgba(107,111,136,0.5)"></div>
+          <span class="annot-label">Topbar</span>
+          <span class="annot-val">height: 48px · position: sticky top: 0</span>
+        </div>
+        <div class="annot">
+          <div class="annot-swatch" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1)"></div>
+          <span class="annot-label">Sidebar</span>
+          <span class="annot-val">width: 240px · position: fixed · glassmorphism</span>
+        </div>
+        <div class="annot">
+          <div class="annot-swatch" style="background:var(--accent-subtle-bg);border:1px solid var(--accent-subtle-border)"></div>
+          <span class="annot-label">Content</span>
+          <span class="annot-val">margin-left: 240px · padding: 24px · overflow-y: auto</span>
+        </div>
+        <div class="annot">
+          <div class="annot-swatch" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07)"></div>
+          <span class="annot-label">Cards KPI</span>
+          <span class="annot-val">glassmorphism · backdrop-blur: 12px</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 04 — ZONES DE CONTENU ══ -->
+  <section class="section">
+    <div class="section-label">04 — Zones de composition</div>
+    <h2 class="section-title">Chaque zone a ses règles de padding.</h2>
+    <p class="section-desc">Le padding d'une zone n'est jamais arbitraire. Il est dicté par le rôle de la zone : plus un élément est "intérieur", plus son padding diminue. Cette logique crée la hiérarchie spatiale sans effort.</p>
+
+    <div class="zones-grid">
+      <div class="zone-card">
+        <div class="zone-card-header">
+          <span class="zone-card-name">Page container</span>
+          <span class="zone-card-dim">max-width: 100%</span>
+        </div>
+        <div class="zone-card-body">
+          <div class="zone-prop"><span class="zone-prop-k">Padding top</span><span class="zone-prop-v">24px (--space-6)</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Padding horizontal</span><span class="zone-prop-v">24px (--space-6)</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Padding bottom</span><span class="zone-prop-v">96px (--space-24)</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Overflow</span><span class="zone-prop-v">overflow-y: auto</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Gap entre sections</span><span class="zone-prop-v">32px (--space-8)</span></div>
+        </div>
+      </div>
+
+      <div class="zone-card">
+        <div class="zone-card-header">
+          <span class="zone-card-name">Sidebar</span>
+          <span class="zone-card-dim">width: 240px · fixe</span>
+        </div>
+        <div class="zone-card-body">
+          <div class="zone-prop"><span class="zone-prop-k">Padding horizontal</span><span class="zone-prop-v">12px (--space-3)</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Padding vertical</span><span class="zone-prop-v">16px (--space-4)</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Gap entre items nav</span><span class="zone-prop-v">4px (--space-1)</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Item nav padding</span><span class="zone-prop-v">6px 8px</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Gap entre groupes</span><span class="zone-prop-v">16px (--space-4)</span></div>
+        </div>
+      </div>
+
+      <div class="zone-card">
+        <div class="zone-card-header">
+          <span class="zone-card-name">Card / Panel</span>
+          <span class="zone-card-dim">radius: 6–8px</span>
+        </div>
+        <div class="zone-card-body">
+          <div class="zone-prop"><span class="zone-prop-k">Padding interne</span><span class="zone-prop-v">16px (--space-4)</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Header padding</span><span class="zone-prop-v">12px 16px</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Gap entre éléments</span><span class="zone-prop-v">8–12px</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Border</span><span class="zone-prop-v">1px solid --border-subtle</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Séparateur interne</span><span class="zone-prop-v">1px · marge ±16px</span></div>
+        </div>
+      </div>
+
+      <div class="zone-card">
+        <div class="zone-card-header">
+          <span class="zone-card-name">Table de données</span>
+          <span class="zone-card-dim">rows: border uniquement</span>
+        </div>
+        <div class="zone-card-body">
+          <div class="zone-prop"><span class="zone-prop-k">Header row padding</span><span class="zone-prop-v">10px 16px</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Data row padding</span><span class="zone-prop-v">9px 16px</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Séparateur</span><span class="zone-prop-v">border-bottom: 1px solid subtle</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Row hover</span><span class="zone-prop-v">bg: rgba(255,255,255,0.02)</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Min row height</span><span class="zone-prop-v">40px</span></div>
+        </div>
+      </div>
+
+      <div class="zone-card">
+        <div class="zone-card-header">
+          <span class="zone-card-name">Modal / Drawer</span>
+          <span class="zone-card-dim">radius: 8px</span>
+        </div>
+        <div class="zone-card-body">
+          <div class="zone-prop"><span class="zone-prop-k">Padding interne</span><span class="zone-prop-v">24px (--space-6)</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Header padding</span><span class="zone-prop-v">20px 24px</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Footer padding</span><span class="zone-prop-v">16px 24px</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Max-width modal</span><span class="zone-prop-v">480px / 640px / 800px</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Backdrop</span><span class="zone-prop-v">rgba(0,0,0,0.6) blur(4px)</span></div>
+        </div>
+      </div>
+
+      <div class="zone-card">
+        <div class="zone-card-header">
+          <span class="zone-card-name">Topbar</span>
+          <span class="zone-card-dim">height: 48px · sticky</span>
+        </div>
+        <div class="zone-card-body">
+          <div class="zone-prop"><span class="zone-prop-k">Hauteur</span><span class="zone-prop-v">48px (--space-12)</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Padding horizontal</span><span class="zone-prop-v">20px (--space-5)</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Position</span><span class="zone-prop-v">sticky · top: 0 · z-index: 200</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Border bottom</span><span class="zone-prop-v">1px solid --border-subtle</span></div>
+          <div class="zone-prop"><span class="zone-prop-k">Background</span><span class="zone-prop-v">--bg-elevated + grain</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 05 — BREAKPOINTS ══ -->
+  <section class="section">
+    <div class="section-label">05 — Breakpoints</div>
+    <h2 class="section-title">4 paliers. Une cible principale : 1280px+.</h2>
+    <p class="section-desc">Le système est conçu desktop-first. Les archivistes travaillent sur grand écran. Le responsive existe mais n'est pas le cas nominal — il assure une dégradation gracieuse sur petits écrans sans sacrifier la densité cible.</p>
+
+    <div class="bp-timeline">
+      <div class="bp-track">
+        <div class="bp-fill" style="width:75%"></div>
+        <div class="bp-marker" style="left:20%">
+          <div class="bp-dot"></div>
+          <div class="bp-tag"><strong>768px</strong>md · tablet</div>
+        </div>
+        <div class="bp-marker" style="left:42%">
+          <div class="bp-dot"></div>
+          <div class="bp-tag"><strong>1024px</strong>lg · laptop</div>
+        </div>
+        <div class="bp-marker" style="left:75%">
+          <div class="bp-dot bp-dot-main"></div>
+          <div class="bp-tag" style="color:var(--accent-300)"><strong>1280px</strong>xl · cible ★</div>
+        </div>
+        <div class="bp-marker" style="left:100%">
+          <div class="bp-dot"></div>
+          <div class="bp-tag"><strong>1536px</strong>2xl · large</div>
+        </div>
+      </div>
+
+      <div class="bp-row">
+        <div class="bp-card">
+          <div class="bp-name">sm</div>
+          <div class="bp-range">640px +</div>
+          <div class="bp-desc">Mobile large. Sidebar cachée (drawer). Navigation bottom bar. Mise en page 1 colonne uniquement.</div>
+        </div>
+        <div class="bp-card">
+          <div class="bp-name">md</div>
+          <div class="bp-range">768px +</div>
+          <div class="bp-desc">Tablette. Sidebar en overlay (toggle). Grille max 2 colonnes. Fonctionnalités admin limitées.</div>
+        </div>
+        <div class="bp-card">
+          <div class="bp-name">lg</div>
+          <div class="bp-range">1024px +</div>
+          <div class="bp-desc">Laptop. Sidebar visible mais réduite à 200px. Grille 12 cols active. Interface complète.</div>
+        </div>
+        <div class="bp-card bp-main">
+          <div class="bp-name">xl ★</div>
+          <div class="bp-range">1280px +</div>
+          <div class="bp-desc">Cible nominale. Sidebar 240px. Toutes fonctionnalités. Densité maximale. Conçu pour ce palier.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 06 — TOKENS CSS ══ -->
+  <section class="section">
+    <div class="section-label">06 — Export tokens</div>
+    <h2 class="section-title">Variables CSS — À ajouter dans globals.css</h2>
+
+    <div class="code-block">
+      <div class="code-lang">CSS — globals.css · Espacement & Layout CG-04</div>
+      <pre>
+<span class="c-comment">/* ═══════════════════════════════════════════════════
+   ESPACEMENT & LAYOUT — Design Tokens CG-04
+   Ajouter à la suite du bloc CG-03 dans globals.css
+═══════════════════════════════════════════════════ */</span>
+
+<span class="c-var">:root</span> {
+
+  <span class="c-comment">/* ── ESPACEMENT BASE-4 ───────────────────────── */</span>
+  <span class="c-prop">--space-1</span>:   <span class="c-val">4px</span>;
+  <span class="c-prop">--space-2</span>:   <span class="c-val">8px</span>;
+  <span class="c-prop">--space-3</span>:  <span class="c-val">12px</span>;
+  <span class="c-prop">--space-4</span>:  <span class="c-val">16px</span>;   <span class="c-comment">/* padding card                */</span>
+  <span class="c-prop">--space-5</span>:  <span class="c-val">20px</span>;
+  <span class="c-prop">--space-6</span>:  <span class="c-val">24px</span>;   <span class="c-comment">/* padding content area        */</span>
+  <span class="c-prop">--space-8</span>:  <span class="c-val">32px</span>;
+  <span class="c-prop">--space-10</span>: <span class="c-val">40px</span>;
+  <span class="c-prop">--space-12</span>: <span class="c-val">48px</span>;   <span class="c-comment">/* hauteur topbar              */</span>
+  <span class="c-prop">--space-16</span>: <span class="c-val">64px</span>;
+  <span class="c-prop">--space-20</span>: <span class="c-val">80px</span>;
+  <span class="c-prop">--space-24</span>: <span class="c-val">96px</span>;
+
+  <span class="c-comment">/* ── LAYOUT SHELL ───────────────────────────── */</span>
+  <span class="c-prop">--sidebar-width</span>:   <span class="c-val">240px</span>;
+  <span class="c-prop">--topbar-height</span>:   <span class="c-val">48px</span>;
+  <span class="c-prop">--content-padding</span>: <span class="c-val">24px</span>;
+  <span class="c-prop">--grid-columns</span>:    <span class="c-val">12</span>;
+  <span class="c-prop">--grid-gap</span>:        <span class="c-val">16px</span>;
+
+  <span class="c-comment">/* ── Z-INDEX ─────────────────────────────────── */</span>
+  <span class="c-prop">--z-base</span>:     <span class="c-val">0</span>;
+  <span class="c-prop">--z-raised</span>:   <span class="c-val">10</span>;
+  <span class="c-prop">--z-dropdown</span>: <span class="c-val">100</span>;
+  <span class="c-prop">--z-sticky</span>:   <span class="c-val">200</span>;
+  <span class="c-prop">--z-overlay</span>:  <span class="c-val">300</span>;
+  <span class="c-prop">--z-modal</span>:    <span class="c-val">400</span>;
+  <span class="c-prop">--z-toast</span>:    <span class="c-val">500</span>;
+  <span class="c-prop">--z-grain</span>:    <span class="c-val">9999</span>;
+}
+
+<span class="c-comment">/* ── SHELL LAYOUT ────────────────────────────── */</span>
+<span class="c-var">.app-shell</span> {
+  <span class="c-prop">display</span>: <span class="c-val">grid</span>;
+  <span class="c-prop">grid-template-rows</span>: <span class="c-val">var(--topbar-height) 1fr</span>;
+  <span class="c-prop">grid-template-columns</span>: <span class="c-val">var(--sidebar-width) 1fr</span>;
+  <span class="c-prop">min-height</span>: <span class="c-val">100vh</span>;
+}
+
+<span class="c-var">.app-topbar</span> {
+  <span class="c-prop">grid-column</span>: <span class="c-val">span 2</span>;
+  <span class="c-prop">height</span>: <span class="c-val">var(--topbar-height)</span>;
+  <span class="c-prop">position</span>: <span class="c-val">sticky</span>;
+  <span class="c-prop">top</span>: <span class="c-val">0</span>;
+  <span class="c-prop">z-index</span>: <span class="c-val">var(--z-sticky)</span>;
+}
+
+<span class="c-var">.app-sidebar</span> {
+  <span class="c-prop">width</span>: <span class="c-val">var(--sidebar-width)</span>;
+  <span class="c-prop">position</span>: <span class="c-val">fixed</span>;
+  <span class="c-prop">top</span>: <span class="c-val">var(--topbar-height)</span>;
+  <span class="c-prop">left</span>: <span class="c-val">0</span>;
+  <span class="c-prop">bottom</span>: <span class="c-val">0</span>;
+  <span class="c-prop">z-index</span>: <span class="c-val">var(--z-raised)</span>;
+  <span class="c-prop">background</span>: <span class="c-val">var(--glass-bg)</span>;
+  <span class="c-prop">backdrop-filter</span>: <span class="c-val">blur(var(--glass-blur))</span>;
+  <span class="c-prop">border-right</span>: <span class="c-val">1px solid var(--border-subtle)</span>;
+  <span class="c-prop">overflow-y</span>: <span class="c-val">auto</span>;
+}
+
+<span class="c-var">.app-content</span> {
+  <span class="c-prop">margin-left</span>: <span class="c-val">var(--sidebar-width)</span>;
+  <span class="c-prop">padding</span>: <span class="c-val">var(--content-padding)</span>;
+  <span class="c-prop">min-height</span>: <span class="c-val">calc(100vh - var(--topbar-height))</span>;
+  <span class="c-prop">overflow-y</span>: <span class="c-val">auto</span>;
+}
+
+<span class="c-comment">/* ── BREAKPOINTS ─────────────────────────────── */</span>
+<span class="c-comment">/* sm: 640px · md: 768px · lg: 1024px · xl: 1280px (cible) */</span>
+<span class="c-var">@media (max-width: 1024px)</span> {
+  <span class="c-var">.app-shell</span>  { <span class="c-prop">grid-template-columns</span>: <span class="c-val">200px 1fr</span>; }
+  <span class="c-var">.app-sidebar</span> { <span class="c-prop">width</span>: <span class="c-val">200px</span>; }
+  <span class="c-var">.app-content</span> { <span class="c-prop">margin-left</span>: <span class="c-val">200px</span>; }
+}
+<span class="c-var">@media (max-width: 768px)</span> {
+  <span class="c-var">.app-shell</span>  { <span class="c-prop">grid-template-columns</span>: <span class="c-val">1fr</span>; }
+  <span class="c-var">.app-sidebar</span> { <span class="c-prop">transform</span>: <span class="c-val">translateX(-100%)</span>; }
+  <span class="c-var">.app-sidebar.open</span> { <span class="c-prop">transform</span>: <span class="c-val">translateX(0)</span>; }
+  <span class="c-var">.app-content</span> { <span class="c-prop">margin-left</span>: <span class="c-val">0</span>; }
+}</pre>
+    </div>
+  </section>
+
+
+  <!-- FOOTER -->
+  <footer class="doc-footer">
+    <div class="footer-left">
+      Charte Graphique — Archivage Numérique · CG-04 / 12<br>
+      <div class="kbd-hint">Raccourcis : <span class="kbd">←</span> Précédent <span class="kbd">→</span> Suivant <span class="kbd">i</span> Index</div>
+    </div>
+    <div class="footer-nav">
+      <a href="CG-03-Typographie-Echelle.html" class="footer-link" aria-label="Module précédent : CG-03">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Précédent
+      </a>
+      <a href="CG-05-Effets-Grain-Verre-Ombres-Bordures.html" class="footer-link" aria-label="Module suivant : CG-05">
+        Suivant
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+// Theme toggle
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+}
+
+function toggleNav(btn) {
+  const dropdown = btn.parentElement;
+  const isActive = dropdown.classList.contains('active');
+  document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('active'));
+  if (!isActive) {
+    dropdown.classList.add('active');
+    btn.setAttribute('aria-expanded', 'true');
+  } else {
+    btn.setAttribute('aria-expanded', 'false');
+  }
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.nav-dropdown')) {
+    document.querySelectorAll('.nav-dropdown').forEach(d => {
+      d.classList.remove('active');
+      const btn = d.querySelector('.nav-dropdown-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  switch(e.key) {
+    case 'ArrowLeft':
+      window.location.href = 'CG-03-Typographie-Echelle.html';
+      break;
+    case 'ArrowRight':
+      window.location.href = 'CG-05-Effets-Grain-Verre-Ombres-Bordures.html';
+      break;
+    case 'i':
+    case 'I':
+      window.location.href = 'index.html';
+      break;
+  }
+});
+</script>
+
+</body>
+</html>

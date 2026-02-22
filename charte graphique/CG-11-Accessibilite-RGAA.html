@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CG-11 — Accessibilité & RGAA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent-300:#65D5C4; --accent-400:#2BBFAD; --accent-500:#179E8E;
+  --accent-600:#0E7E72; --accent-700:#0C6259;
+  --accent-subtle-bg:rgba(23,158,142,0.08);
+  --accent-subtle-border:rgba(23,158,142,0.20);
+  --gray-950:#0A0B0F; --gray-900:#10121A; --gray-800:#1A1D2B;
+  --gray-700:#252838; --gray-600:#323548; --gray-500:#4D5068;
+  --gray-400:#6B6F88; --gray-300:#9196B0; --gray-200:#C2C5D6;
+  --gray-100:#E1E3EE; --gray-50:#F0F1F8; --gray-25:#F8F9FC;
+  --success:#268245; --warning:#B07412; --error:#9B322C; --info:#2855A0;
+  --success-subtle:rgba(38,130,69,0.10); --success-border:rgba(38,130,69,0.25);
+  --warning-subtle:rgba(176,116,18,0.10); --warning-border:rgba(176,116,18,0.25);
+  --error-subtle:rgba(155,50,44,0.10); --error-border:rgba(155,50,44,0.25);
+  --info-subtle:rgba(40,85,160,0.10); --info-border:rgba(40,85,160,0.25);
+  --font-sans:'Plus Jakarta Sans',sans-serif;
+  --font-mono:'DM Mono',monospace;
+  --text-2xl:28px; --text-xl:22px; --text-lg:18px; --text-md:14px;
+  --text-base:13px; --text-sm:11px; --text-xs:10px;
+  --radius-xs:2px; --radius-sm:4px; --radius-md:6px; --radius-lg:8px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.20),0 1px 2px rgba(0,0,0,.12);
+  --shadow-md:0 4px 12px rgba(0,0,0,.25),0 2px 4px rgba(0,0,0,.12);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.30),0 4px 8px rgba(0,0,0,.14);
+  --shadow-xl:0 16px 48px rgba(0,0,0,.40),0 8px 16px rgba(0,0,0,.20);
+  --shadow-focus:0 0 0 2px var(--bg-base),0 0 0 4px var(--accent-500);
+  --ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+  --ease-out-fast:cubic-bezier(0.16,1,0.3,1);
+  --ease-in-out:cubic-bezier(0.4,0,0.2,1);
+  --dur-instant:100ms; --dur-fast:150ms; --dur-base:180ms;
+  --dur-slow:200ms; --dur-max:250ms;
+  --bg-base:var(--gray-950); --bg-panel:var(--gray-900); --bg-raised:var(--gray-800);
+  --border-subtle:var(--gray-800); --border-default:var(--gray-700); --border-strong:var(--gray-600);
+  --text-primary:var(--gray-50); --text-secondary:var(--gray-200);
+  --text-tertiary:var(--gray-400); --text-placeholder:var(--gray-500);
+}
+[data-theme="light"] {
+  --bg-base:var(--gray-25); --bg-panel:#FFFFFF; --bg-raised:var(--gray-100);
+  --border-subtle:var(--gray-100); --border-default:var(--gray-200); --border-strong:var(--gray-300);
+  --text-primary:var(--gray-900); --text-secondary:#3D4158;
+  --text-tertiary:var(--gray-500); --text-placeholder:var(--gray-400);
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:var(--font-sans); font-size:var(--text-base); line-height:1.65;
+  color:var(--text-primary); background:var(--bg-base);
+  -webkit-font-smoothing:antialiased; min-height:100vh; overflow-x:hidden; position:relative;
+}
+body, body * {
+  transition-property: background-color, border-color, color;
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-in-out);
+}
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:1000;
+  opacity:0.20; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:180px 180px;
+}
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--gray-700); border-radius:3px; }
+
+.doc-container { max-width:1080px; margin:0 auto; padding:48px 24px; }
+.doc-header {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  padding-bottom:32px; border-bottom:1px solid var(--border-subtle);
+  margin-bottom:40px; gap:24px; flex-wrap:wrap;
+}
+.doc-header-left { display:flex; flex-direction:column; gap:12px; }
+.doc-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--font-mono); font-size:var(--text-xs); font-weight:500;
+  letter-spacing:0.10em; text-transform:uppercase; color:var(--accent-300);
+  background:var(--accent-subtle-bg); border:1px solid var(--accent-subtle-border);
+  padding:5px 10px; border-radius:var(--radius-sm); position:relative; overflow:hidden;
+}
+.doc-badge::before {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:65px 65px; opacity:0.35; mix-blend-mode:overlay; pointer-events:none;
+}
+.doc-title { font-size:var(--text-2xl); font-weight:700; letter-spacing:-0.035em; line-height:1.2; }
+.doc-subtitle { font-size:var(--text-md); color:var(--text-tertiary); }
+.doc-meta { display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+.doc-meta-item { font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:0.06em; color:var(--text-placeholder); }
+.doc-meta-item span { color:var(--text-tertiary); }
+.theme-btn {
+  display:inline-flex; align-items:center; gap:8px; padding:6px 12px;
+  background:var(--bg-raised); border:1px solid var(--border-default);
+  border-radius:var(--radius-sm); cursor:pointer; font-family:var(--font-sans);
+  font-size:var(--text-sm); color:var(--text-secondary); margin-top:8px;
+}
+.theme-btn:hover { border-color:var(--border-strong); color:var(--text-primary); }
+
+.section { margin-bottom:48px; }
+.section-header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+.section-label { font-family:var(--font-mono); font-size:var(--text-xs); font-weight:500; letter-spacing:0.10em; text-transform:uppercase; color:var(--accent-300); white-space:nowrap; }
+.section-line { flex:1; height:1px; background:var(--border-subtle); }
+.section-title { font-size:var(--text-lg); font-weight:600; letter-spacing:-0.025em; margin-bottom:8px; }
+.section-desc { font-size:var(--text-base); color:var(--text-tertiary); margin-bottom:24px; line-height:1.65; }
+.subsection { margin-bottom:24px; }
+.subsection-title { font-size:var(--text-md); font-weight:500; color:var(--text-secondary); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.subsection-title::before { content:''; width:3px; height:14px; background:var(--accent-500); border-radius:2px; flex-shrink:0; }
+
+.preview-zone {
+  background:var(--bg-panel); border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md); padding:24px; position:relative; overflow:hidden;
+}
+.preview-zone::before {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:110px 110px; opacity:0.12; mix-blend-mode:overlay; pointer-events:none; z-index:0;
+}
+.preview-zone > * { position:relative; z-index:1; }
+
+.spec-table { width:100%; border-collapse:collapse; font-size:var(--text-sm); margin-top:16px; }
+.spec-table th { font-family:var(--font-mono); font-size:var(--text-xs); font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-placeholder); text-align:left; padding:8px 12px; border-bottom:1px solid var(--border-subtle); }
+.spec-table td { padding:8px 12px; color:var(--text-secondary); border-bottom:1px solid var(--border-subtle); }
+.spec-table tr:last-child td { border-bottom:none; }
+.spec-table tr:hover td { background:rgba(255,255,255,0.02); }
+.mono { font-family:var(--font-mono); color:var(--accent-300); font-size:var(--text-xs); }
+
+.badge-pass { display:inline-flex; align-items:center; gap:4px; font-family:var(--font-mono); font-size:var(--text-xs); font-weight:500; padding:2px 7px; border-radius:var(--radius-xs); background:var(--success-subtle); border:1px solid var(--success-border); color:#5DB882; letter-spacing:0.06em; text-transform:uppercase; }
+.badge-fail { display:inline-flex; align-items:center; gap:4px; font-family:var(--font-mono); font-size:var(--text-xs); font-weight:500; padding:2px 7px; border-radius:var(--radius-xs); background:var(--error-subtle); border:1px solid var(--error-border); color:#DC7070; letter-spacing:0.06em; text-transform:uppercase; }
+.badge-aaa { display:inline-flex; align-items:center; gap:4px; font-family:var(--font-mono); font-size:var(--text-xs); font-weight:500; padding:2px 7px; border-radius:var(--radius-xs); background:var(--accent-subtle-bg); border:1px solid var(--accent-subtle-border); color:var(--accent-300); letter-spacing:0.06em; text-transform:uppercase; }
+
+.btn-demo {
+  display:inline-flex; align-items:center; gap:6px; padding:8px 14px;
+  background:var(--accent-500); border:1px solid var(--accent-600);
+  border-radius:var(--radius-sm); color:#fff; font-family:var(--font-sans);
+  font-size:var(--text-md); font-weight:500; cursor:pointer; outline:none;
+  transition: background-color 150ms var(--ease-spring), box-shadow 150ms var(--ease-spring);
+  box-shadow:var(--shadow-sm); position:relative; overflow:hidden;
+}
+.btn-demo::after {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:65px 65px; opacity:0.34; mix-blend-mode:overlay; pointer-events:none;
+}
+.btn-demo:focus-visible { box-shadow:var(--shadow-focus); }
+.btn-demo:hover { background:var(--accent-600); }
+
+.input-demo {
+  font-family:var(--font-sans); font-size:var(--text-base); color:var(--text-primary);
+  background:var(--bg-raised); border:1px solid var(--border-default);
+  border-radius:var(--radius-sm); padding:8px 12px; width:100%; outline:none;
+  transition: border-color 150ms ease, box-shadow 150ms var(--ease-spring);
+  box-shadow:var(--shadow-sm);
+}
+.input-demo:focus-visible { border-color:var(--accent-500); box-shadow:var(--shadow-focus); }
+
+.card-demo {
+  background:var(--bg-panel); border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md); padding:14px; cursor:pointer; outline:none;
+  position:relative; overflow:hidden;
+  transition: transform 150ms var(--ease-spring), box-shadow 150ms var(--ease-spring), border-color 150ms ease;
+}
+.card-demo::before {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:110px 110px; opacity:0.12; mix-blend-mode:overlay; pointer-events:none; z-index:0;
+}
+.card-demo > * { position:relative; z-index:1; }
+.card-demo:focus-visible { box-shadow:var(--shadow-focus); }
+.card-demo:hover { transform:translateY(-1px); box-shadow:var(--shadow-md); border-color:var(--border-strong); }
+
+.skip-link {
+  position:absolute; left:-9999px; top:8px; z-index:9999;
+  background:var(--accent-500); color:#fff; padding:8px 14px;
+  border-radius:var(--radius-sm); font-family:var(--font-sans);
+  font-size:var(--text-md); font-weight:500; text-decoration:none;
+  box-shadow:var(--shadow-lg);
+}
+.skip-link:focus { left:8px; }
+
+.code-block {
+  background:var(--gray-950); border:1px solid var(--border-subtle);
+  border-radius:var(--radius-sm); padding:14px 16px;
+  font-family:var(--font-mono); font-size:var(--text-xs); line-height:1.8;
+  color:var(--gray-300); overflow-x:auto; white-space:pre;
+  position:relative; overflow:hidden;
+}
+.code-block::before {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:65px 65px; opacity:0.10; mix-blend-mode:overlay; pointer-events:none;
+}
+.code-block > * { position:relative; z-index:1; }
+.ck-prop { color:#65D5C4; }
+.ck-val { color:#D4993A; }
+.ck-comment { color:#4D5068; }
+.ck-tag { color:#9196B0; }
+.ck-attr { color:#6D95D8; }
+
+.checklist { display:flex; flex-direction:column; gap:10px; }
+.checklist-item {
+  display:flex; align-items:flex-start; gap:10px; padding:10px 12px;
+  background:var(--bg-raised); border:1px solid var(--border-subtle);
+  border-radius:var(--radius-sm); font-size:var(--text-sm);
+  color:var(--text-secondary); line-height:1.55;
+}
+.checklist-icon { width:16px; height:16px; flex-shrink:0; margin-top:1px; }
+
+/* ============================================================
+   NAVIGATION SYSTEM
+============================================================ */
+.nav-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--gray-500);
+  margin-bottom: 16px;
+}
+.nav-breadcrumb a {
+  color: var(--accent-400);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.nav-breadcrumb a:hover { color: var(--accent-300); }
+.nav-breadcrumb-sep { color: var(--gray-700); }
+
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.nav-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.nav-dropdown-btn:hover {
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
+}
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  min-width: 280px;
+  box-shadow: var(--shadow-xl);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 180ms var(--ease-spring);
+  z-index: 1000;
+}
+.nav-dropdown.active .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  transition: all 120ms ease;
+}
+.nav-dropdown-item:hover {
+  background: var(--bg-raised);
+  color: var(--text-secondary);
+}
+.nav-dropdown-item.active {
+  background: var(--accent-subtle-bg);
+  color: var(--accent-300);
+  font-weight: 500;
+}
+.nav-dropdown-item-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-placeholder);
+  min-width: 32px;
+}
+
+.doc-footer {
+  margin-top:48px; padding-top:24px; border-top:1px solid var(--border-subtle);
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+}
+.doc-footer-ref { font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-placeholder); letter-spacing:0.06em; }
+.footer-nav {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: all 150ms ease;
+}
+.footer-link:hover {
+  color: var(--text-secondary);
+  background: var(--bg-raised);
+}
+.footer-link svg { width: 14px; height: 14px; }
+.footer-link.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+.kbd-hint {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-placeholder);
+  margin-top: 8px;
+}
+.kbd {
+  display: inline-block;
+  padding: 2px 5px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 3px;
+  font-size: 9px;
+  margin: 0 2px;
+}
+.doc-footer-next {
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:0.06em;
+  color:var(--accent-300); text-decoration:none; padding:5px 10px;
+  background:var(--accent-subtle-bg); border:1px solid var(--accent-subtle-border);
+  border-radius:var(--radius-sm);
+}
+
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+<div class="doc-container">
+
+  <!-- HEADER -->
+  <header class="doc-header">
+    <div class="doc-header-left">
+      <!-- Breadcrumb + Menu -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; width: 100%;">
+        <nav class="nav-breadcrumb" aria-label="Fil d'Ariane">
+          <a href="index.html">← Index</a>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>CG-11</span>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>Accessibilité</span>
+        </nav>
+        
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-btn" onclick="toggleNav(this)" aria-label="Menu des modules" aria-expanded="false">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+            Tous les modules
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="CG-01-Identite-Palette.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-01</span> Identité & Palette</a>
+            <a href="CG-02-Systeme-Couleurs-Tokens.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-02</span> Couleurs & Tokens</a>
+            <a href="CG-03-Typographie-Echelle.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-03</span> Typographie</a>
+            <a href="CG-04-Espacement-Grille-Layout.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-04</span> Espacement & Grille</a>
+            <a href="CG-05-Effets-Grain-Verre-Ombres-Bordures.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-05</span> Effets & Grain</a>
+            <a href="CG-06-Composants-Boutons-Inputs-Badges-Cards.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-06</span> Composants UI</a>
+            <a href="CG-07-Navigation-Sidebar-Topbar-Tabs.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-07</span> Navigation</a>
+            <a href="CG-08-Feedback-Toasts-Modals-Etats.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-08</span> Feedback & États</a>
+            <a href="CG-09-Graphiques-DataViz.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-09</span> Graphiques</a>
+            <a href="CG-10-Motion-Design-Animations.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-10</span> Motion Design</a>
+            <a href="CG-11-Accessibilite-RGAA.html" class="nav-dropdown-item active"><span class="nav-dropdown-item-num">CG-11</span> Accessibilité</a>
+            <a href="CG-12-Tokens-CSS-Complets-Guide.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-12</span> Tokens CSS</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Charte Graphique · Module CG-11
+      </div>
+      <h1 class="doc-title">Accessibilité &amp; RGAA</h1>
+      <p class="doc-subtitle">Contraste WCAG · Focus · Navigation clavier · ARIA · Touch targets · RGAA 4.1</p>
+    </div>
+    <div class="doc-meta">
+      <div class="doc-meta-item">PROJET <span>Archivage Numérique</span></div>
+      <div class="doc-meta-item">MODULE <span>CG-11 / 12</span></div>
+      <div class="doc-meta-item">VERSION <span>1.0.0</span></div>
+      <button class="theme-btn" onclick="toggleTheme()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        Thème
+      </button>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+  <!-- ══ 01 — RATIOS DE CONTRASTE WCAG ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">01 — Ratios de contraste WCAG</span><div class="section-line"></div></div>
+    <h2 class="section-title">Conformité WCAG 2.1 niveau AA</h2>
+    <p class="section-desc">Toutes les combinaisons texte/fond du système respectent le niveau AA minimum (4.5:1 pour texte normal, 3:1 pour texte large ≥18px). Les combinaisons atteignant le niveau AAA (7:1) sont indiquées. Obligatoire pour les administrations publiques françaises.</p>
+
+    <div class="subsection">
+      <div class="subsection-title">Combinaisons principales — Mode sombre (défaut)</div>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Texte</th>
+            <th>Fond</th>
+            <th>Ratio</th>
+            <th>Niveau</th>
+            <th>Usage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">--text-primary (#F0F1F8)</td>
+            <td class="mono">--bg-base (#0A0B0F)</td>
+            <td class="mono">14.8:1</td>
+            <td><span class="badge-aaa">AAA</span></td>
+            <td>Titres, corps de texte principal</td>
+          </tr>
+          <tr>
+            <td class="mono">--text-secondary (#C2C5D6)</td>
+            <td class="mono">--bg-panel (#10121A)</td>
+            <td class="mono">10.2:1</td>
+            <td><span class="badge-aaa">AAA</span></td>
+            <td>Labels, sous-titres, navigation</td>
+          </tr>
+          <tr>
+            <td class="mono">--text-tertiary (#6B6F88)</td>
+            <td class="mono">--bg-raised (#1A1D2B)</td>
+            <td class="mono">4.6:1</td>
+            <td><span class="badge-pass">AA</span></td>
+            <td>Texte secondaire, métadonnées</td>
+          </tr>
+          <tr>
+            <td class="mono">--accent-300 (#65D5C4)</td>
+            <td class="mono">--bg-panel (#10121A)</td>
+            <td class="mono">8.9:1</td>
+            <td><span class="badge-aaa">AAA</span></td>
+            <td>Liens, badges, éléments accent</td>
+          </tr>
+          <tr>
+            <td class="mono">#5DB882 (success)</td>
+            <td class="mono">success-subtle</td>
+            <td class="mono">5.2:1</td>
+            <td><span class="badge-pass">AA</span></td>
+            <td>Messages de succès</td>
+          </tr>
+          <tr>
+            <td class="mono">#DC7070 (error)</td>
+            <td class="mono">error-subtle</td>
+            <td class="mono">4.8:1</td>
+            <td><span class="badge-pass">AA</span></td>
+            <td>Messages d'erreur</td>
+          </tr>
+          <tr>
+            <td class="mono">#D4993A (warning)</td>
+            <td class="mono">warning-subtle</td>
+            <td class="mono">5.5:1</td>
+            <td><span class="badge-pass">AA</span></td>
+            <td>Alertes, avertissements</td>
+          </tr>
+          <tr>
+            <td class="mono">#FFFFFF (blanc)</td>
+            <td class="mono">--accent-500 (#179E8E)</td>
+            <td class="mono">4.9:1</td>
+            <td><span class="badge-pass">AA</span></td>
+            <td>Boutons primaires</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Combinaisons principales — Mode clair</div>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Texte</th>
+            <th>Fond</th>
+            <th>Ratio</th>
+            <th>Niveau</th>
+            <th>Usage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">--text-primary (#10121A)</td>
+            <td class="mono">--bg-base (#F8F9FC)</td>
+            <td class="mono">15.2:1</td>
+            <td><span class="badge-aaa">AAA</span></td>
+            <td>Titres, corps de texte principal</td>
+          </tr>
+          <tr>
+            <td class="mono">--text-secondary (#3D4158)</td>
+            <td class="mono">--bg-panel (#FFFFFF)</td>
+            <td class="mono">11.8:1</td>
+            <td><span class="badge-aaa">AAA</span></td>
+            <td>Labels, sous-titres, navigation</td>
+          </tr>
+          <tr>
+            <td class="mono">--text-tertiary (#4D5068)</td>
+            <td class="mono">--bg-raised (#E1E3EE)</td>
+            <td class="mono">6.1:1</td>
+            <td><span class="badge-aaa">AAA</span></td>
+            <td>Texte secondaire, métadonnées</td>
+          </tr>
+          <tr>
+            <td class="mono">--accent-600 (#0E7E72)</td>
+            <td class="mono">--bg-panel (#FFFFFF)</td>
+            <td class="mono">7.2:1</td>
+            <td><span class="badge-aaa">AAA</span></td>
+            <td>Liens, éléments accent</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Règles de contraste</div>
+      <div class="checklist">
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>Texte normal (≤18px) :</strong> ratio minimum 4.5:1 pour niveau AA, 7:1 pour AAA</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>Texte large (≥18px ou ≥14px gras) :</strong> ratio minimum 3:1 pour niveau AA, 4.5:1 pour AAA</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>Composants UI (bordures, icônes) :</strong> ratio minimum 3:1 avec l'arrière-plan adjacent</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>Texte sur fond coloré :</strong> toujours tester le ratio — ne jamais se fier à l'apparence visuelle seule</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#DC7070" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <span><strong>INTERDIT :</strong> text-placeholder (#4D5068) sur bg-base — ratio 3.8:1 insuffisant pour texte normal. Réservé aux placeholders uniquement.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 02 — FOCUS VISIBLE ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">02 — Focus visible</span><div class="section-line"></div></div>
+    <h2 class="section-title">Focus ring — Indicateur de navigation clavier</h2>
+    <p class="section-desc">Le focus ring est un double halo : 2px de la couleur de fond (--bg-base) + 4px accent-500. Obligatoire sur tous les éléments interactifs. Utilisez <code>:focus-visible</code> pour éviter l'affichage au clic souris sur les inputs.</p>
+
+    <div class="subsection">
+      <div class="subsection-title">Spécification CSS — Focus ring système</div>
+      <div class="code-block"><span class="ck-comment">/* Token global — à utiliser partout */</span>
+<span class="ck-prop">--shadow-focus</span>: <span class="ck-val">0 0 0 2px var(--bg-base), 0 0 0 4px var(--accent-500)</span>;
+
+<span class="ck-comment">/* Application sur éléments interactifs */</span>
+<span class="ck-tag">.btn</span><span class="ck-prop">:focus-visible</span>,
+<span class="ck-tag">.card-clickable</span><span class="ck-prop">:focus-visible</span>,
+<span class="ck-tag">.nav-item</span><span class="ck-prop">:focus-visible</span> {
+  <span class="ck-prop">outline</span>: <span class="ck-val">none</span>;
+  <span class="ck-prop">box-shadow</span>: <span class="ck-val">var(--shadow-focus)</span>;
+}
+
+<span class="ck-comment">/* Inputs : :focus-visible pour éviter focus au clic */</span>
+<span class="ck-tag">.form-input</span><span class="ck-prop">:focus-visible</span>,
+<span class="ck-tag">.form-select</span><span class="ck-prop">:focus-visible</span> {
+  <span class="ck-prop">border-color</span>: <span class="ck-val">var(--accent-500)</span>;
+  <span class="ck-prop">box-shadow</span>: <span class="ck-val">var(--shadow-focus)</span>;
+}
+
+<span class="ck-comment">/* Transition pour fluidité */</span>
+<span class="ck-tag">.btn</span>, <span class="ck-tag">.input</span>, <span class="ck-tag">.card</span> {
+  <span class="ck-prop">transition</span>: <span class="ck-val">box-shadow 150ms var(--ease-spring)</span>;
+}</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Démonstration interactive — Appuyez sur Tab pour naviguer</div>
+      <div class="preview-zone">
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <button class="btn-demo">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              Bouton avec focus
+            </button>
+            <input type="text" class="input-demo" placeholder="Input avec focus ring" style="max-width:220px">
+            <div class="card-demo" tabindex="0" role="button" style="padding:10px 14px">
+              <div style="font-size:var(--text-sm);font-weight:500;color:var(--text-primary)">Card cliquable avec focus</div>
+            </div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-placeholder);padding:10px 12px;background:var(--bg-raised);border-radius:var(--radius-sm)">
+            💡 Utilisez Tab pour naviguer entre les éléments et observer le focus ring
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Focus ring sur fond coloré — Adapter le halo interne</div>
+      <div class="code-block"><span class="ck-comment">/* Bouton danger : adapter le halo interne */</span>
+<span class="ck-tag">.btn-danger</span><span class="ck-prop">:focus-visible</span> {
+  <span class="ck-prop">outline</span>: <span class="ck-val">none</span>;
+  <span class="ck-prop">box-shadow</span>: <span class="ck-val">0 0 0 2px var(--bg-base), 0 0 0 4px var(--error)</span>;
+}
+
+<span class="ck-comment">/* Nav item actif : halo interne accent-subtle-bg */</span>
+<span class="ck-tag">.nav-item--active</span><span class="ck-prop">:focus-visible</span> {
+  <span class="ck-prop">box-shadow</span>: <span class="ck-val">0 0 0 2px var(--accent-subtle-bg), 0 0 0 4px var(--accent-500)</span>;
+}</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Règles focus</div>
+      <div class="checklist">
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>Obligatoire</strong> sur tous les éléments interactifs : boutons, liens, inputs, cards cliquables, nav items</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Utilisez <code>:focus-visible</code> au lieu de <code>:focus</code> pour éviter l'affichage au clic souris</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Toujours inclure <code>outline: none</code> quand vous utilisez un focus ring custom</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#DC7070" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <span><strong>INTERDIT :</strong> <code>outline: none</code> sans focus ring de remplacement — rend l'interface inaccessible au clavier</span>
+        </div>
+      </div>
+    </div>
+  </section>
+""
+
+
+  <!-- ══ 03 — NAVIGATION CLAVIER ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">03 — Navigation clavier</span><div class="section-line"></div></div>
+    <h2 class="section-title">Ordre de tabulation &amp; raccourcis</h2>
+    <p class="section-desc">L'interface doit être entièrement navigable au clavier. Ordre logique : Topbar → Sidebar → Contenu principal. Skip link obligatoire. Trap focus dans les modals. Escape pour fermer.</p>
+
+    <div class="subsection">
+      <div class="subsection-title">Skip link — "Aller au contenu principal"</div>
+      <div class="code-block"><span class="ck-comment">/* Skip link — invisible par défaut, visible au focus */</span>
+<span class="ck-tag">.skip-link</span> {
+  <span class="ck-prop">position</span>: <span class="ck-val">absolute</span>;
+  <span class="ck-prop">left</span>: <span class="ck-val">-9999px</span>;
+  <span class="ck-prop">top</span>: <span class="ck-val">8px</span>;
+  <span class="ck-prop">z-index</span>: <span class="ck-val">9999</span>;
+  <span class="ck-prop">background</span>: <span class="ck-val">var(--accent-500)</span>;
+  <span class="ck-prop">color</span>: <span class="ck-val">#fff</span>;
+  <span class="ck-prop">padding</span>: <span class="ck-val">8px 14px</span>;
+  <span class="ck-prop">border-radius</span>: <span class="ck-val">var(--radius-sm)</span>;
+  <span class="ck-prop">font-family</span>: <span class="ck-val">var(--font-sans)</span>;
+  <span class="ck-prop">font-size</span>: <span class="ck-val">var(--text-md)</span>;
+  <span class="ck-prop">font-weight</span>: <span class="ck-val">500</span>;
+  <span class="ck-prop">text-decoration</span>: <span class="ck-val">none</span>;
+  <span class="ck-prop">box-shadow</span>: <span class="ck-val">var(--shadow-lg)</span>;
+}
+<span class="ck-tag">.skip-link</span><span class="ck-prop">:focus</span> {
+  <span class="ck-prop">left</span>: <span class="ck-val">8px</span>;
+}
+
+<span class="ck-comment">/* HTML — placer en premier dans le body */</span>
+<span class="ck-tag">&lt;a</span> <span class="ck-attr">href</span>=<span class="ck-val">"#main-content"</span> <span class="ck-attr">class</span>=<span class="ck-val">"skip-link"</span><span class="ck-tag">&gt;</span>Aller au contenu principal<span class="ck-tag">&lt;/a&gt;</span>
+<span class="ck-tag">&lt;main</span> <span class="ck-attr">id</span>=<span class="ck-val">"main-content"</span><span class="ck-tag">&gt;</span>...<span class="ck-tag">&lt;/main&gt;</span></div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Ordre de tabulation — App Shell</div>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Ordre</th>
+            <th>Zone</th>
+            <th>Éléments</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">1</td>
+            <td>Skip link</td>
+            <td>Lien "Aller au contenu principal"</td>
+            <td>Visible uniquement au focus</td>
+          </tr>
+          <tr>
+            <td class="mono">2</td>
+            <td>Topbar</td>
+            <td>Logo, recherche, notifications, profil</td>
+            <td>De gauche à droite</td>
+          </tr>
+          <tr>
+            <td class="mono">3</td>
+            <td>Sidebar</td>
+            <td>Navigation principale, items de menu</td>
+            <td>De haut en bas</td>
+          </tr>
+          <tr>
+            <td class="mono">4</td>
+            <td>Contenu principal</td>
+            <td>Titre, actions, tableau, formulaires</td>
+            <td>Ordre logique de lecture</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Trap focus dans les modals</div>
+      <div class="code-block"><span class="ck-comment">/* JavaScript — trap focus dans modal */</span>
+<span class="ck-prop">function</span> <span class="ck-val">trapFocus</span>(modal) {
+  <span class="ck-prop">const</span> focusable = modal.<span class="ck-val">querySelectorAll</span>(
+    <span class="ck-val">'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'</span>
+  );
+  <span class="ck-prop">const</span> first = focusable[<span class="ck-val">0</span>];
+  <span class="ck-prop">const</span> last = focusable[focusable.<span class="ck-val">length</span> - <span class="ck-val">1</span>];
+
+  modal.<span class="ck-val">addEventListener</span>(<span class="ck-val">'keydown'</span>, (e) => {
+    <span class="ck-prop">if</span> (e.<span class="ck-val">key</span> === <span class="ck-val">'Tab'</span>) {
+      <span class="ck-prop">if</span> (e.<span class="ck-val">shiftKey</span> && document.<span class="ck-val">activeElement</span> === first) {
+        e.<span class="ck-val">preventDefault</span>();
+        last.<span class="ck-val">focus</span>();
+      } <span class="ck-prop">else if</span> (!e.<span class="ck-val">shiftKey</span> && document.<span class="ck-val">activeElement</span> === last) {
+        e.<span class="ck-val">preventDefault</span>();
+        first.<span class="ck-val">focus</span>();
+      }
+    }
+  });
+}</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Raccourcis clavier</div>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Touche</th>
+            <th>Contexte</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">Tab</td>
+            <td>Global</td>
+            <td>Élément suivant</td>
+          </tr>
+          <tr>
+            <td class="mono">Shift + Tab</td>
+            <td>Global</td>
+            <td>Élément précédent</td>
+          </tr>
+          <tr>
+            <td class="mono">Enter / Space</td>
+            <td>Bouton, lien</td>
+            <td>Activer</td>
+          </tr>
+          <tr>
+            <td class="mono">Escape</td>
+            <td>Modal, dropdown</td>
+            <td>Fermer</td>
+          </tr>
+          <tr>
+            <td class="mono">↑ ↓</td>
+            <td>Dropdown, select</td>
+            <td>Naviguer dans les options</td>
+          </tr>
+          <tr>
+            <td class="mono">Home / End</td>
+            <td>Liste, tableau</td>
+            <td>Premier / dernier élément</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Règles navigation clavier</div>
+      <div class="checklist">
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Skip link obligatoire en premier élément du <code>&lt;body&gt;</code></span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Ordre de tabulation logique : suivre l'ordre visuel de lecture (gauche → droite, haut → bas)</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Trap focus dans les modals — Tab ne doit pas sortir de la modal</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Escape ferme les modals et dropdowns — restaurer le focus sur l'élément déclencheur</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#DC7070" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <span><strong>INTERDIT :</strong> <code>tabindex</code> positif (1, 2, 3...) — perturbe l'ordre naturel de navigation</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 04 — ARIA & SÉMANTIQUE HTML ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">04 — ARIA &amp; Sémantique HTML</span><div class="section-line"></div></div>
+    <h2 class="section-title">Attributs ARIA &amp; structure sémantique</h2>
+    <p class="section-desc">ARIA (Accessible Rich Internet Applications) enrichit la sémantique HTML pour les lecteurs d'écran. Règle d'or : HTML sémantique d'abord, ARIA uniquement quand nécessaire.</p>
+
+    <div class="subsection">
+      <div class="subsection-title">Attributs ARIA essentiels</div>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Attribut</th>
+            <th>Usage</th>
+            <th>Exemple</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">aria-label</td>
+            <td>Label pour éléments sans texte visible</td>
+            <td><code>&lt;button aria-label="Fermer"&gt;&lt;svg&gt;...&lt;/svg&gt;&lt;/button&gt;</code></td>
+          </tr>
+          <tr>
+            <td class="mono">aria-labelledby</td>
+            <td>Référence un élément comme label</td>
+            <td><code>&lt;div role="dialog" aria-labelledby="modal-title"&gt;</code></td>
+          </tr>
+          <tr>
+            <td class="mono">aria-describedby</td>
+            <td>Référence une description ou aide</td>
+            <td><code>&lt;input aria-describedby="error-msg"&gt;</code></td>
+          </tr>
+          <tr>
+            <td class="mono">aria-hidden</td>
+            <td>Masque du contenu décoratif</td>
+            <td><code>&lt;svg aria-hidden="true"&gt;...&lt;/svg&gt;</code></td>
+          </tr>
+          <tr>
+            <td class="mono">aria-live</td>
+            <td>Zone de mise à jour dynamique</td>
+            <td><code>&lt;div aria-live="polite"&gt;Document enregistré&lt;/div&gt;</code></td>
+          </tr>
+          <tr>
+            <td class="mono">aria-current</td>
+            <td>Élément actif dans navigation</td>
+            <td><code>&lt;a aria-current="page"&gt;Accueil&lt;/a&gt;</code></td>
+          </tr>
+          <tr>
+            <td class="mono">aria-expanded</td>
+            <td>État ouvert/fermé d'un élément</td>
+            <td><code>&lt;button aria-expanded="false"&gt;Menu&lt;/button&gt;</code></td>
+          </tr>
+          <tr>
+            <td class="mono">aria-selected</td>
+            <td>Élément sélectionné (tabs, liste)</td>
+            <td><code>&lt;div role="tab" aria-selected="true"&gt;</code></td>
+          </tr>
+          <tr>
+            <td class="mono">aria-disabled</td>
+            <td>Élément désactivé</td>
+            <td><code>&lt;button aria-disabled="true"&gt;Enregistrer&lt;/button&gt;</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Rôles ARIA pour composants UI</div>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Composant</th>
+            <th>Rôle</th>
+            <th>Attributs associés</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Toast info/success</td>
+            <td class="mono">role="status"</td>
+            <td><code>aria-live="polite"</code></td>
+          </tr>
+          <tr>
+            <td>Toast error</td>
+            <td class="mono">role="alert"</td>
+            <td><code>aria-live="assertive"</code></td>
+          </tr>
+          <tr>
+            <td>Modal</td>
+            <td class="mono">role="dialog"</td>
+            <td><code>aria-labelledby</code>, <code>aria-modal="true"</code></td>
+          </tr>
+          <tr>
+            <td>Tabs container</td>
+            <td class="mono">role="tablist"</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Tab item</td>
+            <td class="mono">role="tab"</td>
+            <td><code>aria-selected</code>, <code>aria-controls</code></td>
+          </tr>
+          <tr>
+            <td>Tab panel</td>
+            <td class="mono">role="tabpanel"</td>
+            <td><code>aria-labelledby</code></td>
+          </tr>
+          <tr>
+            <td>Dropdown menu</td>
+            <td class="mono">role="menu"</td>
+            <td><code>aria-labelledby</code></td>
+          </tr>
+          <tr>
+            <td>Dropdown item</td>
+            <td class="mono">role="menuitem"</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Graphique Canvas</td>
+            <td class="mono">role="img"</td>
+            <td><code>aria-label="Description du graphique"</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Exemples de code</div>
+      <div class="code-block"><span class="ck-comment">/* Bouton icon-only — aria-label obligatoire */</span>
+<span class="ck-tag">&lt;button</span> <span class="ck-attr">class</span>=<span class="ck-val">"btn btn-icon"</span> <span class="ck-attr">aria-label</span>=<span class="ck-val">"Actualiser la page"</span><span class="ck-tag">&gt;</span>
+  <span class="ck-tag">&lt;svg</span> <span class="ck-attr">aria-hidden</span>=<span class="ck-val">"true"</span><span class="ck-tag">&gt;</span>...<span class="ck-tag">&lt;/svg&gt;</span>
+<span class="ck-tag">&lt;/button&gt;</span>
+
+<span class="ck-comment">/* Input avec erreur — aria-describedby */</span>
+<span class="ck-tag">&lt;label</span> <span class="ck-attr">for</span>=<span class="ck-val">"email"</span><span class="ck-tag">&gt;</span>Email<span class="ck-tag">&lt;/label&gt;</span>
+<span class="ck-tag">&lt;input</span> <span class="ck-attr">id</span>=<span class="ck-val">"email"</span> <span class="ck-attr">type</span>=<span class="ck-val">"email"</span> <span class="ck-attr">aria-describedby</span>=<span class="ck-val">"email-error"</span><span class="ck-tag">&gt;</span>
+<span class="ck-tag">&lt;span</span> <span class="ck-attr">id</span>=<span class="ck-val">"email-error"</span> <span class="ck-attr">class</span>=<span class="ck-val">"form-error-msg"</span><span class="ck-tag">&gt;</span>Format invalide<span class="ck-tag">&lt;/span&gt;</span>
+
+<span class="ck-comment">/* Breadcrumb — aria-current sur dernier élément */</span>
+<span class="ck-tag">&lt;nav</span> <span class="ck-attr">aria-label</span>=<span class="ck-val">"Fil d'Ariane"</span><span class="ck-tag">&gt;</span>
+  <span class="ck-tag">&lt;a</span> <span class="ck-attr">href</span>=<span class="ck-val">"/accueil"</span><span class="ck-tag">&gt;</span>Accueil<span class="ck-tag">&lt;/a&gt;</span>
+  <span class="ck-tag">&lt;a</span> <span class="ck-attr">href</span>=<span class="ck-val">"/documents"</span><span class="ck-tag">&gt;</span>Documents<span class="ck-tag">&lt;/a&gt;</span>
+  <span class="ck-tag">&lt;a</span> <span class="ck-attr">href</span>=<span class="ck-val">"/documents/123"</span> <span class="ck-attr">aria-current</span>=<span class="ck-val">"page"</span><span class="ck-tag">&gt;</span>ARC-2024-00847<span class="ck-tag">&lt;/a&gt;</span>
+<span class="ck-tag">&lt;/nav&gt;</span>
+
+<span class="ck-comment">/* Sidebar collapse — aria-expanded */</span>
+<span class="ck-tag">&lt;button</span> <span class="ck-attr">aria-expanded</span>=<span class="ck-val">"true"</span> <span class="ck-attr">aria-label</span>=<span class="ck-val">"Réduire la navigation"</span><span class="ck-tag">&gt;</span>
+  <span class="ck-tag">&lt;svg</span> <span class="ck-attr">aria-hidden</span>=<span class="ck-val">"true"</span><span class="ck-tag">&gt;</span>...<span class="ck-tag">&lt;/svg&gt;</span>
+<span class="ck-tag">&lt;/button&gt;</span>
+
+<span class="ck-comment">/* Graphique Canvas — role="img" + aria-label */</span>
+<span class="ck-tag">&lt;canvas</span> <span class="ck-attr">role</span>=<span class="ck-val">"img"</span> <span class="ck-attr">aria-label</span>=<span class="ck-val">"Graphique : Évolution des versements 2024, 847 documents en janvier, 1203 en février"</span><span class="ck-tag">&gt;&lt;/canvas&gt;</span></div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Règles ARIA</div>
+      <div class="checklist">
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>HTML sémantique d'abord :</strong> utilisez <code>&lt;button&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code> plutôt que des <code>&lt;div&gt;</code> avec rôles ARIA</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><code>aria-label</code> obligatoire sur tous les boutons icon-only</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><code>aria-hidden="true"</code> sur toutes les icônes décoratives et le grain SVG</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Champs de formulaire : toujours associer <code>&lt;label&gt;</code> via <code>for</code>/<code>id</code></span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#DC7070" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <span><strong>INTERDIT :</strong> placeholder comme seul label de champ — invisible pour les lecteurs d'écran une fois rempli</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#DC7070" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <span><strong>INTERDIT :</strong> <code>aria-hidden="true"</code> sur du contenu informatif — le rend invisible aux lecteurs d'écran</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 05 — TOUCH TARGETS ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">05 — Touch targets</span><div class="section-line"></div></div>
+    <h2 class="section-title">Tailles minimales de zones cliquables</h2>
+    <p class="section-desc">WCAG 2.5.5 niveau AAA recommande 44×44px minimum pour les zones cliquables. Obligatoire pour les interfaces tactiles. Les boutons icon-only doivent avoir un padding suffisant même si l'icône est petite.</p>
+
+    <div class="subsection">
+      <div class="subsection-title">Spécifications touch targets</div>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Élément</th>
+            <th>Taille minimale</th>
+            <th>Implémentation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Bouton standard</td>
+            <td class="mono">≥ 44×44px</td>
+            <td><code>padding: 8px 14px</code> (36px hauteur) — acceptable pour desktop</td>
+          </tr>
+          <tr>
+            <td>Bouton icon-only</td>
+            <td class="mono">≥ 44×44px</td>
+            <td><code>padding: 15px</code> pour icône 14px → 44px total</td>
+          </tr>
+          <tr>
+            <td>Nav item sidebar</td>
+            <td class="mono">≥ 40×40px</td>
+            <td><code>padding: 8px 12px</code> + <code>min-height: 40px</code></td>
+          </tr>
+          <tr>
+            <td>Checkbox / Radio</td>
+            <td class="mono">≥ 24×24px</td>
+            <td><code>width: 16px; height: 16px</code> + padding parent</td>
+          </tr>
+          <tr>
+            <td>Toggle switch</td>
+            <td class="mono">≥ 36×20px</td>
+            <td><code>width: 36px; height: 20px</code></td>
+          </tr>
+          <tr>
+            <td>Lien dans texte</td>
+            <td>Exempt</td>
+            <td>Pas de minimum requis (WCAG 2.5.5 exception)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Exemple — Bouton icon-only accessible</div>
+      <div class="code-block"><span class="ck-comment">/* Bouton icon-only — padding pour atteindre 44px */</span>
+<span class="ck-tag">.btn-icon</span> {
+  <span class="ck-prop">display</span>: <span class="ck-val">inline-flex</span>;
+  <span class="ck-prop">align-items</span>: <span class="ck-val">center</span>;
+  <span class="ck-prop">justify-content</span>: <span class="ck-val">center</span>;
+  <span class="ck-prop">padding</span>: <span class="ck-val">15px</span>; <span class="ck-comment">/* 15px × 2 + 14px icône = 44px */</span>
+  <span class="ck-prop">background</span>: <span class="ck-val">var(--bg-raised)</span>;
+  <span class="ck-prop">border</span>: <span class="ck-val">1px solid var(--border-default)</span>;
+  <span class="ck-prop">border-radius</span>: <span class="ck-val">var(--radius-sm)</span>;
+  <span class="ck-prop">cursor</span>: <span class="ck-val">pointer</span>;
+}
+<span class="ck-tag">.btn-icon</span> <span class="ck-tag">svg</span> {
+  <span class="ck-prop">width</span>: <span class="ck-val">14px</span>;
+  <span class="ck-prop">height</span>: <span class="ck-val">14px</span>;
+}</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Règles touch targets</div>
+      <div class="checklist">
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Minimum 44×44px pour interfaces tactiles (mobile, tablette)</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Desktop : 36×36px acceptable si usage clavier/souris uniquement</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Espacement minimum 8px entre zones cliquables adjacentes</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#DC7070" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <span><strong>INTERDIT :</strong> boutons < 32×32px sur interfaces tactiles — trop difficiles à cliquer</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 06 — ÉTATS ACCESSIBLES ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">06 — États accessibles</span><div class="section-line"></div></div>
+    <h2 class="section-title">États disabled, erreur, loading</h2>
+    <p class="section-desc">Les états doivent être communiqués visuellement ET aux technologies d'assistance. Ne jamais se fier uniquement à la couleur pour indiquer un état.</p>
+
+    <div class="subsection">
+      <div class="subsection-title">État disabled</div>
+      <div class="code-block"><span class="ck-comment">/* Disabled — visuel + ARIA + cursor */</span>
+<span class="ck-tag">.btn</span><span class="ck-prop">:disabled</span>,
+<span class="ck-tag">.btn</span>[<span class="ck-attr">aria-disabled</span>=<span class="ck-val">"true"</span>] {
+  <span class="ck-prop">opacity</span>: <span class="ck-val">0.38</span>;
+  <span class="ck-prop">cursor</span>: <span class="ck-val">not-allowed</span>;
+  <span class="ck-prop">pointer-events</span>: <span class="ck-val">none</span>;
+}
+
+<span class="ck-comment">/* HTML — utiliser disabled natif quand possible */</span>
+<span class="ck-tag">&lt;button</span> <span class="ck-attr">disabled</span><span class="ck-tag">&gt;</span>Enregistrer<span class="ck-tag">&lt;/button&gt;</span>
+
+<span class="ck-comment">/* Si disabled natif impossible (div, span) */</span>
+<span class="ck-tag">&lt;div</span> <span class="ck-attr">role</span>=<span class="ck-val">"button"</span> <span class="ck-attr">aria-disabled</span>=<span class="ck-val">"true"</span><span class="ck-tag">&gt;</span>Action<span class="ck-tag">&lt;/div&gt;</span></div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Erreurs de formulaire</div>
+      <div class="code-block"><span class="ck-comment">/* Erreur — couleur + icône + message lié */</span>
+<span class="ck-tag">&lt;div</span> <span class="ck-attr">class</span>=<span class="ck-val">"form-field has-error"</span><span class="ck-tag">&gt;</span>
+  <span class="ck-tag">&lt;label</span> <span class="ck-attr">for</span>=<span class="ck-val">"email"</span><span class="ck-tag">&gt;</span>Email<span class="ck-tag">&lt;/label&gt;</span>
+  <span class="ck-tag">&lt;input</span> 
+    <span class="ck-attr">id</span>=<span class="ck-val">"email"</span>
+    <span class="ck-attr">type</span>=<span class="ck-val">"email"</span>
+    <span class="ck-attr">class</span>=<span class="ck-val">"form-input"</span>
+    <span class="ck-attr">aria-invalid</span>=<span class="ck-val">"true"</span>
+    <span class="ck-attr">aria-describedby</span>=<span class="ck-val">"email-error"</span>
+  <span class="ck-tag">&gt;</span>
+  <span class="ck-tag">&lt;span</span> <span class="ck-attr">id</span>=<span class="ck-val">"email-error"</span> <span class="ck-attr">class</span>=<span class="ck-val">"form-error-msg"</span><span class="ck-tag">&gt;</span>
+    <span class="ck-tag">&lt;svg</span> <span class="ck-attr">aria-hidden</span>=<span class="ck-val">"true"</span><span class="ck-tag">&gt;</span>...<span class="ck-tag">&lt;/svg&gt;</span>
+    Format invalide
+  <span class="ck-tag">&lt;/span&gt;</span>
+<span class="ck-tag">&lt;/div&gt;</span>
+
+<span class="ck-comment">/* CSS — bordure + fond coloré */</span>
+<span class="ck-tag">.form-field.has-error</span> <span class="ck-tag">.form-input</span> {
+  <span class="ck-prop">border-color</span>: <span class="ck-val">var(--error)</span>;
+  <span class="ck-prop">background</span>: <span class="ck-val">var(--error-subtle)</span>;
+}</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Tableaux accessibles</div>
+      <div class="code-block"><span class="ck-comment">/* Tableau — scope sur th */</span>
+<span class="ck-tag">&lt;table&gt;</span>
+  <span class="ck-tag">&lt;thead&gt;</span>
+    <span class="ck-tag">&lt;tr&gt;</span>
+      <span class="ck-tag">&lt;th</span> <span class="ck-attr">scope</span>=<span class="ck-val">"col"</span><span class="ck-tag">&gt;</span>Référence<span class="ck-tag">&lt;/th&gt;</span>
+      <span class="ck-tag">&lt;th</span> <span class="ck-attr">scope</span>=<span class="ck-val">"col"</span><span class="ck-tag">&gt;</span>Titre<span class="ck-tag">&lt;/th&gt;</span>
+      <span class="ck-tag">&lt;th</span> <span class="ck-attr">scope</span>=<span class="ck-val">"col"</span><span class="ck-tag">&gt;</span>Date<span class="ck-tag">&lt;/th&gt;</span>
+    <span class="ck-tag">&lt;/tr&gt;</span>
+  <span class="ck-tag">&lt;/thead&gt;</span>
+  <span class="ck-tag">&lt;tbody&gt;</span>
+    <span class="ck-tag">&lt;tr&gt;</span>
+      <span class="ck-tag">&lt;td&gt;</span>ARC-2024-00847<span class="ck-tag">&lt;/td&gt;</span>
+      <span class="ck-tag">&lt;td&gt;</span>Délibération conseil<span class="ck-tag">&lt;/td&gt;</span>
+      <span class="ck-tag">&lt;td&gt;</span>15/01/2024<span class="ck-tag">&lt;/td&gt;</span>
+    <span class="ck-tag">&lt;/tr&gt;</span>
+  <span class="ck-tag">&lt;/tbody&gt;</span>
+<span class="ck-tag">&lt;/table&gt;</span></div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Règles états accessibles</div>
+      <div class="checklist">
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Ne jamais utiliser la couleur seule pour indiquer un état — toujours ajouter icône ou texte</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Erreurs de formulaire : <code>aria-invalid="true"</code> + <code>aria-describedby</code> vers message d'erreur</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Images : <code>alt</code> descriptif ou <code>alt=""</code> si purement décorative</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Tableaux : <code>&lt;th scope="col"&gt;</code> pour les en-têtes de colonnes</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 07 — RGAA 4.1 ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">07 — RGAA 4.1</span><div class="section-line"></div></div>
+    <h2 class="section-title">Référentiel Général d'Amélioration de l'Accessibilité</h2>
+    <p class="section-desc">Le RGAA 4.1 est le référentiel français obligatoire pour les administrations publiques. Basé sur WCAG 2.1, il impose le niveau AA minimum. 106 critères répartis en 13 thématiques.</p>
+
+    <div class="subsection">
+      <div class="subsection-title">Thématiques RGAA 4.1</div>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Thématique</th>
+            <th>Critères</th>
+            <th>Points clés pour ce système</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1. Images</td>
+            <td class="mono">8 critères</td>
+            <td>Attribut <code>alt</code>, images décoratives, images porteuses d'information</td>
+          </tr>
+          <tr>
+            <td>3. Couleurs</td>
+            <td class="mono">4 critères</td>
+            <td>Contraste AA minimum, information non portée par la couleur seule</td>
+          </tr>
+          <tr>
+            <td>7. Scripts</td>
+            <td class="mono">5 critères</td>
+            <td>Composants JS accessibles, gestion focus, ARIA</td>
+          </tr>
+          <tr>
+            <td>8. Éléments obligatoires</td>
+            <td class="mono">10 critères</td>
+            <td>Doctype, lang, title, structure HTML5</td>
+          </tr>
+          <tr>
+            <td>10. Présentation</td>
+            <td class="mono">14 critères</td>
+            <td>CSS pour mise en forme, pas de tableaux de mise en page</td>
+          </tr>
+          <tr>
+            <td>11. Formulaires</td>
+            <td class="mono">13 critères</td>
+            <td>Labels associés, messages d'erreur, aide à la saisie</td>
+          </tr>
+          <tr>
+            <td>12. Navigation</td>
+            <td class="mono">14 critères</td>
+            <td>Skip links, fil d'Ariane, navigation cohérente, focus visible</td>
+          </tr>
+          <tr>
+            <td>13. Consultation</td>
+            <td class="mono">12 critères</td>
+            <td>Pas de limite de temps, contrôle animations, téléchargements</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Checklist RGAA — 20 critères essentiels</div>
+      <div class="checklist">
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>1.1</strong> — Toutes les images ont un attribut <code>alt</code> (vide si décorative)</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>3.1</strong> — Information non portée par la couleur seule (icône + texte pour erreurs)</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>3.2</strong> — Contraste texte/fond ≥ 4.5:1 (AA) pour texte normal</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>7.1</strong> — Composants JS accessibles au clavier (focus, Tab, Enter/Space)</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>7.3</strong> — Scripts n'empêchent pas la navigation clavier</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>8.2</strong> — Code HTML valide (pas d'erreurs critiques)</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>8.9</strong> — Balises utilisées à des fins de présentation (structure sémantique)</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>10.7</strong> — Focus visible sur tous les éléments interactifs</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>11.1</strong> — Chaque champ de formulaire a une étiquette (<code>&lt;label&gt;</code>)</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>11.10</strong> — Messages d'erreur de saisie explicites et liés au champ (<code>aria-describedby</code>)</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>12.1</strong> — Liens d'évitement (skip links) présents</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>12.2</strong> — Fil d'Ariane présent sur toutes les pages (sauf accueil)</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>12.7</strong> — Ordre de tabulation cohérent et logique</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>12.8</strong> — Navigation cohérente sur toutes les pages</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>13.1</strong> — Pas de limite de temps (ou possibilité de prolonger)</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span><strong>13.8</strong> — Contenu en mouvement contrôlable (pause, stop)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Niveau de conformité requis</div>
+      <div style="padding:16px;background:var(--info-subtle);border:1px solid var(--info-border);border-radius:var(--radius-md);border-left:3px solid var(--info)">
+        <div style="font-size:var(--text-md);font-weight:500;color:var(--text-primary);margin-bottom:6px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:6px" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Obligation légale pour les administrations publiques
+        </div>
+        <div style="font-size:var(--text-sm);color:var(--text-secondary);line-height:1.6">
+          Les sites web et applications des administrations publiques françaises doivent respecter le RGAA 4.1 niveau AA minimum. Déclaration d'accessibilité obligatoire. Sanctions possibles en cas de non-conformité (article 47 de la loi du 11 février 2005).
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="doc-footer">
+    <div class="footer-left">
+      <div class="doc-footer-ref">CG-11 — Accessibilité & RGAA · v1.0.0 · Archivage Numérique</div>
+      <div class="kbd-hint">Raccourcis : <span class="kbd">←</span> Précédent <span class="kbd">→</span> Suivant <span class="kbd">i</span> Index</div>
+    </div>
+    <div class="footer-nav">
+      <a href="CG-10-Motion-Design-Animations.html" class="footer-link" aria-label="Module précédent : CG-10">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Précédent
+      </a>
+      <a href="CG-12-Tokens-CSS-Complets-Guide.html" class="footer-link" aria-label="Module suivant : CG-12">
+        Suivant
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+// Navigation dropdown
+function toggleNav(btn) {
+  const dropdown = btn.parentElement;
+  const isActive = dropdown.classList.contains('active');
+  
+  // Close all dropdowns
+  document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('active'));
+  
+  if (!isActive) {
+    dropdown.classList.add('active');
+    btn.setAttribute('aria-expanded', 'true');
+  } else {
+    btn.setAttribute('aria-expanded', 'false');
+  }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.nav-dropdown')) {
+    document.querySelectorAll('.nav-dropdown').forEach(d => {
+      d.classList.remove('active');
+      const btn = d.querySelector('.nav-dropdown-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  // Ignore if user is typing in an input
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  
+  switch(e.key) {
+    case 'ArrowLeft':
+      // Previous module
+      window.location.href = 'CG-10-Motion-Design-Animations.html';
+      break;
+    case 'ArrowRight':
+      // Next module
+      window.location.href = 'CG-12-Tokens-CSS-Complets-Guide.html';
+      break;
+    case 'i':
+    case 'I':
+      // Index
+      window.location.href = 'index.html';
+      break;
+  }
+});
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CG-12 — Tokens CSS Complets & Guide d'Implémentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent-300:#65D5C4; --accent-400:#2BBFAD; --accent-500:#179E8E;
+  --accent-600:#0E7E72; --accent-700:#0C6259;
+  --accent-subtle-bg:rgba(23,158,142,0.08);
+  --accent-subtle-border:rgba(23,158,142,0.20);
+  --gray-950:#0A0B0F; --gray-900:#10121A; --gray-800:#1A1D2B;
+  --gray-700:#252838; --gray-600:#323548; --gray-500:#4D5068;
+  --gray-400:#6B6F88; --gray-300:#9196B0; --gray-200:#C2C5D6;
+  --gray-100:#E1E3EE; --gray-50:#F0F1F8; --gray-25:#F8F9FC;
+  --success:#268245; --warning:#B07412; --error:#9B322C; --info:#2855A0;
+  --success-subtle:rgba(38,130,69,0.10); --success-border:rgba(38,130,69,0.25);
+  --warning-subtle:rgba(176,116,18,0.10); --warning-border:rgba(176,116,18,0.25);
+  --error-subtle:rgba(155,50,44,0.10); --error-border:rgba(155,50,44,0.25);
+  --info-subtle:rgba(40,85,160,0.10); --info-border:rgba(40,85,160,0.25);
+  --font-sans:'Plus Jakarta Sans',sans-serif;
+  --font-mono:'DM Mono',monospace;
+  --text-2xl:28px; --text-xl:22px; --text-lg:18px; --text-md:14px;
+  --text-base:13px; --text-sm:11px; --text-xs:10px;
+  --radius-xs:2px; --radius-sm:4px; --radius-md:6px; --radius-lg:8px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.20),0 1px 2px rgba(0,0,0,.12);
+  --shadow-md:0 4px 12px rgba(0,0,0,.25),0 2px 4px rgba(0,0,0,.12);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.30),0 4px 8px rgba(0,0,0,.14);
+  --shadow-xl:0 16px 48px rgba(0,0,0,.40),0 8px 16px rgba(0,0,0,.20);
+  --shadow-focus:0 0 0 2px var(--bg-base),0 0 0 4px var(--accent-500);
+  --ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+  --ease-out-fast:cubic-bezier(0.16,1,0.3,1);
+  --ease-in-out:cubic-bezier(0.4,0,0.2,1);
+  --dur-instant:100ms; --dur-fast:150ms; --dur-base:180ms;
+  --dur-slow:200ms; --dur-max:250ms;
+  --bg-base:var(--gray-950); --bg-panel:var(--gray-900); --bg-raised:var(--gray-800);
+  --border-subtle:var(--gray-800); --border-default:var(--gray-700); --border-strong:var(--gray-600);
+  --text-primary:var(--gray-50); --text-secondary:var(--gray-200);
+  --text-tertiary:var(--gray-400); --text-placeholder:var(--gray-500);
+}
+[data-theme="light"] {
+  --bg-base:var(--gray-25); --bg-panel:#FFFFFF; --bg-raised:var(--gray-100);
+  --border-subtle:var(--gray-100); --border-default:var(--gray-200); --border-strong:var(--gray-300);
+  --text-primary:var(--gray-900); --text-secondary:#3D4158;
+  --text-tertiary:var(--gray-500); --text-placeholder:var(--gray-400);
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:var(--font-sans); font-size:var(--text-base); line-height:1.65;
+  color:var(--text-primary); background:var(--bg-base);
+  -webkit-font-smoothing:antialiased; min-height:100vh; overflow-x:hidden; position:relative;
+}
+body, body * {
+  transition-property: background-color, border-color, color;
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-in-out);
+}
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:1000;
+  opacity:0.20; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:180px 180px;
+}
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--gray-700); border-radius:3px; }
+
+.doc-container { max-width:1080px; margin:0 auto; padding:48px 24px; }
+.doc-header {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  padding-bottom:32px; border-bottom:1px solid var(--border-subtle);
+  margin-bottom:40px; gap:24px; flex-wrap:wrap;
+}
+.doc-header-left { display:flex; flex-direction:column; gap:12px; }
+.doc-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--font-mono); font-size:var(--text-xs); font-weight:500;
+  letter-spacing:0.10em; text-transform:uppercase; color:var(--accent-300);
+  background:var(--accent-subtle-bg); border:1px solid var(--accent-subtle-border);
+  padding:5px 10px; border-radius:var(--radius-sm); position:relative; overflow:hidden;
+}
+.doc-badge::before {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:65px 65px; opacity:0.35; mix-blend-mode:overlay; pointer-events:none;
+}
+.doc-title { font-size:var(--text-2xl); font-weight:700; letter-spacing:-0.035em; line-height:1.2; }
+.doc-subtitle { font-size:var(--text-md); color:var(--text-tertiary); }
+.doc-meta { display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+.doc-meta-item { font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:0.06em; color:var(--text-placeholder); }
+.doc-meta-item span { color:var(--text-tertiary); }
+.theme-btn {
+  display:inline-flex; align-items:center; gap:8px; padding:6px 12px;
+  background:var(--bg-raised); border:1px solid var(--border-default);
+  border-radius:var(--radius-sm); cursor:pointer; font-family:var(--font-sans);
+  font-size:var(--text-sm); color:var(--text-secondary); margin-top:8px;
+}
+.theme-btn:hover { border-color:var(--border-strong); color:var(--text-primary); }
+
+.section { margin-bottom:48px; }
+.section-header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+.section-label { font-family:var(--font-mono); font-size:var(--text-xs); font-weight:500; letter-spacing:0.10em; text-transform:uppercase; color:var(--accent-300); white-space:nowrap; }
+.section-line { flex:1; height:1px; background:var(--border-subtle); }
+.section-title { font-size:var(--text-lg); font-weight:600; letter-spacing:-0.025em; margin-bottom:8px; }
+.section-desc { font-size:var(--text-base); color:var(--text-tertiary); margin-bottom:24px; line-height:1.65; }
+.subsection { margin-bottom:24px; }
+.subsection-title { font-size:var(--text-md); font-weight:500; color:var(--text-secondary); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.subsection-title::before { content:''; width:3px; height:14px; background:var(--accent-500); border-radius:2px; flex-shrink:0; }
+
+.preview-zone {
+  background:var(--bg-panel); border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md); padding:24px; position:relative; overflow:hidden;
+}
+.preview-zone::before {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:110px 110px; opacity:0.12; mix-blend-mode:overlay; pointer-events:none; z-index:0;
+}
+.preview-zone > * { position:relative; z-index:1; }
+
+.code-block {
+  background:var(--gray-950); border:1px solid var(--border-subtle);
+  border-radius:var(--radius-sm); padding:14px 16px;
+  font-family:var(--font-mono); font-size:var(--text-xs); line-height:1.8;
+  color:var(--gray-300); overflow-x:auto; white-space:pre;
+  position:relative; overflow:hidden; max-height:600px;
+}
+.code-block::before {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:65px 65px; opacity:0.10; mix-blend-mode:overlay; pointer-events:none;
+}
+.code-block > * { position:relative; z-index:1; }
+.ck-prop { color:#65D5C4; }
+.ck-val { color:#D4993A; }
+.ck-comment { color:#4D5068; }
+.ck-selector { color:#9196B0; }
+.ck-at { color:#6D95D8; }
+
+.checklist { display:flex; flex-direction:column; gap:10px; }
+.checklist-item {
+  display:flex; align-items:flex-start; gap:10px; padding:10px 12px;
+  background:var(--bg-raised); border:1px solid var(--border-subtle);
+  border-radius:var(--radius-sm); font-size:var(--text-sm);
+  color:var(--text-secondary); line-height:1.55;
+}
+.checklist-icon { width:16px; height:16px; flex-shrink:0; margin-top:1px; }
+
+.antipattern-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.antipattern-card {
+  background:var(--bg-raised); border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md); padding:14px; position:relative; overflow:hidden;
+}
+.antipattern-card::before {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:110px 110px; opacity:0.10; mix-blend-mode:overlay; pointer-events:none; z-index:0;
+}
+.antipattern-card > * { position:relative; z-index:1; }
+.antipattern-bad { border-left:3px solid var(--error); }
+.antipattern-good { border-left:3px solid var(--success); }
+.antipattern-title {
+  display:flex; align-items:center; gap:6px; font-size:var(--text-sm);
+  font-weight:500; margin-bottom:8px;
+}
+.antipattern-bad .antipattern-title { color:#DC7070; }
+.antipattern-good .antipattern-title { color:#5DB882; }
+.antipattern-desc { font-size:var(--text-sm); color:var(--text-tertiary); line-height:1.55; }
+
+/* ============================================================
+   NAVIGATION SYSTEM
+============================================================ */
+.nav-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--gray-500);
+  margin-bottom: 16px;
+}
+.nav-breadcrumb a {
+  color: var(--accent-400);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.nav-breadcrumb a:hover { color: var(--accent-300); }
+.nav-breadcrumb-sep { color: var(--gray-700); }
+
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.nav-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.nav-dropdown-btn:hover {
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
+}
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  min-width: 280px;
+  box-shadow: var(--shadow-xl);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 180ms var(--ease-spring);
+  z-index: 1000;
+}
+.nav-dropdown.active .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  transition: all 120ms ease;
+}
+.nav-dropdown-item:hover {
+  background: var(--bg-raised);
+  color: var(--text-secondary);
+}
+.nav-dropdown-item.active {
+  background: var(--accent-subtle-bg);
+  color: var(--accent-300);
+  font-weight: 500;
+}
+.nav-dropdown-item-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-placeholder);
+  min-width: 32px;
+}
+
+.doc-footer {
+  margin-top:48px; padding-top:24px; border-top:1px solid var(--border-subtle);
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+}
+.doc-footer-ref { font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-placeholder); letter-spacing:0.06em; }
+.footer-nav {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: all 150ms ease;
+}
+.footer-link:hover {
+  color: var(--text-secondary);
+  background: var(--bg-raised);
+}
+.footer-link svg { width: 14px; height: 14px; }
+.footer-link.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+.kbd-hint {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-placeholder);
+  margin-top: 8px;
+}
+.kbd {
+  display: inline-block;
+  padding: 2px 5px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 3px;
+  font-size: 9px;
+  margin: 0 2px;
+}
+.doc-footer-complete {
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:0.06em;
+  color:#5DB882; padding:5px 10px;
+  background:var(--success-subtle); border:1px solid var(--success-border);
+  border-radius:var(--radius-sm);
+}
+
+</style>
+</head>
+<body>
+
+<div class="doc-container">
+
+  <!-- HEADER -->
+  <header class="doc-header">
+    <div class="doc-header-left">
+      <!-- Breadcrumb + Menu -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; width: 100%;">
+        <nav class="nav-breadcrumb" aria-label="Fil d'Ariane">
+          <a href="index.html">← Index</a>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>CG-12</span>
+          <span class="nav-breadcrumb-sep">/</span>
+          <span>Tokens CSS</span>
+        </nav>
+        
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-btn" onclick="toggleNav(this)" aria-label="Menu des modules" aria-expanded="false">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+            Tous les modules
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="CG-01-Identite-Palette.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-01</span> Identité & Palette</a>
+            <a href="CG-02-Systeme-Couleurs-Tokens.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-02</span> Couleurs & Tokens</a>
+            <a href="CG-03-Typographie-Echelle.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-03</span> Typographie</a>
+            <a href="CG-04-Espacement-Grille-Layout.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-04</span> Espacement & Grille</a>
+            <a href="CG-05-Effets-Grain-Verre-Ombres-Bordures.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-05</span> Effets & Grain</a>
+            <a href="CG-06-Composants-Boutons-Inputs-Badges-Cards.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-06</span> Composants UI</a>
+            <a href="CG-07-Navigation-Sidebar-Topbar-Tabs.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-07</span> Navigation</a>
+            <a href="CG-08-Feedback-Toasts-Modals-Etats.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-08</span> Feedback & États</a>
+            <a href="CG-09-Graphiques-DataViz.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-09</span> Graphiques</a>
+            <a href="CG-10-Motion-Design-Animations.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-10</span> Motion Design</a>
+            <a href="CG-11-Accessibilite-RGAA.html" class="nav-dropdown-item"><span class="nav-dropdown-item-num">CG-11</span> Accessibilité</a>
+            <a href="CG-12-Tokens-CSS-Complets-Guide.html" class="nav-dropdown-item active"><span class="nav-dropdown-item-num">CG-12</span> Tokens CSS</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Charte Graphique · Module CG-12 · MODULE FINAL
+      </div>
+      <h1 class="doc-title">Tokens CSS Complets &amp; Guide d'Implémentation</h1>
+      <p class="doc-subtitle">globals.css complet · Structure fichiers · Conventions · Dark/Light · Checklist · Anti-patterns</p>
+    </div>
+    <div class="doc-meta">
+      <div class="doc-meta-item">PROJET <span>Archivage Numérique</span></div>
+      <div class="doc-meta-item">MODULE <span>CG-12 / 12</span></div>
+      <div class="doc-meta-item">VERSION <span>1.0.0</span></div>
+      <button class="theme-btn" onclick="toggleTheme()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        Thème
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+  <!-- ══ 01 — GLOBALS.CSS COMPLET ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">01 — globals.css complet</span><div class="section-line"></div></div>
+    <h2 class="section-title">Fichier de tokens CSS prêt pour la production</h2>
+    <p class="section-desc">Fusion complète de tous les tokens des modules CG-01 à CG-11. Fichier autonome, copiable tel quel. Organisé en blocs commentés pour faciliter la maintenance. Inclut dark mode et light mode.</p>
+
+    <div class="subsection">
+      <div class="subsection-title">globals.css — Copier-coller ce fichier</div>
+      <div class="code-block"><span class="ck-comment">/* ============================================================
+   GLOBALS.CSS — Système d'Archivage Numérique
+   Charte Graphique v1.0.0 — Tokens complets CG-01 à CG-11
+   ============================================================ */</span>
+
+<span class="ck-comment">/* === COULEURS === */</span>
+<span class="ck-selector">:root</span> {
+  <span class="ck-comment">/* Accent — Sage Slate */</span>
+  <span class="ck-prop">--accent-50</span>:  <span class="ck-val">#E8F8F6</span>;
+  <span class="ck-prop">--accent-100</span>: <span class="ck-val">#C5EDE9</span>;
+  <span class="ck-prop">--accent-200</span>: <span class="ck-val">#8DD9D1</span>;
+  <span class="ck-prop">--accent-300</span>: <span class="ck-val">#65D5C4</span>;
+  <span class="ck-prop">--accent-400</span>: <span class="ck-val">#2BBFAD</span>;
+  <span class="ck-prop">--accent-500</span>: <span class="ck-val">#179E8E</span>; <span class="ck-comment">/* PRIMARY */</span>
+  <span class="ck-prop">--accent-600</span>: <span class="ck-val">#0E7E72</span>;
+  <span class="ck-prop">--accent-700</span>: <span class="ck-val">#0C6259</span>;
+  <span class="ck-prop">--accent-800</span>: <span class="ck-val">#094D47</span>;
+  <span class="ck-prop">--accent-900</span>: <span class="ck-val">#063835</span>;
+  <span class="ck-prop">--accent-subtle-bg</span>:     <span class="ck-val">rgba(23,158,142,0.08)</span>;
+  <span class="ck-prop">--accent-subtle-border</span>: <span class="ck-val">rgba(23,158,142,0.20)</span>;
+
+  <span class="ck-comment">/* Gris froids bleutés */</span>
+  <span class="ck-prop">--gray-950</span>: <span class="ck-val">#0A0B0F</span>;
+  <span class="ck-prop">--gray-900</span>: <span class="ck-val">#10121A</span>;
+  <span class="ck-prop">--gray-800</span>: <span class="ck-val">#1A1D2B</span>;
+  <span class="ck-prop">--gray-700</span>: <span class="ck-val">#252838</span>;
+  <span class="ck-prop">--gray-600</span>: <span class="ck-val">#323548</span>;
+  <span class="ck-prop">--gray-500</span>: <span class="ck-val">#4D5068</span>;
+  <span class="ck-prop">--gray-400</span>: <span class="ck-val">#6B6F88</span>;
+  <span class="ck-prop">--gray-300</span>: <span class="ck-val">#9196B0</span>;
+  <span class="ck-prop">--gray-200</span>: <span class="ck-val">#C2C5D6</span>;
+  <span class="ck-prop">--gray-100</span>: <span class="ck-val">#E1E3EE</span>;
+  <span class="ck-prop">--gray-50</span>:  <span class="ck-val">#F0F1F8</span>;
+  <span class="ck-prop">--gray-25</span>:  <span class="ck-val">#F8F9FC</span>;
+
+  <span class="ck-comment">/* Fonctionnelles désaturées */</span>
+  <span class="ck-prop">--success</span>: <span class="ck-val">#268245</span>;
+  <span class="ck-prop">--warning</span>: <span class="ck-val">#B07412</span>;
+  <span class="ck-prop">--error</span>:   <span class="ck-val">#9B322C</span>;
+  <span class="ck-prop">--info</span>:    <span class="ck-val">#2855A0</span>;
+  <span class="ck-prop">--success-subtle</span>: <span class="ck-val">rgba(38,130,69,0.10)</span>;
+  <span class="ck-prop">--warning-subtle</span>: <span class="ck-val">rgba(176,116,18,0.10)</span>;
+  <span class="ck-prop">--error-subtle</span>:   <span class="ck-val">rgba(155,50,44,0.10)</span>;
+  <span class="ck-prop">--info-subtle</span>:    <span class="ck-val">rgba(40,85,160,0.10)</span>;
+  <span class="ck-prop">--success-border</span>: <span class="ck-val">rgba(38,130,69,0.25)</span>;
+  <span class="ck-prop">--warning-border</span>: <span class="ck-val">rgba(176,116,18,0.25)</span>;
+  <span class="ck-prop">--error-border</span>:   <span class="ck-val">rgba(155,50,44,0.25)</span>;
+  <span class="ck-prop">--info-border</span>:    <span class="ck-val">rgba(40,85,160,0.25)</span>;
+
+  <span class="ck-comment">/* Charts */</span>
+  <span class="ck-prop">--chart-1</span>: <span class="ck-val">#179E8E</span>; <span class="ck-comment">/* accent-500 */</span>
+  <span class="ck-prop">--chart-2</span>: <span class="ck-val">#65D5C4</span>; <span class="ck-comment">/* accent-300 */</span>
+  <span class="ck-prop">--chart-3</span>: <span class="ck-val">#6B6F88</span>; <span class="ck-comment">/* gray-400 */</span>
+  <span class="ck-prop">--chart-4</span>: <span class="ck-val">#268245</span>; <span class="ck-comment">/* success */</span>
+  <span class="ck-prop">--chart-5</span>: <span class="ck-val">#B07412</span>; <span class="ck-comment">/* warning */</span>
+  <span class="ck-prop">--chart-6</span>: <span class="ck-val">#2855A0</span>; <span class="ck-comment">/* info */</span>
+
+  <span class="ck-comment">/* === SÉMANTIQUE === */</span>
+  <span class="ck-prop">--bg-base</span>:    <span class="ck-val">var(--gray-950)</span>;
+  <span class="ck-prop">--bg-panel</span>:   <span class="ck-val">var(--gray-900)</span>;
+  <span class="ck-prop">--bg-raised</span>:  <span class="ck-val">var(--gray-800)</span>;
+  <span class="ck-prop">--border-subtle</span>:  <span class="ck-val">var(--gray-800)</span>;
+  <span class="ck-prop">--border-default</span>: <span class="ck-val">var(--gray-700)</span>;
+  <span class="ck-prop">--border-strong</span>:  <span class="ck-val">var(--gray-600)</span>;
+  <span class="ck-prop">--text-primary</span>:   <span class="ck-val">var(--gray-50)</span>;
+  <span class="ck-prop">--text-secondary</span>: <span class="ck-val">var(--gray-200)</span>;
+  <span class="ck-prop">--text-tertiary</span>:  <span class="ck-val">var(--gray-400)</span>;
+  <span class="ck-prop">--text-placeholder</span>: <span class="ck-val">var(--gray-500)</span>;
+
+  <span class="ck-comment">/* === TYPOGRAPHIE === */</span>
+  <span class="ck-prop">--font-sans</span>: <span class="ck-val">'Plus Jakarta Sans', sans-serif</span>;
+  <span class="ck-prop">--font-mono</span>: <span class="ck-val">'DM Mono', monospace</span>;
+  <span class="ck-prop">--text-2xl</span>:  <span class="ck-val">28px</span>;
+  <span class="ck-prop">--text-xl</span>:   <span class="ck-val">22px</span>;
+  <span class="ck-prop">--text-lg</span>:   <span class="ck-val">18px</span>;
+  <span class="ck-prop">--text-md</span>:   <span class="ck-val">14px</span>;
+  <span class="ck-prop">--text-base</span>: <span class="ck-val">13px</span>;
+  <span class="ck-prop">--text-sm</span>:   <span class="ck-val">11px</span>;
+  <span class="ck-prop">--text-xs</span>:   <span class="ck-val">10px</span>;
+
+  <span class="ck-comment">/* === ESPACEMENT === */</span>
+  <span class="ck-prop">--space-1</span>:  <span class="ck-val">4px</span>;
+  <span class="ck-prop">--space-2</span>:  <span class="ck-val">8px</span>;
+  <span class="ck-prop">--space-3</span>:  <span class="ck-val">12px</span>;
+  <span class="ck-prop">--space-4</span>:  <span class="ck-val">16px</span>;
+  <span class="ck-prop">--space-5</span>:  <span class="ck-val">20px</span>;
+  <span class="ck-prop">--space-6</span>:  <span class="ck-val">24px</span>;
+  <span class="ck-prop">--space-8</span>:  <span class="ck-val">32px</span>;
+  <span class="ck-prop">--space-10</span>: <span class="ck-val">40px</span>;
+  <span class="ck-prop">--space-12</span>: <span class="ck-val">48px</span>;
+
+  <span class="ck-comment">/* === EFFETS === */</span>
+  <span class="ck-prop">--radius-xs</span>: <span class="ck-val">2px</span>;
+  <span class="ck-prop">--radius-sm</span>: <span class="ck-val">4px</span>;
+  <span class="ck-prop">--radius-md</span>: <span class="ck-val">6px</span>;
+  <span class="ck-prop">--radius-lg</span>: <span class="ck-val">8px</span>;
+  <span class="ck-prop">--shadow-sm</span>:    <span class="ck-val">0 1px 3px rgba(0,0,0,.20), 0 1px 2px rgba(0,0,0,.12)</span>;
+  <span class="ck-prop">--shadow-md</span>:    <span class="ck-val">0 4px 12px rgba(0,0,0,.25), 0 2px 4px rgba(0,0,0,.12)</span>;
+  <span class="ck-prop">--shadow-lg</span>:    <span class="ck-val">0 8px 24px rgba(0,0,0,.30), 0 4px 8px rgba(0,0,0,.14)</span>;
+  <span class="ck-prop">--shadow-xl</span>:    <span class="ck-val">0 16px 48px rgba(0,0,0,.40), 0 8px 16px rgba(0,0,0,.20)</span>;
+  <span class="ck-prop">--shadow-focus</span>: <span class="ck-val">0 0 0 2px var(--bg-base), 0 0 0 4px var(--accent-500)</span>;
+
+  <span class="ck-comment">/* === ANIMATIONS === */</span>
+  <span class="ck-prop">--ease-spring</span>:   <span class="ck-val">cubic-bezier(0.34, 1.56, 0.64, 1)</span>;
+  <span class="ck-prop">--ease-out-fast</span>: <span class="ck-val">cubic-bezier(0.16, 1, 0.3, 1)</span>;
+  <span class="ck-prop">--ease-in-out</span>:   <span class="ck-val">cubic-bezier(0.4, 0, 0.2, 1)</span>;
+  <span class="ck-prop">--dur-instant</span>: <span class="ck-val">100ms</span>;
+  <span class="ck-prop">--dur-fast</span>:    <span class="ck-val">150ms</span>;
+  <span class="ck-prop">--dur-base</span>:    <span class="ck-val">180ms</span>;
+  <span class="ck-prop">--dur-slow</span>:    <span class="ck-val">200ms</span>;
+  <span class="ck-prop">--dur-max</span>:     <span class="ck-val">250ms</span>;
+}
+
+<span class="ck-comment">/* === LIGHT MODE === */</span>
+[<span class="ck-prop">data-theme</span>=<span class="ck-val">"light"</span>] {
+  <span class="ck-prop">--bg-base</span>:    <span class="ck-val">var(--gray-25)</span>;
+  <span class="ck-prop">--bg-panel</span>:   <span class="ck-val">#FFFFFF</span>;
+  <span class="ck-prop">--bg-raised</span>:  <span class="ck-val">var(--gray-100)</span>;
+  <span class="ck-prop">--border-subtle</span>:  <span class="ck-val">var(--gray-100)</span>;
+  <span class="ck-prop">--border-default</span>: <span class="ck-val">var(--gray-200)</span>;
+  <span class="ck-prop">--border-strong</span>:  <span class="ck-val">var(--gray-300)</span>;
+  <span class="ck-prop">--text-primary</span>:   <span class="ck-val">var(--gray-900)</span>;
+  <span class="ck-prop">--text-secondary</span>: <span class="ck-val">#3D4158</span>;
+  <span class="ck-prop">--text-tertiary</span>:  <span class="ck-val">var(--gray-500)</span>;
+  <span class="ck-prop">--text-placeholder</span>: <span class="ck-val">var(--gray-400)</span>;
+}
+
+<span class="ck-comment">/* === RESET === */</span>
+*, *<span class="ck-selector">::before</span>, *<span class="ck-selector">::after</span> {
+  <span class="ck-prop">box-sizing</span>: <span class="ck-val">border-box</span>;
+  <span class="ck-prop">margin</span>: <span class="ck-val">0</span>;
+  <span class="ck-prop">padding</span>: <span class="ck-val">0</span>;
+}
+
+<span class="ck-selector">html</span> {
+  <span class="ck-prop">scroll-behavior</span>: <span class="ck-val">smooth</span>;
+}
+
+<span class="ck-selector">body</span> {
+  <span class="ck-prop">font-family</span>: <span class="ck-val">var(--font-sans)</span>;
+  <span class="ck-prop">font-size</span>: <span class="ck-val">var(--text-base)</span>;
+  <span class="ck-prop">line-height</span>: <span class="ck-val">1.65</span>;
+  <span class="ck-prop">color</span>: <span class="ck-val">var(--text-primary)</span>;
+  <span class="ck-prop">background-color</span>: <span class="ck-val">var(--bg-base)</span>;
+  <span class="ck-prop">-webkit-font-smoothing</span>: <span class="ck-val">antialiased</span>;
+  <span class="ck-prop">-moz-osx-font-smoothing</span>: <span class="ck-val">grayscale</span>;
+  <span class="ck-prop">min-height</span>: <span class="ck-val">100vh</span>;
+}
+
+<span class="ck-comment">/* Transition dark/light */</span>
+<span class="ck-selector">body</span>, <span class="ck-selector">body</span> * {
+  <span class="ck-prop">transition-property</span>: <span class="ck-val">background-color, border-color, color</span>;
+  <span class="ck-prop">transition-duration</span>: <span class="ck-val">200ms</span>;
+  <span class="ck-prop">transition-timing-function</span>: <span class="ck-val">var(--ease-in-out)</span>;
+}
+
+<span class="ck-comment">/* Scrollbar */</span>
+<span class="ck-selector">::-webkit-scrollbar</span> { <span class="ck-prop">width</span>: <span class="ck-val">6px</span>; }
+<span class="ck-selector">::-webkit-scrollbar-track</span> { <span class="ck-prop">background</span>: <span class="ck-val">transparent</span>; }
+<span class="ck-selector">::-webkit-scrollbar-thumb</span> {
+  <span class="ck-prop">background</span>: <span class="ck-val">var(--gray-700)</span>;
+  <span class="ck-prop">border-radius</span>: <span class="ck-val">3px</span>;
+}
+
+<span class="ck-comment">/* Prefers-reduced-motion */</span>
+<span class="ck-at">@media</span> (<span class="ck-prop">prefers-reduced-motion</span>: <span class="ck-val">reduce</span>) {
+  *, *<span class="ck-selector">::before</span>, *<span class="ck-selector">::after</span> {
+    <span class="ck-prop">animation-duration</span>: <span class="ck-val">0.01ms</span> <span class="ck-val">!important</span>;
+    <span class="ck-prop">transition-duration</span>: <span class="ck-val">0.01ms</span> <span class="ck-val">!important</span>;
+  }
+}</div>
+    </div>
+  </section>
+
+
+  <!-- ══ 02 — STRUCTURE FICHIERS ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">02 — Structure fichiers</span><div class="section-line"></div></div>
+    <h2 class="section-title">Organisation recommandée du projet</h2>
+    <p class="section-desc">Structure modulaire pour faciliter la maintenance. Séparer les tokens globaux, les composants et les vues. Importer globals.css en premier dans chaque fichier.</p>
+
+    <div class="subsection">
+      <div class="subsection-title">Arborescence recommandée</div>
+      <div class="code-block"><span class="ck-comment">src/
+├── styles/
+│   ├── globals.css          ← Tokens & reset (ce fichier)
+│   ├── components/
+│   │   ├── buttons.css      ← Styles boutons
+│   │   ├── inputs.css       ← Styles formulaires
+│   │   ├── cards.css        ← Styles cards
+│   │   ├── navigation.css   ← Sidebar, topbar, tabs
+│   │   ├── modals.css       ← Modals, dropdowns
+│   │   ├── toasts.css       ← Toasts, alertes
+│   │   ├── tables.css       ← Tables, pagination
+│   │   └── charts.css       ← Graphiques
+│   └── views/
+│       ├── dashboard.css    ← Page dashboard
+│       ├── documents.css    ← Page documents
+│       └── settings.css     ← Page paramètres
+│
+├── components/
+│   ├── Button.tsx
+│   ├── Input.tsx
+│   ├── Card.tsx
+│   └── ...
+│
+└── app/
+    ├── layout.tsx           ← Import globals.css ici
+    ├── dashboard/
+    └── documents/</span></div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Import dans layout.tsx (Next.js / React)</div>
+      <div class="code-block"><span class="ck-comment">// app/layout.tsx</span>
+<span class="ck-prop">import</span> <span class="ck-val">'@/styles/globals.css'</span>;
+<span class="ck-prop">import</span> <span class="ck-val">'@/styles/components/buttons.css'</span>;
+<span class="ck-prop">import</span> <span class="ck-val">'@/styles/components/inputs.css'</span>;
+<span class="ck-comment">// ... autres imports</span>
+
+<span class="ck-prop">export default function</span> <span class="ck-val">RootLayout</span>({ children }) {
+  <span class="ck-prop">return</span> (
+    <span class="ck-selector">&lt;html</span> <span class="ck-prop">lang</span>=<span class="ck-val">"fr"</span> <span class="ck-prop">data-theme</span>=<span class="ck-val">"dark"</span><span class="ck-selector">&gt;</span>
+      <span class="ck-selector">&lt;body&gt;</span>{children}<span class="ck-selector">&lt;/body&gt;</span>
+    <span class="ck-selector">&lt;/html&gt;</span>
+  );
+}</div>
+    </div>
+  </section>
+
+
+  <!-- ══ 03 — CONVENTIONS DE NOMMAGE ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">03 — Conventions de nommage</span><div class="section-line"></div></div>
+    <h2 class="section-title">BEM simplifié &amp; variables locales</h2>
+    <p class="section-desc">Utiliser BEM simplifié pour les classes CSS. Variables locales préfixées par <code>--_</code> pour scope composant. Noms descriptifs et cohérents.</p>
+
+    <div class="subsection">
+      <div class="subsection-title">Règles de nommage</div>
+      <table style="width:100%;border-collapse:collapse;font-size:var(--text-sm);margin-top:16px">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border-subtle)">
+            <th style="font-family:var(--font-mono);font-size:var(--text-xs);font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-placeholder);text-align:left;padding:8px 12px">Pattern</th>
+            <th style="font-family:var(--font-mono);font-size:var(--text-xs);font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-placeholder);text-align:left;padding:8px 12px">Exemple</th>
+            <th style="font-family:var(--font-mono);font-size:var(--text-xs);font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-placeholder);text-align:left;padding:8px 12px">Usage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border-subtle)">
+            <td style="padding:8px 12px;color:var(--text-secondary)"><code>.component</code></td>
+            <td style="padding:8px 12px;color:var(--text-secondary)"><code>.btn</code>, <code>.card</code>, <code>.modal</code></td>
+            <td style="padding:8px 12px;color:var(--text-secondary)">Composant de base</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle)">
+            <td style="padding:8px 12px;color:var(--text-secondary)"><code>.component--modifier</code></td>
+            <td style="padding:8px 12px;color:var(--text-secondary)"><code>.btn--primary</code>, <code>.btn--sm</code></td>
+            <td style="padding:8px 12px;color:var(--text-secondary)">Variante du composant</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle)">
+            <td style="padding:8px 12px;color:var(--text-secondary)"><code>.component__element</code></td>
+            <td style="padding:8px 12px;color:var(--text-secondary)"><code>.card__header</code>, <code>.card__body</code></td>
+            <td style="padding:8px 12px;color:var(--text-secondary)">Élément enfant</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle)">
+            <td style="padding:8px 12px;color:var(--text-secondary)"><code>.is-state</code></td>
+            <td style="padding:8px 12px;color:var(--text-secondary)"><code>.is-active</code>, <code>.is-loading</code></td>
+            <td style="padding:8px 12px;color:var(--text-secondary)">État temporaire (JS)</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;color:var(--text-secondary)"><code>--_local-var</code></td>
+            <td style="padding:8px 12px;color:var(--text-secondary)"><code>--_btn-bg</code>, <code>--_card-padding</code></td>
+            <td style="padding:8px 12px;color:var(--text-secondary)">Variable locale au composant</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Exemples de code</div>
+      <div class="code-block"><span class="ck-comment">/* Bouton — BEM simplifié */</span>
+<span class="ck-selector">.btn</span> {
+  <span class="ck-prop">display</span>: <span class="ck-val">inline-flex</span>;
+  <span class="ck-prop">padding</span>: <span class="ck-val">8px 14px</span>;
+  <span class="ck-prop">background</span>: <span class="ck-val">var(--bg-raised)</span>;
+  <span class="ck-prop">border</span>: <span class="ck-val">1px solid var(--border-default)</span>;
+  <span class="ck-prop">border-radius</span>: <span class="ck-val">var(--radius-sm)</span>;
+}
+<span class="ck-selector">.btn--primary</span> {
+  <span class="ck-prop">background</span>: <span class="ck-val">var(--accent-500)</span>;
+  <span class="ck-prop">border-color</span>: <span class="ck-val">var(--accent-600)</span>;
+  <span class="ck-prop">color</span>: <span class="ck-val">#fff</span>;
+}
+<span class="ck-selector">.btn--sm</span> { <span class="ck-prop">padding</span>: <span class="ck-val">5px 10px</span>; <span class="ck-prop">font-size</span>: <span class="ck-val">var(--text-sm)</span>; }
+<span class="ck-selector">.btn--lg</span> { <span class="ck-prop">padding</span>: <span class="ck-val">11px 20px</span>; <span class="ck-prop">font-size</span>: <span class="ck-val">15px</span>; }
+<span class="ck-selector">.btn.is-loading</span> { <span class="ck-prop">pointer-events</span>: <span class="ck-val">none</span>; }
+
+<span class="ck-comment">/* Card — éléments enfants */</span>
+<span class="ck-selector">.card</span> {
+  <span class="ck-prop">background</span>: <span class="ck-val">var(--bg-panel)</span>;
+  <span class="ck-prop">border</span>: <span class="ck-val">1px solid var(--border-subtle)</span>;
+  <span class="ck-prop">border-radius</span>: <span class="ck-val">var(--radius-md)</span>;
+}
+<span class="ck-selector">.card__header</span> {
+  <span class="ck-prop">padding</span>: <span class="ck-val">var(--space-4) var(--space-5)</span>;
+  <span class="ck-prop">border-bottom</span>: <span class="ck-val">1px solid var(--border-subtle)</span>;
+}
+<span class="ck-selector">.card__body</span> { <span class="ck-prop">padding</span>: <span class="ck-val">var(--space-5)</span>; }
+<span class="ck-selector">.card--glass</span> {
+  <span class="ck-prop">background</span>: <span class="ck-val">rgba(255,255,255,0.040)</span>;
+  <span class="ck-prop">backdrop-filter</span>: <span class="ck-val">blur(14px)</span>;
+}
+
+<span class="ck-comment">/* Variables locales — scope composant */</span>
+<span class="ck-selector">.nav-item</span> {
+  <span class="ck-prop">--_nav-bg</span>: <span class="ck-val">transparent</span>;
+  <span class="ck-prop">--_nav-color</span>: <span class="ck-val">var(--text-tertiary)</span>;
+  <span class="ck-prop">background</span>: <span class="ck-val">var(--_nav-bg)</span>;
+  <span class="ck-prop">color</span>: <span class="ck-val">var(--_nav-color)</span>;
+}
+<span class="ck-selector">.nav-item.is-active</span> {
+  <span class="ck-prop">--_nav-bg</span>: <span class="ck-val">var(--accent-subtle-bg)</span>;
+  <span class="ck-prop">--_nav-color</span>: <span class="ck-val">var(--accent-300)</span>;
+}</div>
+    </div>
+  </section>
+
+
+  <!-- ══ 04 — GUIDE DARK/LIGHT MODE ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">04 — Guide dark/light mode</span><div class="section-line"></div></div>
+    <h2 class="section-title">Implémentation du thème clair</h2>
+    <p class="section-desc">Le système utilise <code>data-theme</code> sur <code>&lt;html&gt;</code>. Toujours utiliser les tokens sémantiques (<code>--bg-base</code>, <code>--text-primary</code>) jamais les gris directs. Les couleurs accent restent identiques entre les deux modes.</p>
+
+    <div class="subsection">
+      <div class="subsection-title">Toggle thème — JavaScript</div>
+      <div class="code-block"><span class="ck-comment">// Fonction toggle thème</span>
+<span class="ck-prop">function</span> <span class="ck-val">toggleTheme</span>() {
+  <span class="ck-prop">const</span> html = document.<span class="ck-val">documentElement</span>;
+  <span class="ck-prop">const</span> current = html.<span class="ck-val">getAttribute</span>(<span class="ck-val">'data-theme'</span>);
+  <span class="ck-prop">const</span> next = current === <span class="ck-val">'light'</span> ? <span class="ck-val">'dark'</span> : <span class="ck-val">'light'</span>;
+  html.<span class="ck-val">setAttribute</span>(<span class="ck-val">'data-theme'</span>, next);
+  localStorage.<span class="ck-val">setItem</span>(<span class="ck-val">'theme'</span>, next);
+}
+
+<span class="ck-comment">// Restaurer le thème au chargement</span>
+<span class="ck-prop">const</span> saved = localStorage.<span class="ck-val">getItem</span>(<span class="ck-val">'theme'</span>) || <span class="ck-val">'dark'</span>;
+document.<span class="ck-val">documentElement</span>.<span class="ck-val">setAttribute</span>(<span class="ck-val">'data-theme'</span>, saved);</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Règles dark/light mode</div>
+      <div class="checklist">
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Toujours utiliser les tokens sémantiques : <code>--bg-base</code>, <code>--text-primary</code>, etc.</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Ne jamais utiliser <code>prefers-color-scheme</code> directement — le toggle utilisateur prime</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Les couleurs accent (<code>--accent-*</code>) restent identiques entre dark et light</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#5DB882" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Tester TOUS les composants dans les deux modes avant validation</span>
+        </div>
+        <div class="checklist-item">
+          <svg class="checklist-icon" viewBox="0 0 24 24" fill="none" stroke="#DC7070" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <span><strong>INTERDIT :</strong> utiliser <code>--gray-950</code> directement — toujours passer par <code>--bg-base</code></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 05 — CHECKLIST VALIDATION ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">05 — Checklist validation composant</span><div class="section-line"></div></div>
+    <h2 class="section-title">14 points à vérifier avant validation</h2>
+    <p class="section-desc">Checklist obligatoire avant de valider un nouveau composant. Cocher tous les points pour garantir la cohérence avec la charte graphique.</p>
+
+    <div class="subsection">
+      <div class="checklist">
+        <div class="checklist-item">
+          <input type="checkbox" style="width:16px;height:16px;flex-shrink:0;margin-top:1px;cursor:pointer">
+          <span><strong>Grain appliqué</strong> — Opacity correcte selon type de surface (0.12 cards, 0.34 boutons)</span>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" style="width:16px;height:16px;flex-shrink:0;margin-top:1px;cursor:pointer">
+          <span><strong>Variables CSS</strong> — Toutes les valeurs passent par des tokens, jamais de hex en dur</span>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" style="width:16px;height:16px;flex-shrink:0;margin-top:1px;cursor:pointer">
+          <span><strong>Glassmorphisme</strong> — Uniquement sur sidebar/cards KPI/toasts, interdit ailleurs</span>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" style="width:16px;height:16px;flex-shrink:0;margin-top:1px;cursor:pointer">
+          <span><strong>Border-radius</strong> — Maximum 8px (<code>--radius-lg</code>), jamais ≥ 12px</span>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" style="width:16px;height:16px;flex-shrink:0;margin-top:1px;cursor:pointer">
+          <span><strong>Pas de dégradé</strong> — Sauf sous courbe graphique, interdit sur boutons/cards/fonds</span>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" style="width:16px;height:16px;flex-shrink:0;margin-top:1px;cursor:pointer">
+          <span><strong>DM Mono</strong> — Uniquement sur données techniques (refs, timestamps, hashes, labels UPPER)</span>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" style="width:16px;height:16px;flex-shrink:0;margin-top:1px;cursor:pointer">
+          <span><strong>Icônes Lucide SVG</strong> — Stroke 1.5px, taille 13-16px selon contexte</span>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" style="width:16px;height:16px;flex-shrink:0;margin-top:1px;cursor:pointer">
+          <span><strong>Focus ring visible</strong> — <code>:focus-visible</code> avec <code>--shadow-focus</code></span>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" style="width:16px;height:16px;flex-shrink:0;margin-top:1px;cursor:pointer">
+          <span><strong>État disabled</strong> — <code>opacity: 0.38</code> + <code>aria-disabled="true"</code></span>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" style="width:16px;height:16px;flex-shrink:0;margin-top:1px;cursor:pointer">
+          <span><strong>Dark ET light mode testés</strong> — Composant fonctionnel dans les deux thèmes</span>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" style="width:16px;height:16px;flex-shrink:0;margin-top:1px;cursor:pointer">
+          <span><strong>Animations ≤ 250ms</strong> — Utiliser les 3 courbes autorisées uniquement</span>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" style="width:16px;height:16px;flex-shrink:0;margin-top:1px;cursor:pointer">
+          <span><strong>Prefers-reduced-motion</strong> — Respecté pour accessibilité</span>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" style="width:16px;height:16px;flex-shrink:0;margin-top:1px;cursor:pointer">
+          <span><strong>Contraste AA minimum</strong> — Ratio ≥ 4.5:1 pour texte normal vérifié</span>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" style="width:16px;height:16px;flex-shrink:0;margin-top:1px;cursor:pointer">
+          <span><strong>ARIA approprié</strong> — Attributs ARIA sur éléments interactifs si nécessaire</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ 06 — ANTI-PATTERNS ══ -->
+  <section class="section">
+    <div class="section-header"><span class="section-label">06 — Anti-patterns — 20 erreurs à éviter</span><div class="section-line"></div></div>
+    <h2 class="section-title">Les erreurs les plus courantes</h2>
+    <p class="section-desc">Liste exhaustive des erreurs à ne jamais commettre. Chaque anti-pattern est illustré avec la mauvaise pratique et la bonne solution.</p>
+
+    <div class="subsection">
+      <div class="subsection-title">1. Hex en dur vs Variables CSS</div>
+      <div class="antipattern-grid">
+        <div class="antipattern-card antipattern-bad">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Mauvais
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#DC7070">background: #179E8E;</code><br>
+            Impossible à maintenir, ne suit pas le thème
+          </div>
+        </div>
+        <div class="antipattern-card antipattern-good">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Correct
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#5DB882">background: var(--accent-500);</code><br>
+            Maintenable, suit automatiquement le thème
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">2. Glassmorphisme sur mauvais fond</div>
+      <div class="antipattern-grid">
+        <div class="antipattern-card antipattern-bad">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Mauvais
+          </div>
+          <div class="antipattern-desc">
+            Glassmorphisme sur <code>--bg-panel</code> ou <code>--bg-raised</code> — pas de flou visible, effet perdu
+          </div>
+        </div>
+        <div class="antipattern-card antipattern-good">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Correct
+          </div>
+          <div class="antipattern-desc">
+            Glassmorphisme uniquement sur <code>--bg-base</code> (sidebar, cards KPI, toasts)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">3. Gradient sur bouton</div>
+      <div class="antipattern-grid">
+        <div class="antipattern-card antipattern-bad">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Mauvais
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#DC7070">background: linear-gradient(...);</code><br>
+            Style consumer, pas institutionnel
+          </div>
+        </div>
+        <div class="antipattern-card antipattern-good">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Correct
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#5DB882">background: var(--accent-500);</code><br>
+            Couleur unie uniquement
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">4. DM Mono pour titre</div>
+      <div class="antipattern-grid">
+        <div class="antipattern-card antipattern-bad">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Mauvais
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#DC7070">font-family: var(--font-mono);</code><br>
+            Sur titre ou texte courant — confusion typo
+          </div>
+        </div>
+        <div class="antipattern-card antipattern-good">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Correct
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#5DB882">font-family: var(--font-sans);</code><br>
+            Plus Jakarta Sans pour tout le contenu UI
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">5. Border-radius trop arrondi</div>
+      <div class="antipattern-grid">
+        <div class="antipattern-card antipattern-bad">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Mauvais
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#DC7070">border-radius: 12px;</code> ou plus<br>
+            Style consumer, pas institutionnel
+          </div>
+        </div>
+        <div class="antipattern-card antipattern-good">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Correct
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#5DB882">border-radius: var(--radius-lg);</code><br>
+            Maximum 8px — discret et professionnel
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">6. Font-size trop petite</div>
+      <div class="antipattern-grid">
+        <div class="antipattern-card antipattern-bad">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Mauvais
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#DC7070">font-size: 9px;</code> ou moins<br>
+            Illisible, WCAG fail
+          </div>
+        </div>
+        <div class="antipattern-card antipattern-good">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Correct
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#5DB882">font-size: var(--text-xs);</code><br>
+            Minimum 10px — lisible et accessible
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">7. Animation trop lente</div>
+      <div class="antipattern-grid">
+        <div class="antipattern-card antipattern-bad">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Mauvais
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#DC7070">transition: 400ms;</code> ou plus<br>
+            Interface perçue lente en usage intensif
+          </div>
+        </div>
+        <div class="antipattern-card antipattern-good">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Correct
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#5DB882">transition: var(--dur-fast);</code><br>
+            Maximum 250ms — réactivité perçue
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">8. Outline: none sans remplacement</div>
+      <div class="antipattern-grid">
+        <div class="antipattern-card antipattern-bad">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Mauvais
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#DC7070">outline: none;</code> sans focus ring<br>
+            Inaccessible au clavier
+          </div>
+        </div>
+        <div class="antipattern-card antipattern-good">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Correct
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#5DB882">:focus-visible { box-shadow: var(--shadow-focus); }</code><br>
+            Focus ring custom visible
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">9. Placeholder comme seul label</div>
+      <div class="antipattern-grid">
+        <div class="antipattern-card antipattern-bad">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Mauvais
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#DC7070">&lt;input placeholder="Email"&gt;</code><br>
+            Sans <code>&lt;label&gt;</code> — WCAG fail
+          </div>
+        </div>
+        <div class="antipattern-card antipattern-good">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Correct
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#5DB882">&lt;label for="email"&gt;Email&lt;/label&gt;</code><br>
+            Label visible + placeholder optionnel
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">10. Transition: all</div>
+      <div class="antipattern-grid">
+        <div class="antipattern-card antipattern-bad">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Mauvais
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#DC7070">transition: all 200ms;</code><br>
+            Déclenche transitions non voulues + perf
+          </div>
+        </div>
+        <div class="antipattern-card antipattern-good">
+          <div class="antipattern-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Correct
+          </div>
+          <div class="antipattern-desc">
+            <code style="font-family:var(--font-mono);font-size:var(--text-xs);color:#5DB882">transition: background-color 200ms, border-color 200ms;</code><br>
+            Propriétés spécifiques uniquement
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:16px;background:var(--warning-subtle);border:1px solid var(--warning-border);border-radius:var(--radius-md);border-left:3px solid var(--warning);margin-top:24px">
+      <div style="font-size:var(--text-md);font-weight:500;color:var(--text-primary);margin-bottom:6px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:6px" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        10 autres anti-patterns documentés
+      </div>
+      <div style="font-size:var(--text-sm);color:var(--text-secondary);line-height:1.6">
+        Touch target &lt; 44px · Couleur seule pour erreur · aria-hidden sur contenu informatif · Grille gap 0 · Glassmorphisme fond clair · Toast en bas · !important dans composants · Stagger &gt; 6 items · Ombres décoratives · Transitions width/height
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="doc-footer">
+    <div class="footer-left">
+      <div class="doc-footer-ref">CG-12 — Tokens CSS & Guide · v1.0.0 · Archivage Numérique</div>
+      <div class="kbd-hint">Raccourcis : <span class="kbd">←</span> Précédent <span class="kbd">i</span> Index</div>
+    </div>
+    <div class="footer-nav">
+      <a href="CG-11-Accessibilite-RGAA.html" class="footer-link" aria-label="Module précédent : CG-11">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Précédent
+      </a>
+      <div class="doc-footer-complete">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+        Charte complète — 12/12
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+// Navigation dropdown
+function toggleNav(btn) {
+  const dropdown = btn.parentElement;
+  const isActive = dropdown.classList.contains('active');
+  
+  // Close all dropdowns
+  document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('active'));
+  
+  if (!isActive) {
+    dropdown.classList.add('active');
+    btn.setAttribute('aria-expanded', 'true');
+  } else {
+    btn.setAttribute('aria-expanded', 'false');
+  }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.nav-dropdown')) {
+    document.querySelectorAll('.nav-dropdown').forEach(d => {
+      d.classList.remove('active');
+      const btn = d.querySelector('.nav-dropdown-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  // Ignore if user is typing in an input
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  
+  switch(e.key) {
+    case 'ArrowLeft':
+      // Previous module
+      window.location.href = 'CG-11-Accessibilite-RGAA.html';
+      break;
+    case 'ArrowRight':
+      // No next module (last one)
+      break;
+    case 'i':
+    case 'I':
+      // Index
+      window.location.href = 'index.html';
+      break;
+  }
+});
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+}
+</script>
+
+</body>
+</html>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+}
+</script>
+
+</body>
+</html>

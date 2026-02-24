@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CG-01 — Identité & Palette · Archivage Numérique</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   /* ============================================================
      RESET & BASE
@@ -14,18 +14,18 @@
 
   :root {
     /* Cold gray scale — base du système */
-    --gray-950: #0A0B0F;
-    --gray-900: #10121A;
-    --gray-850: #14161F;
-    --gray-800: #1A1D2B;
-    --gray-700: #252836;
-    --gray-600: #353848;
-    --gray-500: #4D5068;
-    --gray-400: #6B6F88;
-    --gray-300: #9498B0;
-    --gray-200: #C2C5D6;
-    --gray-100: #E3E5F0;
-    --gray-50:  #F0F1F8;
+    --gray-950: #0c0c0c;
+    --gray-900: #141414;
+    --gray-850: #191919;
+    --gray-800: #202020;
+    --gray-700: #2e2e2e;
+    --gray-600: #3e3e3e;
+    --gray-500: #575757;
+    --gray-400: #787878;
+    --gray-300: #9e9e9e;
+    --gray-200: #c4c4c4;
+    --gray-100: #e5e5e5;
+    --gray-50:  #f2f2f2;
 
     /* Option A — Indigo Dusk */
     --a-50:   #EEF0FF;
@@ -51,19 +51,19 @@
     --b-800:  #083A66;
     --b-900:  #052849;
 
-    /* Option C — Sage Slate */
-    --c-50:   #EDFAF8;
-    --c-100:  #D0F4EE;
-    --c-200:  #9FE8DC;
-    --c-300:  #65D5C4;
-    --c-400:  #36BCAB;
-    --c-500:  #179E8E;
-    --c-600:  #0E7E72;
-    --c-700:  #0C6259;
-    --c-800:  #094A43;
-    --c-900:  #063530;
+    /* Option C — Teal Capy */
+    --c-50:   #e8faf7;
+    --c-100:  #d5f2ef;
+    --c-200:  #abe4de;
+    --c-300:  #8dd9d4;
+    --c-400:  #75d0c8;
+    --c-500:  #63c8c1;
+    --c-600:  #339997;
+    --c-700:  #267b7a;
+    --c-800:  #1a5a59;
+    --c-900:  #0e3a3a;
 
-    --font-main: 'Plus Jakarta Sans', sans-serif;
+    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-mono: 'DM Mono', monospace;
     --radius: 4px;
     --radius-md: 6px;
@@ -71,8 +71,8 @@
 
     /* Semantic tokens (dark mode par défaut) */
     --bg-base: var(--gray-950);
-    --bg-panel: var(--gray-900);
-    --bg-raised: var(--gray-800);
+    --bg-elevated: var(--gray-900);
+    --bg-subtle: var(--gray-800);
     --border-subtle: var(--gray-800);
     --border-default: var(--gray-700);
     --border-strong: var(--gray-600);
@@ -84,14 +84,14 @@
 
   /* Light mode */
   [data-theme="light"] {
-    --bg-base: #F8F9FC;
-    --bg-panel: #FFFFFF;
-    --bg-raised: var(--gray-100);
+    --bg-base: #f9f9f9;
+    --bg-elevated: #FFFFFF;
+    --bg-subtle: var(--gray-100);
     --border-subtle: var(--gray-100);
     --border-default: var(--gray-200);
     --border-strong: var(--gray-300);
     --text-primary: var(--gray-900);
-    --text-secondary: #3D4158;
+    --text-secondary: #4f4f4f;
     --text-tertiary: var(--gray-500);
     --text-placeholder: var(--gray-400);
   }
@@ -126,7 +126,7 @@
     pointer-events: none;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     background-size: 180px 180px;
-    opacity: 0.18;
+    opacity: 0.03;
     mix-blend-mode: overlay;
   }
 
@@ -203,7 +203,7 @@
     align-items: center;
     gap: 8px;
     padding: 6px 12px;
-    background: var(--bg-raised);
+    background: var(--bg-subtle);
     border: 1px solid var(--border-default);
     border-radius: var(--radius);
     cursor: pointer;
@@ -284,7 +284,7 @@
     inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     background-size: 120px;
-    opacity: 0.09;
+    opacity: 0.01;
     mix-blend-mode: overlay;
     pointer-events: none;
   }
@@ -380,7 +380,7 @@
     inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     background-size: 100px;
-    opacity: 0.12;
+    opacity: 0.02;
     mix-blend-mode: overlay;
     pointer-events: none;
     z-index: 1;
@@ -461,7 +461,7 @@
 
   .tag-a { background: rgba(68,84,232,0.15); color: var(--a-300); border: 1px solid rgba(68,84,232,0.25); }
   .tag-b { background: rgba(20,128,216,0.15); color: var(--b-300); border: 1px solid rgba(20,128,216,0.25); }
-  .tag-c { background: rgba(23,158,142,0.15); color: var(--c-300); border: 1px solid rgba(23,158,142,0.25); }
+  .tag-c { background: rgba(99,200,193,0.15); color: var(--c-300); border: 1px solid rgba(99,200,193,0.25); }
 
   .color-rationale {
     font-size: 11px;
@@ -578,7 +578,7 @@
     inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     background-size: 100px;
-    opacity: 0.08;
+    opacity: 0.01;
     mix-blend-mode: overlay;
     pointer-events: none;
   }
@@ -686,7 +686,7 @@
     inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     background-size: 80px;
-    opacity: 0.07;
+    opacity: 0.01;
     mix-blend-mode: overlay;
     pointer-events: none;
   }
@@ -1291,10 +1291,10 @@
         </div>
       </div>
 
-      <!-- Option C — Sage Slate -->
+      <!-- Option C — Teal Capy -->
       <div class="color-option color-option-c">
         <div class="color-swatch-main swatch-c">
-          <span class="swatch-hex">#179E8E</span>
+          <span class="swatch-hex">#63c8c1</span>
         </div>
 
         <div class="color-scale">
@@ -1311,22 +1311,22 @@
         </div>
 
         <div class="color-info">
-          <div class="color-name">Sage Slate</div>
+          <div class="color-name">Teal Capy</div>
           <div class="color-tag tag-c">Option C</div>
           <div class="color-rationale">Teal sage désaturé. Rare dans les interfaces publiques — différenciation maximale. Évoque la sérénité, la nature, la permanence. Tranche distinctement avec les gris froids sans agressivité.</div>
           <div class="color-divider"></div>
           <div class="color-props">
             <div class="color-prop">
               <span class="color-prop-label">Primary</span>
-              <span class="color-prop-value">#179E8E</span>
+              <span class="color-prop-value">#63c8c1</span>
             </div>
             <div class="color-prop">
               <span class="color-prop-label">Hover</span>
-              <span class="color-prop-value">#0E7E72</span>
+              <span class="color-prop-value">#339997</span>
             </div>
             <div class="color-prop">
               <span class="color-prop-label">Subtle bg</span>
-              <span class="color-prop-value">rgba(23,158,142,0.10)</span>
+              <span class="color-prop-value">rgba(99,200,193,0.10)</span>
             </div>
             <div class="color-prop">
               <span class="color-prop-label">WCAG ratio</span>
@@ -1343,11 +1343,11 @@
   <!-- ========== TYPOGRAPHIE ========== -->
   <section class="section">
     <div class="section-label">04 — Typographie</div>
-    <h2 class="section-title">Plus Jakarta Sans + DM Mono</h2>
-    <p class="section-desc">Duo humaniste + monospace. Plus Jakarta Sans pour son caractère chaleureux mais discipliné, adapté aux interfaces denses. DM Mono pour les données, références, timestamps — jamais pour le contenu courant.</p>
+    <h2 class="section-title">Inter + DM Mono</h2>
+    <p class="section-desc">Duo humaniste + monospace. Inter pour son caractère chaleureux mais discipliné, adapté aux interfaces denses. DM Mono pour les données, références, timestamps — jamais pour le contenu courant.</p>
 
     <div class="typo-showcase">
-      <div class="typo-font-name">Plus Jakarta Sans — Humaniste · Variable 300–700</div>
+      <div class="typo-font-name">Inter — Humaniste · Variable 300–700</div>
 
       <div class="typo-sample-display">Archivage Numérique</div>
       <div class="typo-sample-body">Le système garantit la traçabilité, l'intégrité et la pérennité des documents administratifs. Chaque action est journalisée, chaque modification versionnée, chaque accès contrôlé.</div>
@@ -1459,7 +1459,7 @@
 
       <div class="decision-row">
         <span class="decision-key">Famille typographique principale</span>
-        <span class="decision-val">Plus Jakarta Sans</span>
+        <span class="decision-val">Inter</span>
       </div>
       <div class="decision-row">
         <span class="decision-key">Famille typographique mono</span>
@@ -1471,7 +1471,7 @@
       </div>
       <div class="decision-row">
         <span class="decision-key">Gris de base</span>
-        <span class="decision-val">Froids bleutés (style GitHub)</span>
+        <span class="decision-val">Neutres chauds</span>
       </div>
       <div class="decision-row">
         <span class="decision-key">Border-radius boutons</span>
@@ -1483,7 +1483,7 @@
       </div>
       <div class="decision-row">
         <span class="decision-key">Grain</span>
-        <span class="decision-val">SVG feTurbulence — niveau lourd (brouillard)</span>
+        <span class="decision-val">SVG feTurbulence — opacity 0.03 (subtil)</span>
       </div>
       <div class="decision-row">
         <span class="decision-key">Animation timing</span>
@@ -1498,8 +1498,8 @@
         <span class="decision-val">Aéré — style Linear/Vercel</span>
       </div>
       <div class="decision-row">
-        <span class="decision-key">Couleur d'accent · Décision en attente</span>
-        <span class="decision-val">Option A / B / C → à valider</span>
+        <span class="decision-key">Couleur d'accent</span>
+        <span class="decision-val">Teal Capy (#63c8c1) — Option validée</span>
       </div>
       <div class="decision-row">
         <span class="decision-key">Icônes</span>

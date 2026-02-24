@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CG-07 — Navigation : Sidebar, Topbar, Breadcrumbs, Tabs, Dropdowns</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 
 /* ============================================================
@@ -13,15 +13,15 @@
    ============================================================ */
 :root {
   --accent-50:  #E8F8F6; --accent-100: #C5EDE9; --accent-200: #8DD9D1;
-  --accent-300: #65D5C4; --accent-400: #2BBFAD; --accent-500: #179E8E;
-  --accent-600: #0E7E72; --accent-700: #0C6259;
-  --accent-subtle-bg:     rgba(23,158,142,0.08);
-  --accent-subtle-border: rgba(23,158,142,0.20);
+  --accent-300: #8dd9d4; --accent-400: #2BBFAD; --accent-500: #63c8c1;
+  --accent-600: #339997; --accent-700: #267b7a;
+  --accent-subtle-bg:     rgba(99,200,193,0.08);
+  --accent-subtle-border: rgba(99,200,193,0.20);
 
-  --gray-950: #0A0B0F; --gray-900: #10121A; --gray-800: #1A1D2B;
-  --gray-700: #252838; --gray-600: #323548; --gray-500: #4D5068;
-  --gray-400: #6B6F88; --gray-300: #9196B0; --gray-200: #C2C5D6;
-  --gray-100: #E1E3EE; --gray-50:  #F0F1F8; --gray-25:  #F8F9FC;
+  --gray-950: #0c0c0c; --gray-900: #141414; --gray-800: #202020;
+  --gray-700: #2e2e2e; --gray-600: #3e3e3e; --gray-500: #575757;
+  --gray-400: #787878; --gray-300: #9e9e9e; --gray-200: #c4c4c4;
+  --gray-100: #e5e5e5; --gray-50:  #f2f2f2; --gray-25:  #f9f9f9;
 
   --success: #268245; --warning: #B07412; --error: #9B322C; --info: #2855A0;
   --success-subtle: rgba(38,130,69,0.10);
@@ -31,7 +31,7 @@
   --warning-border: rgba(176,116,18,0.25);
   --error-border:   rgba(155,50,44,0.25);
 
-  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'DM Mono', monospace;
   --text-2xl: 28px; --text-xl: 22px; --text-lg: 18px;
   --text-md: 14px; --text-base: 13px; --text-sm: 11px; --text-xs: 10px;
@@ -45,8 +45,8 @@
 
   /* Semantic dark */
   --bg-base:    var(--gray-950);
-  --bg-panel:   var(--gray-900);
-  --bg-raised:  var(--gray-800);
+  --bg-elevated:   var(--gray-900);
+  --bg-subtle:  var(--gray-800);
   --border-subtle:  var(--gray-800);
   --border-default: var(--gray-700);
   --border-strong:  var(--gray-600);
@@ -58,8 +58,8 @@
 
 [data-theme="light"] {
   --bg-base:    var(--gray-25);
-  --bg-panel:   #FFFFFF;
-  --bg-raised:  var(--gray-100);
+  --bg-elevated:   #FFFFFF;
+  --bg-subtle:  var(--gray-100);
   --border-subtle:  var(--gray-100);
   --border-default: var(--gray-200);
   --border-strong:  var(--gray-300);
@@ -89,7 +89,7 @@ body::before {
   content: '';
   position: fixed; inset: 0;
   pointer-events: none; z-index: 1000;
-  opacity: 0.20; mix-blend-mode: overlay;
+  opacity: 0.03; mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
   background-size: 180px 180px;
 }
@@ -120,7 +120,7 @@ body::before {
 .doc-badge::before {
   content: ''; position: absolute; inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
-  background-size: 65px 65px; opacity: 0.35; mix-blend-mode: overlay; pointer-events: none;
+  background-size: 65px 65px; opacity: 0.02; mix-blend-mode: overlay; pointer-events: none;
 }
 .doc-title { font-size: var(--text-2xl); font-weight: 700; letter-spacing: -0.035em; line-height: 1.2; }
 .doc-subtitle { font-size: var(--text-md); color: var(--text-tertiary); }
@@ -129,7 +129,7 @@ body::before {
 .doc-meta-item span { color: var(--text-tertiary); }
 .theme-btn {
   display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px;
-  background: var(--bg-raised); border: 1px solid var(--border-default);
+  background: var(--bg-subtle); border: 1px solid var(--border-default);
   border-radius: var(--radius-sm); cursor: pointer; font-family: var(--font-sans);
   font-size: var(--text-sm); color: var(--text-secondary);
   transition: all 150ms cubic-bezier(0.34,1.56,0.64,1); margin-top: 8px;
@@ -152,13 +152,13 @@ body::before {
 
 /* Preview zones */
 .preview-zone {
-  background: var(--bg-panel); border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated); border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md); padding: 24px; position: relative; overflow: hidden;
 }
 .preview-zone::before {
   content: ''; position: absolute; inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
-  background-size: 110px 110px; opacity: 0.12; mix-blend-mode: overlay; pointer-events: none; z-index: 0;
+  background-size: 110px 110px; opacity: 0.02; mix-blend-mode: overlay; pointer-events: none; z-index: 0;
 }
 .preview-zone > * { position: relative; z-index: 1; }
 .preview-zone.p0 { padding: 0; }
@@ -188,10 +188,10 @@ body::before {
 }
 .btn-primary { background: var(--accent-500); border-color: var(--accent-600); color: #fff; box-shadow: var(--shadow-sm); }
 .btn-primary:hover { background: var(--accent-600); transform: translateY(-1px); box-shadow: var(--shadow-md); }
-.btn-secondary { background: var(--bg-raised); border-color: var(--border-default); color: var(--text-secondary); box-shadow: var(--shadow-sm); }
+.btn-secondary { background: var(--bg-subtle); border-color: var(--border-default); color: var(--text-secondary); box-shadow: var(--shadow-sm); }
 .btn-secondary:hover { background: var(--gray-700); border-color: var(--border-strong); color: var(--text-primary); }
 .btn-ghost { background: transparent; border-color: transparent; color: var(--text-secondary); }
-.btn-ghost:hover { background: var(--bg-raised); color: var(--text-primary); }
+.btn-ghost:hover { background: var(--bg-subtle); color: var(--text-primary); }
 .btn-sm { padding: 5px 10px; font-size: var(--text-sm); }
 .btn-sm svg { width: 13px; height: 13px; }
 .btn-icon { padding: 7px; }
@@ -208,7 +208,7 @@ body::before {
 .badge::before {
   content: ''; position: absolute; inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
-  background-size: 65px 65px; opacity: 0.35; mix-blend-mode: overlay; pointer-events: none;
+  background-size: 65px 65px; opacity: 0.02; mix-blend-mode: overlay; pointer-events: none;
 }
 .badge > * { position: relative; z-index: 1; }
 .badge-accent   { background: var(--accent-subtle-bg);  border-color: var(--accent-subtle-border); color: var(--accent-300); }
@@ -364,7 +364,7 @@ body::before {
 .topbar-demo::before {
   content: ''; position: absolute; inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
-  background-size: 110px 110px; opacity: 0.10; mix-blend-mode: overlay; pointer-events: none; z-index: 0;
+  background-size: 110px 110px; opacity: 0.01; mix-blend-mode: overlay; pointer-events: none; z-index: 0;
 }
 .topbar-demo::after {
   content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
@@ -397,7 +397,7 @@ body::before {
 .topbar-search-input {
   width: 100%; max-width: 380px;
   display: flex; align-items: center; gap: 8px;
-  background: var(--bg-raised); border: 1px solid var(--border-subtle);
+  background: var(--bg-subtle); border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm); padding: 6px 12px;
   cursor: text; transition: border-color 150ms ease;
 }
@@ -408,7 +408,7 @@ body::before {
 }
 .topbar-search-kbd kbd {
   font-family: var(--font-mono); font-size: var(--text-xs);
-  background: var(--bg-panel); border: 1px solid var(--border-default);
+  background: var(--bg-elevated); border: 1px solid var(--border-default);
   border-radius: var(--radius-xs); padding: 1px 5px;
   color: var(--text-placeholder); line-height: 1.6;
 }
@@ -426,7 +426,7 @@ body::before {
   cursor: pointer; color: var(--text-tertiary);
   transition: all 150ms ease;
 }
-.topbar-action:hover { background: var(--bg-raised); border-color: var(--border-subtle); color: var(--text-secondary); }
+.topbar-action:hover { background: var(--bg-subtle); border-color: var(--border-subtle); color: var(--text-secondary); }
 .topbar-notif-dot {
   position: absolute; top: 4px; right: 4px;
   width: 7px; height: 7px; background: var(--error);
@@ -457,7 +457,7 @@ body::before {
   padding: 3px 6px; border-radius: var(--radius-sm);
   transition: all 150ms ease; cursor: pointer;
 }
-.breadcrumb-link:hover { background: var(--bg-raised); color: var(--text-secondary); }
+.breadcrumb-link:hover { background: var(--bg-subtle); color: var(--text-secondary); }
 .breadcrumb-sep {
   color: var(--text-placeholder);
   font-size: var(--text-sm); padding: 0 2px;
@@ -473,7 +473,7 @@ body::before {
   border-radius: var(--radius-sm); cursor: pointer;
   transition: background 150ms ease;
 }
-.breadcrumb-ellipsis:hover { background: var(--bg-raised); }
+.breadcrumb-ellipsis:hover { background: var(--bg-subtle); }
 
 /* ============================================================
    ██████████  TABS  ██████████
@@ -502,7 +502,7 @@ body::before {
 /* Tabs variante pills */
 .tabs-pills {
   display: flex; align-items: center; gap: 4px;
-  background: var(--bg-raised); border: 1px solid var(--border-subtle);
+  background: var(--bg-subtle); border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md); padding: 3px;
   width: fit-content;
 }
@@ -516,7 +516,7 @@ body::before {
 }
 .tab-pill:hover { color: var(--text-secondary); background: rgba(255,255,255,0.03); }
 .tab-pill.is-active {
-  background: var(--bg-panel); color: var(--text-primary); font-weight: 500;
+  background: var(--bg-elevated); color: var(--text-primary); font-weight: 500;
   box-shadow: var(--shadow-sm); border: 1px solid var(--border-subtle);
 }
 
@@ -524,7 +524,7 @@ body::before {
    ██████████  DROPDOWNS  ██████████
    ============================================================ */
 .dropdown-menu {
-  background: var(--bg-panel);
+  background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
@@ -535,7 +535,7 @@ body::before {
 .dropdown-menu::before {
   content: ''; position: absolute; inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
-  background-size: 110px 110px; opacity: 0.12; mix-blend-mode: overlay; pointer-events: none; z-index: 0;
+  background-size: 110px 110px; opacity: 0.02; mix-blend-mode: overlay; pointer-events: none; z-index: 0;
 }
 .dropdown-menu > * { position: relative; z-index: 1; }
 
@@ -589,7 +589,7 @@ body::before {
 .app-shell-topbar::before {
   content: ''; position: absolute; inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
-  background-size: 110px 110px; opacity: 0.08; mix-blend-mode: overlay; pointer-events: none; z-index: 0;
+  background-size: 110px 110px; opacity: 0.01; mix-blend-mode: overlay; pointer-events: none; z-index: 0;
 }
 .app-shell-body { display: flex; flex: 1; overflow: hidden; }
 .app-shell-sidebar {
@@ -613,10 +613,10 @@ body::before {
   display: flex; flex-direction: column; gap: 12px;
 }
 .shell-placeholder-bar {
-  height: 8px; border-radius: 4px; background: var(--bg-raised);
+  height: 8px; border-radius: 4px; background: var(--bg-subtle);
 }
 .shell-placeholder-card {
-  height: 72px; border-radius: var(--radius-md); background: var(--bg-panel);
+  height: 72px; border-radius: var(--radius-md); background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
 }
 
@@ -652,7 +652,7 @@ body::before {
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: var(--bg-raised);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
   color: var(--text-tertiary);
@@ -662,7 +662,7 @@ body::before {
   transition: all 150ms ease;
 }
 .nav-dropdown-btn:hover {
-  background: var(--bg-panel);
+  background: var(--bg-elevated);
   border-color: var(--border-strong);
   color: var(--text-secondary);
 }
@@ -670,7 +670,7 @@ body::before {
   position: absolute;
   top: calc(100% + 4px);
   right: 0;
-  background: var(--bg-panel);
+  background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 6px;
@@ -699,7 +699,7 @@ body::before {
   transition: all 120ms ease;
 }
 .nav-dropdown-item:hover {
-  background: var(--bg-raised);
+  background: var(--bg-subtle);
   color: var(--text-secondary);
 }
 .nav-dropdown-item.active {
@@ -738,7 +738,7 @@ body::before {
 }
 .footer-link:hover {
   color: var(--text-secondary);
-  background: var(--bg-raised);
+  background: var(--bg-subtle);
 }
 .footer-link svg { width: 14px; height: 14px; }
 .footer-link.disabled {
@@ -754,7 +754,7 @@ body::before {
 .kbd {
   display: inline-block;
   padding: 2px 5px;
-  background: var(--bg-raised);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
   border-radius: 3px;
   font-size: 9px;
@@ -846,12 +846,12 @@ body::before {
           </div>
           <!-- Search -->
           <div style="flex:1;padding:0 16px;position:relative;z-index:1">
-            <div style="display:flex;align-items:center;gap:8px;background:var(--bg-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:5px 10px;max-width:340px">
+            <div style="display:flex;align-items:center;gap:8px;background:var(--bg-subtle);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:5px 10px;max-width:340px">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gray-500)" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
               <span style="font-size:var(--text-sm);color:var(--text-placeholder);flex:1">Rechercher un document, une référence…</span>
               <div style="display:flex;gap:2px">
-                <kbd style="font-family:var(--font-mono);font-size:9px;background:var(--bg-panel);border:1px solid var(--border-default);border-radius:2px;padding:1px 4px;color:var(--text-placeholder)">⌘</kbd>
-                <kbd style="font-family:var(--font-mono);font-size:9px;background:var(--bg-panel);border:1px solid var(--border-default);border-radius:2px;padding:1px 4px;color:var(--text-placeholder)">K</kbd>
+                <kbd style="font-family:var(--font-mono);font-size:9px;background:var(--bg-elevated);border:1px solid var(--border-default);border-radius:2px;padding:1px 4px;color:var(--text-placeholder)">⌘</kbd>
+                <kbd style="font-family:var(--font-mono);font-size:9px;background:var(--bg-elevated);border:1px solid var(--border-default);border-radius:2px;padding:1px 4px;color:var(--text-placeholder)">K</kbd>
               </div>
             </div>
           </div>
@@ -913,8 +913,8 @@ body::before {
           <div class="app-shell-content">
             <div class="shell-content-placeholder">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-                <div class="shell-placeholder-bar" style="width:180px;height:10px;background:var(--bg-raised)"></div>
-                <div class="shell-placeholder-bar" style="width:80px;height:10px;background:var(--bg-raised)"></div>
+                <div class="shell-placeholder-bar" style="width:180px;height:10px;background:var(--bg-subtle)"></div>
+                <div class="shell-placeholder-bar" style="width:80px;height:10px;background:var(--bg-subtle)"></div>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
                 <div class="shell-placeholder-card"></div>
@@ -1242,10 +1242,10 @@ body::before {
     <table class="spec-table">
       <thead><tr><th>Élément</th><th>Style</th><th>Interaction</th></tr></thead>
       <tbody>
-        <tr><td>Lien parent</td><td class="mono">color: --text-tertiary · hover: bg-raised</td><td>Cliquable · cursor pointer</td></tr>
+        <tr><td>Lien parent</td><td class="mono">color: --text-tertiary · hover: bg-subtle</td><td>Cliquable · cursor pointer</td></tr>
         <tr><td>Séparateur</td><td class="mono">color: --text-placeholder · user-select: none</td><td>Non interactif · aria-hidden</td></tr>
         <tr><td>Item courant</td><td class="mono">color: --text-primary · font-weight 500</td><td>Non cliquable · aria-current="page"</td></tr>
-        <tr><td>Ellipsis</td><td class="mono">color: --text-placeholder · hover: bg-raised</td><td>Cliquable pour déplier</td></tr>
+        <tr><td>Ellipsis</td><td class="mono">color: --text-placeholder · hover: bg-subtle</td><td>Cliquable pour déplier</td></tr>
       </tbody>
     </table>
   </section>
@@ -1293,7 +1293,7 @@ body::before {
         </div>
         <!-- Tab content area -->
         <div role="tabpanel" id="panel-apercu" style="padding:16px 4px 4px">
-          <div style="height:48px;background:var(--bg-raised);border-radius:var(--radius-sm);display:flex;align-items:center;padding:12px;gap:8px">
+          <div style="height:48px;background:var(--bg-subtle);border-radius:var(--radius-sm);display:flex;align-items:center;padding:12px;gap:8px">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-placeholder)" stroke-width="1.5" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
             <span style="font-size:var(--text-sm);color:var(--text-placeholder)">Contenu de l'onglet Aperçu — Prévisualisation du document PDF</span>
           </div>

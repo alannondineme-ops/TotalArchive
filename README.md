@@ -1,6 +1,6 @@
 # 🎨 Charte Graphique — Système d'Archivage Numérique
 
-> Design system complet pour une application d'archivage documentaire de l'administration publique française.
+> Design system complet pour une application d'archivage documentaire de l'administration publique.
 
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)

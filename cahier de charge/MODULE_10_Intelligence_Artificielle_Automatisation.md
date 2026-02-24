@@ -140,7 +140,7 @@ Les fonctionnalités d'IA implémentées sont **pragmatiques et éprouvées**, p
 |---|---|---|---|
 | Personne | PERSON | "Jean Dupont", "Marie Martin" | Pré-remplir le champ "Auteur" ou "Partie contractante" |
 | Organisation | ORG | "Ministère de la Santé", "Société ABC" | Pré-remplir "Service émetteur" ou "Partie contractante" |
-| Lieu | LOC | "Paris", "France", "Rue de la Paix" | Métadonnées de localisation |
+| Lieu | LOC | "Brazzaville", "Congo", "Avenue de la Paix" | Métadonnées de localisation |
 | Date | DATE | "15 janvier 2026", "2026-01-15" | Pré-remplir "Date du document" |
 | Montant | MONEY | "1 500 €", "$ 2,000" | Métadonnées financières |
 | Référence | MISC | "Contrat n° 2026-001" | Numéro de référence |

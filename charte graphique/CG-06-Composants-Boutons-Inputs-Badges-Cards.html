@@ -5,40 +5,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CG-06 — Composants : Boutons, Inputs, Badges, Cards</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
 /* ============================================================
    TOKENS — Charte Graphique Archivage Numérique
    ============================================================ */
 :root {
-  /* Accent — Sage Slate */
-  --accent-50:  #E8F8F6;
-  --accent-100: #C5EDE9;
-  --accent-200: #8DD9D1;
-  --accent-300: #65D5C4;
-  --accent-400: #2BBFAD;
-  --accent-500: #179E8E;
-  --accent-600: #0E7E72;
-  --accent-700: #0C6259;
-  --accent-800: #094D47;
-  --accent-900: #063835;
-  --accent-subtle-bg:     rgba(23,158,142,0.08);
-  --accent-subtle-border: rgba(23,158,142,0.20);
+  /* Accent — Teal Capy */
+  --accent-50:  #e8faf7;
+  --accent-100: #d5f2ef;
+  --accent-200: #abe4de;
+  --accent-300: #8dd9d4;
+  --accent-400: #75d0c8;
+  --accent-500: #63c8c1;
+  --accent-600: #339997;
+  --accent-700: #267b7a;
+  --accent-800: #1a5a59;
+  --accent-900: #0e3a3a;
+  --accent-subtle-bg:     rgba(99,200,193,0.08);
+  --accent-subtle-border: rgba(99,200,193,0.20);
 
-  /* Gris froids bleutés */
-  --gray-950: #0A0B0F;
-  --gray-900: #10121A;
-  --gray-800: #1A1D2B;
-  --gray-700: #252838;
-  --gray-600: #323548;
-  --gray-500: #4D5068;
-  --gray-400: #6B6F88;
-  --gray-300: #9196B0;
-  --gray-200: #C2C5D6;
-  --gray-100: #E1E3EE;
-  --gray-50:  #F0F1F8;
-  --gray-25:  #F8F9FC;
+  /* Gris neutres */
+  --gray-950: #0c0c0c;
+  --gray-900: #141414;
+  --gray-800: #202020;
+  --gray-700: #2e2e2e;
+  --gray-600: #3e3e3e;
+  --gray-500: #575757;
+  --gray-400: #787878;
+  --gray-300: #9e9e9e;
+  --gray-200: #c4c4c4;
+  --gray-100: #e5e5e5;
+  --gray-50:  #f2f2f2;
+  --gray-25:  #f9f9f9;
 
   /* Fonctionnelles désaturées */
   --success: #268245;
@@ -55,7 +55,7 @@
   --info-border:    rgba(40,85,160,0.25);
 
   /* Typo */
-  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'DM Mono', monospace;
   --text-2xl: 28px;
   --text-xl:  22px;
@@ -84,8 +84,8 @@
 
   /* Semantic dark (défaut) */
   --bg-base:    var(--gray-950);
-  --bg-panel:   var(--gray-900);
-  --bg-raised:  var(--gray-800);
+  --bg-elevated:   var(--gray-900);
+  --bg-subtle:  var(--gray-800);
   --border-subtle:  var(--gray-800);
   --border-default: var(--gray-700);
   --border-strong:  var(--gray-600);
@@ -97,8 +97,8 @@
 
 [data-theme="light"] {
   --bg-base:    var(--gray-25);
-  --bg-panel:   #FFFFFF;
-  --bg-raised:  var(--gray-100);
+  --bg-elevated:   #FFFFFF;
+  --bg-subtle: var(--gray-50);
   --border-subtle:  var(--gray-100);
   --border-default: var(--gray-200);
   --border-strong:  var(--gray-300);
@@ -136,7 +136,7 @@ body::before {
   width: 100%; height: 100%;
   pointer-events: none;
   z-index: 1000;
-  opacity: 0.20;
+  opacity: 0.03;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
   background-size: 180px 180px;
@@ -199,7 +199,7 @@ body::before {
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
   background-size: 65px 65px;
-  opacity: 0.35;
+  opacity: 0.02;
   mix-blend-mode: overlay;
   pointer-events: none;
 }
@@ -242,7 +242,7 @@ body::before {
   align-items: center;
   gap: var(--space-2);
   padding: 6px 12px;
-  background: var(--bg-raised);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
   cursor: pointer;
@@ -306,7 +306,7 @@ body::before {
    PREVIEW ZONES
    ============================================================ */
 .preview-zone {
-  background: var(--bg-panel);
+  background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: var(--space-6);
@@ -319,7 +319,7 @@ body::before {
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
   background-size: 110px 110px;
-  opacity: 0.12;
+  opacity: 0.02;
   mix-blend-mode: overlay;
   pointer-events: none;
   z-index: 0;
@@ -462,7 +462,7 @@ body::before {
 
 /* Secondary */
 .btn-secondary {
-  background: var(--bg-raised);
+  background: var(--bg-subtle);
   border-color: var(--border-default);
   color: var(--text-secondary);
   box-shadow: var(--shadow-sm);
@@ -490,7 +490,7 @@ body::before {
   color: var(--text-secondary);
 }
 .btn-ghost:hover {
-  background: var(--bg-raised);
+  background: var(--bg-subtle);
   color: var(--text-primary);
 }
 .btn-ghost:active {
@@ -530,8 +530,8 @@ body::before {
   box-shadow: var(--shadow-sm);
 }
 .btn-outline-accent:hover {
-  background: rgba(23,158,142,0.14);
-  border-color: rgba(23,158,142,0.35);
+  background: rgba(99,200,193,0.14);
+  border-color: rgba(99,200,193,0.35);
   transform: translateY(-1px);
 }
 .btn-outline-accent:focus-visible {
@@ -604,7 +604,7 @@ body::before {
   font-family: var(--font-sans);
   font-size: var(--text-base);
   color: var(--text-primary);
-  background: var(--bg-raised);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
   padding: 8px 12px;
@@ -648,7 +648,7 @@ body::before {
 .form-textarea:focus {
   border-color: var(--accent-500);
   box-shadow: 0 0 0 2px var(--bg-base), 0 0 0 4px var(--accent-500);
-  background: var(--bg-panel);
+  background: var(--bg-elevated);
 }
 .form-input:hover:not(:focus):not(:disabled),
 .form-select:hover:not(:focus):not(:disabled) {
@@ -677,7 +677,7 @@ body::before {
 .form-textarea:disabled {
   opacity: 0.42;
   cursor: not-allowed;
-  background: var(--bg-raised);
+  background: var(--bg-subtle);
 }
 
 /* Help & error text */
@@ -726,7 +726,7 @@ body::before {
 .checkbox-input {
   width: 16px; height: 16px;
   appearance: none;
-  background: var(--bg-raised);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-xs);
   cursor: pointer;
@@ -782,7 +782,7 @@ body::before {
 .radio-input {
   width: 16px; height: 16px;
   appearance: none;
-  background: var(--bg-raised);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-default);
   border-radius: 50%;
   cursor: pointer;
@@ -867,7 +867,7 @@ body::before {
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
   background-size: 65px 65px;
-  opacity: 0.35;
+  opacity: 0.02;
   mix-blend-mode: overlay;
   pointer-events: none;
 }
@@ -907,7 +907,7 @@ body::before {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background: var(--bg-raised);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-xs);
   padding: 3px 8px;
@@ -948,7 +948,7 @@ body::before {
 
 /* Card base */
 .card {
-  background: var(--bg-panel);
+  background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
@@ -961,7 +961,7 @@ body::before {
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
   background-size: 110px 110px;
-  opacity: 0.12;
+  opacity: 0.02;
   mix-blend-mode: overlay;
   pointer-events: none;
   z-index: 0;
@@ -1102,7 +1102,7 @@ body::before {
   width: 100%;
   border-collapse: collapse;
   font-size: var(--text-base);
-  background: var(--bg-panel);
+  background: var(--bg-elevated);
 }
 .data-table thead th {
   font-family: var(--font-mono);
@@ -1137,7 +1137,7 @@ body::before {
 
 /* Row states */
 .data-table tbody tr:hover td { background: rgba(255,255,255,0.025); }
-.data-table tbody tr.is-selected td { background: var(--accent-subtle-bg); border-bottom-color: rgba(23,158,142,0.12); }
+.data-table tbody tr.is-selected td { background: var(--accent-subtle-bg); border-bottom-color: rgba(99,200,193,0.12); }
 .data-table tbody tr.is-selected td:first-child { border-left: 2px solid var(--accent-500); padding-left: 14px; }
 
 /* Checkbox column */
@@ -1163,7 +1163,7 @@ body::before {
 }
 .table-empty-icon {
   width: 40px; height: 40px;
-  background: var(--bg-raised);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   display: flex;
@@ -1217,7 +1217,7 @@ body::before {
   color: var(--text-tertiary);
   transition: all 150ms ease;
 }
-.page-btn:hover { background: var(--bg-raised); border-color: var(--border-default); color: var(--text-primary); }
+.page-btn:hover { background: var(--bg-subtle); border-color: var(--border-default); color: var(--text-primary); }
 .page-btn.is-active { background: var(--accent-subtle-bg); border-color: var(--accent-subtle-border); color: var(--accent-300); }
 .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
@@ -1285,7 +1285,7 @@ body::before {
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: var(--bg-raised);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
   color: var(--text-tertiary);
@@ -1295,7 +1295,7 @@ body::before {
   transition: all 150ms ease;
 }
 .nav-dropdown-btn:hover {
-  background: var(--bg-panel);
+  background: var(--bg-elevated);
   border-color: var(--border-strong);
   color: var(--text-secondary);
 }
@@ -1303,7 +1303,7 @@ body::before {
   position: absolute;
   top: calc(100% + 4px);
   right: 0;
-  background: var(--bg-panel);
+  background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 6px;
@@ -1332,7 +1332,7 @@ body::before {
   transition: all 120ms ease;
 }
 .nav-dropdown-item:hover {
-  background: var(--bg-raised);
+  background: var(--bg-subtle);
   color: var(--text-secondary);
 }
 .nav-dropdown-item.active {
@@ -1385,7 +1385,7 @@ body::before {
 }
 .footer-link:hover {
   color: var(--text-secondary);
-  background: var(--bg-raised);
+  background: var(--bg-subtle);
 }
 .footer-link svg { width: 14px; height: 14px; }
 .footer-link.disabled {
@@ -1401,7 +1401,7 @@ body::before {
 .kbd {
   display: inline-block;
   padding: 2px 5px;
-  background: var(--bg-raised);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
   border-radius: 3px;
   font-size: 9px;
@@ -1627,7 +1627,7 @@ body::before {
       </thead>
       <tbody>
         <tr><td>Primary</td><td class="mono">--accent-500</td><td class="mono">--accent-600</td><td>#FFFFFF</td><td>Action principale de la page</td></tr>
-        <tr><td>Secondary</td><td class="mono">--bg-raised</td><td class="mono">--border-default</td><td class="mono">--text-secondary</td><td>Actions secondaires, alternatives</td></tr>
+        <tr><td>Secondary</td><td class="mono">--bg-subtle</td><td class="mono">--border-default</td><td class="mono">--text-secondary</td><td>Actions secondaires, alternatives</td></tr>
         <tr><td>Ghost</td><td>transparent</td><td>transparent</td><td class="mono">--text-secondary</td><td>Actions tertiaires, icônes toolbar</td></tr>
         <tr><td>Outline Accent</td><td class="mono">--accent-subtle-bg</td><td class="mono">--accent-subtle-border</td><td class="mono">--accent-300</td><td>CTA accent sans remplissage fort</td></tr>
         <tr><td>Danger</td><td class="mono">--error-subtle</td><td class="mono">--error-border</td><td>#DC7070</td><td>Suppression, archivage irréversible</td></tr>
@@ -2047,7 +2047,7 @@ body::before {
                   <span style="color:var(--text-tertiary)">Stockage utilisé</span>
                   <span style="color:var(--text-secondary);font-family:var(--font-mono)">1.24 Go / 5 Go</span>
                 </div>
-                <div style="height:4px;background:var(--bg-raised);border-radius:2px;overflow:hidden">
+                <div style="height:4px;background:var(--bg-subtle);border-radius:2px;overflow:hidden">
                   <div style="height:100%;width:24.8%;background:var(--accent-500);border-radius:2px"></div>
                 </div>
               </div>

@@ -5,29 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CG-05 — Effets : Grain, Verre, Ombres & Bordures · Archivage Numérique</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --accent-300:  #65D5C4;
-  --accent-400:  #36BCAB;
-  --accent-500:  #179E8E;
-  --accent-600:  #0E7E72;
-  --accent-subtle-bg:     rgba(23,158,142,0.08);
-  --accent-subtle-border: rgba(23,158,142,0.20);
+  --accent-300:  #8dd9d4;
+  --accent-400:  #75d0c8;
+  --accent-500:  #63c8c1;
+  --accent-600:  #339997;
+  --accent-subtle-bg:     rgba(99,200,193,0.08);
+  --accent-subtle-border: rgba(99,200,193,0.20);
 
-  --gray-950: #0A0B0F;
-  --gray-900: #10121A;
-  --gray-850: #14161F;
-  --gray-800: #1A1D2B;
-  --gray-700: #252838;
-  --gray-600: #353848;
-  --gray-500: #4D5068;
-  --gray-400: #6B6F88;
-  --gray-300: #9498B0;
-  --gray-200: #C2C5D6;
-  --gray-50:  #F0F1F8;
+  --gray-950: #0c0c0c;
+  --gray-900: #141414;
+  --gray-850: #191919;
+  --gray-800: #202020;
+  --gray-700: #2e2e2e;
+  --gray-600: #3e3e3e;
+  --gray-500: #575757;
+  --gray-400: #787878;
+  --gray-300: #9e9e9e;
+  --gray-200: #c4c4c4;
+  --gray-50:  #f2f2f2;
 
   --bg-base:     var(--gray-950);
   --bg-elevated: var(--gray-900);
@@ -38,7 +38,7 @@
   --text-secondary: var(--gray-200);
   --text-tertiary:  var(--gray-400);
 
-  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'DM Mono', monospace;
   --radius-sm: 4px;
   --radius-md: 6px;
@@ -48,13 +48,13 @@
 
 /* Light mode */
 [data-theme="light"] {
-  --bg-base: #F8F9FC;
+  --bg-base: #f9f9f9;
   --bg-elevated: #FFFFFF;
-  --bg-subtle: var(--gray-100);
+  --bg-subtle: var(--gray-50);
   --border-subtle: var(--gray-100);
   --border-default: var(--gray-200);
   --text-primary: var(--gray-900);
-  --text-secondary: #3D4158;
+  --text-secondary: #4f4f4f;
   --text-tertiary: var(--gray-500);
 }
 
@@ -80,7 +80,7 @@ body::before {
   content: '';
   position: fixed; inset: 0; z-index: 9999; pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  background-size: 180px; opacity: 0.20; mix-blend-mode: overlay;
+  background-size: 180px; opacity: 0.03; mix-blend-mode: overlay;
 }
 
 .page { max-width: 1100px; margin: 0 auto; padding: 64px 40px 120px; }
@@ -129,17 +129,17 @@ body::before {
 .grain-light::after {
   content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 180px; opacity: 0.10; mix-blend-mode: overlay;
+  background-size: 180px; opacity: 0.01; mix-blend-mode: overlay;
 }
 .grain-medium::after {
   content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 110px; opacity: 0.15; mix-blend-mode: overlay;
+  background-size: 110px; opacity: 0.02; mix-blend-mode: overlay;
 }
 .grain-heavy::after {
   content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 70px; opacity: 0.32; mix-blend-mode: overlay;
+  background-size: 70px; opacity: 0.02; mix-blend-mode: overlay;
 }
 
 .grain-showcase {
@@ -174,7 +174,7 @@ body::before {
 .grain-info::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 80px; opacity: 0.08; mix-blend-mode: overlay;
+  background-size: 80px; opacity: 0.01; mix-blend-mode: overlay;
 }
 .grain-name { font-size: 11px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; position: relative; z-index: 2; }
 .grain-spec { font-family: var(--font-mono); font-size: 9px; color: var(--accent-300); margin-bottom: 6px; position: relative; z-index: 2; }
@@ -241,7 +241,7 @@ body::before {
   content: '';
   position: absolute; inset: 0; z-index: 0;
   background:
-    radial-gradient(ellipse 140px 100px at 20% 30%, rgba(23,158,142,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 140px 100px at 20% 30%, rgba(99,200,193,0.18) 0%, transparent 70%),
     radial-gradient(ellipse 100px 80px at 80% 70%, rgba(107,111,136,0.20) 0%, transparent 70%),
     var(--gray-850);
 }
@@ -295,7 +295,7 @@ body::before {
   content: '';
   position: absolute; inset: 0; pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 80px; opacity: 0.18; mix-blend-mode: overlay;
+  background-size: 80px; opacity: 0.03; mix-blend-mode: overlay;
 }
 .glass-toast::after {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
@@ -315,7 +315,7 @@ body::before {
 .glass-spec-card::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 80px; opacity: 0.08; mix-blend-mode: overlay;
+  background-size: 80px; opacity: 0.01; mix-blend-mode: overlay;
 }
 .gsc-target { font-size: 11px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px; position: relative; z-index: 2; }
 .gsc-prop { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border-subtle); position: relative; z-index: 2; }
@@ -341,7 +341,7 @@ body::before {
 .shadow-card::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 80px; opacity: 0.08; mix-blend-mode: overlay;
+  background-size: 80px; opacity: 0.01; mix-blend-mode: overlay;
 }
 .shadow-subject {
   width: 60px; height: 60px; border-radius: var(--radius-md);
@@ -356,9 +356,9 @@ body::before {
 
 /* Ombres réelles appliquées */
 .sh-none   { box-shadow: none; border: 1px solid var(--border-default); }
-.sh-sm     { box-shadow: 0 1px 3px rgba(0,0,0,0.20), 0 1px 2px rgba(0,0,0,0.12); }
-.sh-md     { box-shadow: 0 4px 12px rgba(0,0,0,0.25), 0 2px 4px rgba(0,0,0,0.12); }
-.sh-lg     { box-shadow: 0 8px 24px rgba(0,0,0,0.30), 0 4px 8px rgba(0,0,0,0.14); }
+.sh-sm     { box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); }
+.sh-md     { box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04); }
+.sh-lg     { box-shadow: 0 8px 24px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.05); }
 .sh-focus  { box-shadow: 0 0 0 2px var(--gray-950), 0 0 0 4px var(--accent-500); border: 1px solid var(--border-default); }
 
 /* Focus ring demo */
@@ -374,7 +374,7 @@ body::before {
 .focus-ring-demo::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 80px; opacity: 0.08; mix-blend-mode: overlay;
+  background-size: 80px; opacity: 0.01; mix-blend-mode: overlay;
 }
 .focus-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .focus-label { font-family: var(--font-mono); font-size: 9px; color: var(--gray-600); letter-spacing: 0.08em; }
@@ -390,7 +390,7 @@ body::before {
 .focus-el-btn::before {
   content: ''; position: absolute; inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 55px; opacity: 0.35; mix-blend-mode: overlay;
+  background-size: 55px; opacity: 0.02; mix-blend-mode: overlay;
 }
 .focus-el-input { background: var(--bg-subtle); border: 1px solid var(--border-default); color: var(--text-secondary); }
 .fr-default {}
@@ -413,7 +413,7 @@ body::before {
 .br-card::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 80px; opacity: 0.08; mix-blend-mode: overlay;
+  background-size: 80px; opacity: 0.01; mix-blend-mode: overlay;
 }
 .br-subject {
   width: 56px; height: 56px; background: var(--gray-700);
@@ -434,7 +434,7 @@ body::before {
 .border-type-card::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 80px; opacity: 0.08; mix-blend-mode: overlay;
+  background-size: 80px; opacity: 0.01; mix-blend-mode: overlay;
 }
 .bt-name { font-size: 11px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; position: relative; z-index: 2; }
 .bt-val  { font-family: var(--font-mono); font-size: 9px; color: var(--accent-300); margin-bottom: 8px; position: relative; z-index: 2; }
@@ -446,7 +446,7 @@ body::before {
 .bt-demo-subtle { background: var(--bg-subtle); border: 1px solid var(--gray-800); }
 .bt-demo-default { background: var(--bg-subtle); border: 1px solid var(--gray-700); }
 .bt-demo-strong  { background: var(--bg-subtle); border: 1px solid var(--gray-600); }
-.bt-demo-focus   { background: var(--bg-subtle); border: 1px solid var(--accent-500); box-shadow: 0 0 0 1px rgba(23,158,142,0.25); }
+.bt-demo-focus   { background: var(--bg-subtle); border: 1px solid var(--accent-500); box-shadow: 0 0 0 1px rgba(99,200,193,0.25); }
 .bt-demo-accent  { background: var(--accent-subtle-bg); border: 1px solid var(--accent-subtle-border); }
 .bt-demo-error   { background: rgba(155,50,44,0.08); border: 1px solid rgba(155,50,44,0.28); }
 
@@ -497,7 +497,7 @@ body::before {
 .code-block::after {
   content: ''; position: absolute; inset: 0; border-radius: var(--radius-md); pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 100px; opacity: 0.07; mix-blend-mode: overlay;
+  background-size: 100px; opacity: 0.01; mix-blend-mode: overlay;
 }
 .code-lang {
   font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
@@ -588,7 +588,7 @@ pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); li
   color: var(--gray-200);
 }
 .nav-dropdown-item.active {
-  background: rgba(23,158,142,0.12);
+  background: rgba(99,200,193,0.12);
   color: var(--accent-300);
   font-weight: 500;
 }
@@ -677,7 +677,7 @@ pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); li
   color: var(--gray-200);
 }
 .nav-dropdown-item.active {
-  background: rgba(23,158,142,0.12);
+  background: rgba(99,200,193,0.12);
   color: var(--accent-300);
   font-weight: 500;
 }
@@ -861,7 +861,7 @@ pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); li
 
     <!-- Boutons avec grain -->
     <div style="margin-top:28px;background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:24px;position:relative;overflow:hidden;">
-      <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.88\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:100px;opacity:0.08;mix-blend-mode:overlay;"></div>
+      <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.88\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:100px;opacity:0.01;mix-blend-mode:overlay;"></div>
       <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gray-600);margin-bottom:16px;position:relative;z-index:2;">Démonstration — Grain sur boutons</div>
       <div class="grain-btn-row">
         <!-- Primary grain fort -->
@@ -873,13 +873,13 @@ pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); li
         <!-- Ghost -->
         <div style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:transparent;border:1px solid var(--border-default);border-radius:var(--radius-sm);font-size:11px;font-weight:500;color:var(--gray-300);cursor:default;position:relative;overflow:hidden;">
           <span style="position:relative;z-index:2">Annuler</span>
-          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:60px;opacity:0.12;mix-blend-mode:overlay;"></div>
+          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:60px;opacity:0.02;mix-blend-mode:overlay;"></div>
         </div>
 
         <!-- Danger -->
         <div style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:rgba(155,50,44,0.15);border:1px solid rgba(155,50,44,0.3);border-radius:var(--radius-sm);font-size:11px;font-weight:500;color:#CF6860;cursor:default;position:relative;overflow:hidden;">
           <span style="position:relative;z-index:2">Supprimer</span>
-          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:60px;opacity:0.20;mix-blend-mode:overlay;"></div>
+          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:60px;opacity:0.03;mix-blend-mode:overlay;"></div>
         </div>
 
         <!-- Badge -->
@@ -888,7 +888,7 @@ pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); li
           <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:45px;opacity:0.28;mix-blend-mode:overlay;"></div>
         </div>
       </div>
-      <p class="grain-note" style="position:relative;z-index:2;margin-top:14px">Regardez de près les boutons — le grain est visible et tactile, notamment sur le bouton primaire Sage Slate et le badge.</p>
+      <p class="grain-note" style="position:relative;z-index:2;margin-top:14px">Regardez de près les boutons — le grain est visible et tactile, notamment sur le bouton primaire Teal Capy et le badge.</p>
     </div>
   </section>
 
@@ -1027,7 +1027,7 @@ pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); li
       <div class="focus-item">
         <div class="focus-el focus-el-btn fr-default" style="position:relative;overflow:hidden">
           <span style="position:relative;z-index:2">Bouton</span>
-          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:55px;opacity:0.35;mix-blend-mode:overlay;"></div>
+          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:55px;opacity:0.02;mix-blend-mode:overlay;"></div>
         </div>
         <div class="focus-label">Default</div>
       </div>
@@ -1035,7 +1035,7 @@ pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); li
       <div class="focus-item">
         <div class="focus-el focus-el-btn fr-focus" style="position:relative;overflow:hidden">
           <span style="position:relative;z-index:2">Bouton</span>
-          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:55px;opacity:0.35;mix-blend-mode:overlay;"></div>
+          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:55px;opacity:0.02;mix-blend-mode:overlay;"></div>
         </div>
         <div class="focus-label">:focus-visible</div>
       </div>
@@ -1109,19 +1109,19 @@ pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); li
     <div class="border-types">
       <div class="border-type-card">
         <div class="bt-name">Subtle</div>
-        <div class="bt-val">--border-subtle · #1A1D2B</div>
+        <div class="bt-val">--border-subtle · #202020</div>
         <div class="bt-desc">Séparateurs internes. Lignes de table. Dividers. Maximal discrétion.</div>
         <div class="bt-demo bt-demo-subtle"></div>
       </div>
       <div class="border-type-card">
         <div class="bt-name">Default</div>
-        <div class="bt-val">--border-default · #252838</div>
+        <div class="bt-val">--border-default · #2e2e2e</div>
         <div class="bt-desc">Contour de cards, inputs, panels. La bordure standard de référence.</div>
         <div class="bt-demo bt-demo-default"></div>
       </div>
       <div class="border-type-card">
         <div class="bt-name">Strong</div>
-        <div class="bt-val">--border-strong · #353848</div>
+        <div class="bt-val">--border-strong · #3e3e3e</div>
         <div class="bt-desc">Séparation marquée entre sections majeures. Utilisé avec parcimonie.</div>
         <div class="bt-demo bt-demo-strong"></div>
       </div>
@@ -1157,7 +1157,7 @@ pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); li
       <!-- Sans reflet -->
       <div class="hl-card">
         <div class="hl-swatch hl-grain" style="background:rgba(255,255,255,0.04);backdrop-filter:blur(14px);">
-          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:60px;opacity:0.15;mix-blend-mode:overlay;position:absolute;inset:0;"></div>
+          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:60px;opacity:0.02;mix-blend-mode:overlay;position:absolute;inset:0;"></div>
           <span class="hl-label" style="position:relative;z-index:2">Sans reflet</span>
         </div>
         <div class="hl-info">
@@ -1166,10 +1166,10 @@ pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); li
         </div>
       </div>
 
-      <!-- Avec reflet Sage Slate -->
+      <!-- Avec reflet Teal Capy -->
       <div class="hl-card">
         <div class="hl-swatch hl-grain" style="background:rgba(255,255,255,0.04);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.09);">
-          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:60px;opacity:0.15;mix-blend-mode:overlay;position:absolute;inset:0;z-index:1;"></div>
+          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:60px;opacity:0.02;mix-blend-mode:overlay;position:absolute;inset:0;z-index:1;"></div>
           <span class="hl-label" style="position:relative;z-index:2">Avec reflet</span>
         </div>
         <div class="hl-info">
@@ -1182,7 +1182,7 @@ pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); li
       <div class="hl-card">
         <div class="hl-swatch hl-grain" style="background:var(--accent-500);position:relative;overflow:hidden;">
           <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.35),transparent);z-index:3;"></div>
-          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:60px;opacity:0.35;mix-blend-mode:overlay;z-index:1;"></div>
+          <div style="position:absolute;inset:0;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 128 128\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');background-size:60px;opacity:0.02;mix-blend-mode:overlay;z-index:1;"></div>
           <span class="hl-label" style="position:relative;z-index:2;color:rgba(255,255,255,0.5)">Bouton primary</span>
         </div>
         <div class="hl-info">
@@ -1211,9 +1211,9 @@ pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); li
 
   <span class="c-comment">/* ── GRAIN ───────────────────────────────────── */</span>
   <span class="c-comment">/* Les SVG sont inline — copiez les URLs de ce fichier */</span>
-  <span class="c-prop">--grain-url-light</span>:  <span class="c-val">url("svg-feTurbulence baseFreq=0.72 opacity=0.10")</span>;
-  <span class="c-prop">--grain-url-medium</span>: <span class="c-val">url("svg-feTurbulence baseFreq=0.88 opacity=0.15")</span>;
-  <span class="c-prop">--grain-url-heavy</span>:  <span class="c-val">url("svg-feTurbulence baseFreq=0.95 opacity=0.32")</span>;
+  <span class="c-prop">--grain-url-light</span>:  <span class="c-val">url("svg-feTurbulence baseFreq=0.72 opacity=0.01")</span>;
+  <span class="c-prop">--grain-url-medium</span>: <span class="c-val">url("svg-feTurbulence baseFreq=0.88 opacity=0.02")</span>;
+  <span class="c-prop">--grain-url-heavy</span>:  <span class="c-val">url("svg-feTurbulence baseFreq=0.95 opacity=0.02")</span>;
   <span class="c-prop">--grain-size-lg</span>:   <span class="c-val">180px</span>;   <span class="c-comment">/* fond page global           */</span>
   <span class="c-prop">--grain-size-md</span>:   <span class="c-val">110px</span>;   <span class="c-comment">/* cards, panels              */</span>
   <span class="c-prop">--grain-size-sm</span>:    <span class="c-val">65px</span>;   <span class="c-comment">/* boutons, badges            */</span>
@@ -1230,9 +1230,9 @@ pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); li
   <span class="c-prop">--glass-highlight</span>: <span class="c-val">linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent)</span>;
 
   <span class="c-comment">/* ── OMBRES Z-DEPTH ─────────────────────────── */</span>
-  <span class="c-prop">--shadow-sm</span>: <span class="c-val">0 1px  3px rgba(0,0,0,.20), 0 1px  2px rgba(0,0,0,.12)</span>;
-  <span class="c-prop">--shadow-md</span>: <span class="c-val">0 4px 12px rgba(0,0,0,.25), 0 2px  4px rgba(0,0,0,.12)</span>;
-  <span class="c-prop">--shadow-lg</span>: <span class="c-val">0 8px 24px rgba(0,0,0,.30), 0 4px  8px rgba(0,0,0,.14)</span>;
+  <span class="c-prop">--shadow-sm</span>: <span class="c-val">0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)</span>;
+  <span class="c-prop">--shadow-md</span>: <span class="c-val">0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)</span>;
+  <span class="c-prop">--shadow-lg</span>: <span class="c-val">0 8px 24px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.05)</span>;
   <span class="c-prop">--shadow-focus</span>: <span class="c-val">0 0 0 2px var(--bg-base), 0 0 0 4px var(--accent-500)</span>;
   <span class="c-prop">--shadow-focus-error</span>: <span class="c-val">0 0 0 2px var(--bg-base), 0 0 0 4px rgba(155,50,44,.70)</span>;
 }
@@ -1241,10 +1241,10 @@ pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); li
 <span class="c-var">.grain-global</span> { <span class="c-comment">/* body::before */</span>
   <span class="c-prop">position</span>: <span class="c-val">fixed</span>; <span class="c-prop">inset</span>: <span class="c-val">0</span>; <span class="c-prop">z-index</span>: <span class="c-val">9999</span>; <span class="c-prop">pointer-events</span>: <span class="c-val">none</span>;
   <span class="c-prop">background-size</span>: <span class="c-val">var(--grain-size-lg)</span>;
-  <span class="c-prop">opacity</span>: <span class="c-val">0.20</span>; <span class="c-prop">mix-blend-mode</span>: <span class="c-val">overlay</span>;
+  <span class="c-prop">opacity</span>: <span class="c-val">0.03</span>; <span class="c-prop">mix-blend-mode</span>: <span class="c-val">overlay</span>;
 }
-<span class="c-var">.grain-card::after</span>   { <span class="c-prop">background-size</span>: <span class="c-val">var(--grain-size-md)</span>; <span class="c-prop">opacity</span>: <span class="c-val">0.13</span>; }
-<span class="c-var">.grain-button::after</span> { <span class="c-prop">background-size</span>: <span class="c-val">var(--grain-size-sm)</span>; <span class="c-prop">opacity</span>: <span class="c-val">0.35</span>; }
+<span class="c-var">.grain-card::after</span>   { <span class="c-prop">background-size</span>: <span class="c-val">var(--grain-size-md)</span>; <span class="c-prop">opacity</span>: <span class="c-val">0.02</span>; }
+<span class="c-var">.grain-button::after</span> { <span class="c-prop">background-size</span>: <span class="c-val">var(--grain-size-sm)</span>; <span class="c-prop">opacity</span>: <span class="c-val">0.02</span>; }
 
 <span class="c-comment">/* ── MIXIN GLASS ──────────────────────────────── */</span>
 <span class="c-var">.glass-card</span> {
@@ -1289,7 +1289,7 @@ pre { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); li
     </div>
     <div class="footer-next">
       Prochain module :
-      <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path stroke="#179E8E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+      <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path stroke="#63c8c1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
       CG-06 — Composants : Boutons, Inputs, Badges, Cards
     </div>
   </footer>

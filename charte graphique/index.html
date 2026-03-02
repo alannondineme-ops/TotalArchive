@@ -5,37 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Charte Graphique — Archivage Numérique</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --accent-300:#65D5C4; --accent-400:#2BBFAD; --accent-500:#179E8E;
-  --accent-600:#0E7E72; --accent-700:#0C6259;
-  --accent-subtle-bg:rgba(23,158,142,0.08);
-  --accent-subtle-border:rgba(23,158,142,0.20);
-  --gray-950:#0A0B0F; --gray-900:#10121A; --gray-800:#1A1D2B;
-  --gray-700:#252838; --gray-600:#323548; --gray-500:#4D5068;
-  --gray-400:#6B6F88; --gray-300:#9196B0; --gray-200:#C2C5D6;
-  --gray-100:#E1E3EE; --gray-50:#F0F1F8; --gray-25:#F8F9FC;
+  --accent-300:#8dd9d4; --accent-400:#75d0c8; --accent-500:#63c8c1;
+  --accent-600:#339997; --accent-700:#267b7a;
+  --accent-subtle-bg:rgba(99,200,193,0.08);
+  --accent-subtle-border:rgba(99,200,193,0.20);
+  --gray-950:#0c0c0c; --gray-900:#141414; --gray-800:#202020;
+  --gray-700:#2e2e2e; --gray-600:#3e3e3e; --gray-500:#575757;
+  --gray-400:#787878; --gray-300:#9e9e9e; --gray-200:#c4c4c4;
+  --gray-100:#e5e5e5; --gray-50:#f2f2f2; --gray-25:#f9f9f9;
   --success:#268245; --warning:#B07412; --error:#9B322C; --info:#2855A0;
   --success-subtle:rgba(38,130,69,0.10); --success-border:rgba(38,130,69,0.25);
-  --font-sans:'Plus Jakarta Sans',sans-serif;
+  --font-sans:'Inter',sans-serif;
   --font-mono:'DM Mono',monospace;
   --text-2xl:28px; --text-xl:22px; --text-lg:18px; --text-md:14px;
   --text-base:13px; --text-sm:11px; --text-xs:10px;
   --radius-xs:2px; --radius-sm:4px; --radius-md:6px; --radius-lg:8px;
-  --shadow-sm:0 1px 3px rgba(0,0,0,.20),0 1px 2px rgba(0,0,0,.12);
-  --shadow-md:0 4px 12px rgba(0,0,0,.25),0 2px 4px rgba(0,0,0,.12);
-  --shadow-lg:0 8px 24px rgba(0,0,0,.30),0 4px 8px rgba(0,0,0,.14);
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg:0 8px 24px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.05);
   --ease-spring:cubic-bezier(0.34,1.56,0.64,1);
-  --bg-base:var(--gray-950); --bg-panel:var(--gray-900); --bg-raised:var(--gray-800);
+  --bg-base:var(--gray-950); --bg-elevated:var(--gray-900); --bg-subtle:var(--gray-800);
   --border-subtle:var(--gray-800); --border-default:var(--gray-700); --border-strong:var(--gray-600);
   --text-primary:var(--gray-50); --text-secondary:var(--gray-200);
   --text-tertiary:var(--gray-400); --text-placeholder:var(--gray-500);
 }
 [data-theme="light"] {
-  --bg-base:var(--gray-25); --bg-panel:#FFFFFF; --bg-raised:var(--gray-100);
+  --bg-base:var(--gray-25); --bg-elevated:#FFFFFF; --bg-subtle: var(--gray-50);
   --border-subtle:var(--gray-100); --border-default:var(--gray-200); --border-strong:var(--gray-300);
-  --text-primary:var(--gray-900); --text-secondary:#3D4158;
+  --text-primary:var(--gray-900); --text-secondary:#4f4f4f;
   --text-tertiary:var(--gray-500); --text-placeholder:var(--gray-400);
 }
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
@@ -52,7 +52,7 @@ body, body * {
 }
 body::before {
   content:''; position:fixed; inset:0; pointer-events:none; z-index:1000;
-  opacity:0.20; mix-blend-mode:overlay;
+  opacity:0.03; mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
   background-size:180px 180px;
 }
@@ -76,7 +76,7 @@ body::before {
 .hero-badge::before {
   content:''; position:absolute; inset:0;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
-  background-size:65px 65px; opacity:0.35; mix-blend-mode:overlay; pointer-events:none;
+  background-size:65px 65px; opacity:0.02; mix-blend-mode:overlay; pointer-events:none;
 }
 .hero-title {
   font-size:42px; font-weight:700; letter-spacing:-0.040em; line-height:1.1;
@@ -106,7 +106,7 @@ body::before {
   max-width:500px; margin:0 auto 40px; position:relative;
 }
 .search-input {
-  width:100%; padding:12px 16px 12px 44px; background:var(--bg-raised);
+  width:100%; padding:12px 16px 12px 44px; background:var(--bg-subtle);
   border:1px solid var(--border-default); border-radius:var(--radius-md);
   font-family:var(--font-sans); font-size:var(--text-base); color:var(--text-primary);
   outline:none; transition:all 150ms ease;
@@ -122,7 +122,7 @@ body::before {
   display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom:40px;
 }
 .filter-btn {
-  padding:6px 14px; background:var(--bg-raised); border:1px solid var(--border-default);
+  padding:6px 14px; background:var(--bg-subtle); border:1px solid var(--border-default);
   border-radius:var(--radius-sm); font-family:var(--font-sans); font-size:var(--text-sm);
   font-weight:500; color:var(--text-secondary); cursor:pointer;
   transition:all 150ms var(--ease-spring); position:relative; overflow:hidden;
@@ -130,7 +130,7 @@ body::before {
 .filter-btn::after {
   content:''; position:absolute; inset:0;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='65' height='65' filter='url(%23g)'/%3E%3C/svg%3E");
-  background-size:65px 65px; opacity:0.10; mix-blend-mode:overlay; pointer-events:none;
+  background-size:65px 65px; opacity:0.01; mix-blend-mode:overlay; pointer-events:none;
 }
 .filter-btn:hover { background:var(--gray-700); border-color:var(--border-strong); color:var(--text-primary); }
 .filter-btn.active {
@@ -143,7 +143,7 @@ body::before {
   gap:24px; margin-bottom:60px;
 }
 .module-card {
-  background:var(--bg-panel); border:1px solid var(--border-subtle);
+  background:var(--bg-elevated); border:1px solid var(--border-subtle);
   border-radius:var(--radius-md); padding:20px; text-decoration:none;
   display:flex; flex-direction:column; gap:12px; position:relative; overflow:hidden;
   transition:all 150ms var(--ease-spring); cursor:pointer;
@@ -151,7 +151,7 @@ body::before {
 .module-card::before {
   content:''; position:absolute; inset:0;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='110' height='110' filter='url(%23g)'/%3E%3C/svg%3E");
-  background-size:110px 110px; opacity:0.12; mix-blend-mode:overlay; pointer-events:none; z-index:0;
+  background-size:110px 110px; opacity:0.02; mix-blend-mode:overlay; pointer-events:none; z-index:0;
 }
 .module-card > * { position:relative; z-index:1; }
 .module-card:hover {
@@ -189,13 +189,13 @@ body::before {
 }
 .module-tag {
   font-family:var(--font-mono); font-size:10px; padding:2px 6px;
-  background:var(--bg-raised); border:1px solid var(--border-subtle);
+  background:var(--bg-subtle); border:1px solid var(--border-subtle);
   border-radius:var(--radius-xs); color:var(--text-placeholder);
 }
 
 .theme-toggle {
   position:fixed; bottom:24px; right:24px; z-index:100;
-  width:48px; height:48px; background:var(--bg-panel); border:1px solid var(--border-default);
+  width:48px; height:48px; background:var(--bg-elevated); border:1px solid var(--border-default);
   border-radius:50%; display:flex; align-items:center; justify-content:center;
   cursor:pointer; box-shadow:var(--shadow-lg); color:var(--text-secondary);
   transition:all 150ms var(--ease-spring);
@@ -253,7 +253,7 @@ body::before {
   <div class="modules-grid" id="modulesGrid">
     
     <!-- CG-01 -->
-    <a href="CG-01-Identite-Palette.html" class="module-card" data-category="fondations" data-keywords="identité palette couleur accent sage slate">
+    <a href="CG-01-Identite-Palette.html" class="module-card" data-category="fondations" data-keywords="identité palette couleur accent teal capy">
       <div class="module-header">
         <div class="module-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
@@ -263,7 +263,7 @@ body::before {
       <div>
         <div class="module-number">CG-01</div>
         <div class="module-title">Identité Visuelle & Palette</div>
-        <div class="module-desc">Manifeste design, règles autorisé/interdit, couleur d'accent Sage Slate, paire typographique</div>
+        <div class="module-desc">Manifeste design, règles autorisé/interdit, couleur d'accent Teal Capy, paire typographique</div>
         <div class="module-tags">
           <span class="module-tag">Identité</span>
           <span class="module-tag">Couleurs</span>
@@ -273,7 +273,7 @@ body::before {
     </a>
 
     <!-- CG-02 -->
-    <a href="CG-02-Systeme-Couleurs-Tokens.html" class="module-card" data-category="fondations" data-keywords="couleurs tokens sage slate gris fonctionnelles wcag">
+    <a href="CG-02-Systeme-Couleurs-Tokens.html" class="module-card" data-category="fondations" data-keywords="couleurs tokens teal capy gris neutres fonctionnelles wcag">
       <div class="module-header">
         <div class="module-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -283,7 +283,7 @@ body::before {
       <div>
         <div class="module-number">CG-02</div>
         <div class="module-title">Système de Couleurs & Tokens</div>
-        <div class="module-desc">Sage Slate 10 nuances, gris froids bleutés, couleurs fonctionnelles, ratios WCAG, tokens sémantiques</div>
+        <div class="module-desc">Teal Capy 10 nuances, gris neutres, couleurs fonctionnelles, ratios WCAG, tokens sémantiques</div>
         <div class="module-tags">
           <span class="module-tag">Tokens</span>
           <span class="module-tag">Palette</span>
@@ -293,7 +293,7 @@ body::before {
     </a>
 
     <!-- CG-03 -->
-    <a href="CG-03-Typographie-Echelle.html" class="module-card" data-category="fondations" data-keywords="typographie plus jakarta sans dm mono échelle tailles">
+    <a href="CG-03-Typographie-Echelle.html" class="module-card" data-category="fondations" data-keywords="typographie inter dm mono échelle tailles">
       <div class="module-header">
         <div class="module-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
@@ -303,7 +303,7 @@ body::before {
       <div>
         <div class="module-number">CG-03</div>
         <div class="module-title">Typographie & Échelle</div>
-        <div class="module-desc">Plus Jakarta Sans + DM Mono, échelle 7 tailles, règles d'usage, specimens complets</div>
+        <div class="module-desc">Inter + DM Mono, échelle 7 tailles, règles d'usage, specimens complets</div>
         <div class="module-tags">
           <span class="module-tag">Fonts</span>
           <span class="module-tag">Échelle</span>

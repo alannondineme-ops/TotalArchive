@@ -1356,7 +1356,7 @@ Un indicateur de fraîcheur est affiché sur chaque widget ("Données mises à j
 
 ### RB-014-06 — Encodage UTF-8 avec BOM pour les CSV
 
-Tous les exports CSV utilisent l'encodage UTF-8 avec BOM (`\ufeff`) et le séparateur point-virgule (`;`) pour assurer la compatibilité avec Microsoft Excel en locale française. Cette règle est non négociable pour garantir la lisibilité des caractères accentués par les agents.
+Tous les exports CSV utilisent l'encodage UTF-8 avec BOM (`\ufeff`) et le séparateur point-virgule (`;`) pour assurer la compatibilité avec Microsoft Excel en locale francophone. Cette règle est non négociable pour garantir la lisibilité des caractères accentués par les agents.
 
 ---
 

@@ -1717,4 +1717,4 @@ docs/
 
 *Système d'Archivage Numérique pour Administration Publique — Spécification technique complète*  
 *18 modules — Architecture Django REST Framework + Tauri + PostgreSQL + Redis + Celery*  
-*Conforme : RGPD, ANSSI, normes archivistiques françaises (SEDA, EAD), stratégie 3-2-1*
+*Conforme : normes archivistiques (SEDA, EAD), OHADA, stratégie 3-2-1*

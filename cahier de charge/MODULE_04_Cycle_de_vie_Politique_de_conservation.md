@@ -618,16 +618,16 @@ Si un document est gelé (`DocumentFreeze.is_active = TRUE`), le système :
 - Affiche un badge "Gelé" sur le document
 - Exclut le document des rapports d'échéances standards
 
-### 9.3 Durées légales minimales prédéfinies (exemples France)
+### 9.3 Durées légales minimales prédéfinies (République du Congo)
 
 | Type de document | Durée minimale | Base légale |
 |---|---|---|
-| Contrats de travail | 5 ans après départ | Code du travail art. L1234-19 |
-| Bulletins de paie | Permanente | Code du travail art. R243-1 |
-| Factures | 10 ans | Code de commerce art. L123-22 |
-| Documents comptables | 10 ans | Code de commerce art. L123-22 |
-| Décisions administratives | 5 ans minimum | Loi 79-587 (archives publiques) |
-| Contrats conclus | 5 ans après expiration | Code civil art. 2224 |
+| Contrats de travail | 5 ans après fin de contrat | Code du travail congolais (Loi n° 6-96 du 6 mars 1996, art. 52) |
+| Bulletins de paie | 5 ans | Code du travail congolais (Loi n° 6-96 du 6 mars 1996) |
+| Factures | 10 ans | Acte Uniforme OHADA relatif au droit comptable (26 janv. 2017, art. 24) |
+| Documents comptables | 10 ans | Acte Uniforme OHADA relatif au droit comptable (26 janv. 2017, art. 24) |
+| Décisions administratives | 5 ans minimum | Pratique administrative usuelle |
+| Contrats conclus | 5 ans après expiration | Acte Uniforme OHADA, droit commercial général (art. 18) |
 
 Ces durées sont configurables par l'administrateur et servent de garde-fou lors de la création d'une politique de conservation.
 
